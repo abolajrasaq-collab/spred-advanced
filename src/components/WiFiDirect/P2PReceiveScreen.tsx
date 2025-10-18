@@ -16,6 +16,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import RNFS from 'react-native-fs';
 import SpredFileService from '../../services/SpredFileService';
 import { P2PService } from '../../services/P2PService';
+import { Android12Button } from '../Android12Button';
 
 const { width, height } = Dimensions.get('window');
 
@@ -444,20 +445,32 @@ const P2PReceiveScreen: React.FC<P2PReceiveScreenProps> = ({
             {deviceName || 'A connected device'} wants to send you a file
           </Text>
           <View style={styles.incomingActions}>
-            <TouchableOpacity
-              style={[styles.incomingButton, styles.rejectButton]}
+            <Android12Button
+              title="Reject"
               onPress={handleRejectTransfer}
-            >
-              <MaterialIcons name="close" size={20} color="#FFFFFF" />
-              <Text style={styles.rejectButtonText}>Reject</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.incomingButton, styles.acceptButton]}
+              iconName="close"
+              style={styles.incomingButton}
+              textStyle={styles.rejectButtonText}
+              buttonColor="#FF5252"
+              pressedColor="#D32F2F"
+              releasedColor="#4CAF50"
+              iconColor="#FFFFFF"
+              iconSize={20}
+              size="small"
+            />
+            <Android12Button
+              title="Accept"
               onPress={() => handleAcceptTransfer('incoming_file')}
-            >
-              <MaterialIcons name="check" size={20} color="#FFFFFF" />
-              <Text style={styles.acceptButtonText}>Accept</Text>
-            </TouchableOpacity>
+              iconName="check"
+              style={styles.incomingButton}
+              textStyle={styles.acceptButtonText}
+              buttonColor="#4CAF50"
+              pressedColor="#388E3C"
+              releasedColor="#4CAF50"
+              iconColor="#FFFFFF"
+              iconSize={20}
+              size="small"
+            />
           </View>
         </View>
       </View>
@@ -502,10 +515,19 @@ const P2PReceiveScreen: React.FC<P2PReceiveScreenProps> = ({
       <Text style={styles.stateSubtitle}>
         File saved to your Downloads folder
       </Text>
-      <TouchableOpacity style={styles.doneButton} onPress={onClose}>
-        <MaterialIcons name="done" size={20} color="#FFFFFF" />
-        <Text style={styles.doneButtonText}>Done</Text>
-      </TouchableOpacity>
+      <Android12Button
+        title="Done"
+        onPress={onClose}
+        iconName="done"
+        style={styles.doneButton}
+        textStyle={styles.doneButtonText}
+        buttonColor="#4CAF50"
+        pressedColor="#388E3C"
+        releasedColor="#4CAF50"
+        iconColor="#FFFFFF"
+        iconSize={20}
+        size="small"
+      />
     </View>
   );
 
@@ -520,27 +542,43 @@ const P2PReceiveScreen: React.FC<P2PReceiveScreenProps> = ({
       </Text>
       <View style={styles.errorActions}>
         {showSettingsButton && (
-          <TouchableOpacity
-            style={[styles.errorButton, styles.settingsButton]}
+          <Android12Button
+            title="Open Permissions"
             onPress={openDeviceSettings}
-          >
-            <MaterialIcons name="settings" size={20} color="#FFFFFF" />
-            <Text style={styles.settingsButtonText}>Open Permissions</Text>
-          </TouchableOpacity>
+            iconName="settings"
+            style={styles.errorButton}
+            textStyle={styles.settingsButtonText}
+            buttonColor="#2196F3"
+            pressedColor="#1976D2"
+            releasedColor="#4CAF50"
+            iconColor="#FFFFFF"
+            iconSize={20}
+            size="small"
+          />
         )}
-        <TouchableOpacity
-          style={[styles.errorButton, styles.retryButton]}
+        <Android12Button
+          title="Try Again"
           onPress={startReceiving}
-        >
-          <MaterialIcons name="refresh" size={20} color="#FFFFFF" />
-          <Text style={styles.retryButtonText}>Try Again</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.errorButton, styles.cancelButton]}
+          iconName="refresh"
+          style={styles.errorButton}
+          textStyle={styles.retryButtonText}
+          buttonColor="#F45303"
+          pressedColor="#D43D00"
+          releasedColor="#4CAF50"
+          iconColor="#FFFFFF"
+          iconSize={20}
+          size="small"
+        />
+        <Android12Button
+          title="Close"
           onPress={onClose}
-        >
-          <Text style={styles.cancelButtonText}>Close</Text>
-        </TouchableOpacity>
+          style={styles.errorButton}
+          textStyle={styles.cancelButtonText}
+          buttonColor="#6C757D"
+          pressedColor="#5A6268"
+          releasedColor="#4CAF50"
+          size="small"
+        />
       </View>
     </View>
   );
@@ -580,13 +618,18 @@ const P2PReceiveScreen: React.FC<P2PReceiveScreenProps> = ({
             {/* Header */}
             <View style={styles.header}>
               <Text style={styles.title}>Receive SPRED video</Text>
-              <TouchableOpacity
-                style={styles.closeButton}
+              <Android12Button
+                title=""
                 onPress={handleCancelReceive}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <MaterialIcons name="close" size={24} color="#8B8B8B" />
-              </TouchableOpacity>
+                iconName="close"
+                style={styles.closeButton}
+                buttonColor="transparent"
+                pressedColor="rgba(0, 0, 0, 0.1)"
+                releasedColor="transparent"
+                iconColor="#8B8B8B"
+                iconSize={24}
+                size="small"
+              />
             </View>
 
             {/* Status Bar */}

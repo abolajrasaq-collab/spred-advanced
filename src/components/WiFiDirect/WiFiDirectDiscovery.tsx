@@ -14,7 +14,9 @@ import {
   PermissionsAndroid,
   Platform,
 } from 'react-native';
+import PlatformTouchable from '../PlatformTouchable/PlatformTouchable';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { Android12Button } from '../Android12Button';
 import {
   P2PService,
   Device,
@@ -91,6 +93,15 @@ const WiFiDirectDiscovery: React.FC<WiFiDirectDiscoveryProps> = ({
       
       // Force UI update by setting state
       setP2PState(state);
+      
+      // Additional state sync check for initialization
+      if (state.isInitialized && !p2pState?.isInitialized) {
+        console.log('🔄 State subscription: P2P service initialized, forcing UI update...');
+        // Force a re-render by updating state
+        setTimeout(() => {
+          setP2PState({...state});
+        }, 100);
+      }
 
       // Check if file transfer is in progress
       if (state.transferProgress && (state.transferProgress as any).progress > 0) {
@@ -139,18 +150,19 @@ const WiFiDirectDiscovery: React.FC<WiFiDirectDiscoveryProps> = ({
     // Force update on mount and when component becomes visible
     forceUIUpdate();
 
-    // DISABLED: Frequent state polling causes app to hang
-    // const stateCheckInterval = setInterval(() => {
-    //   const currentState = p2pService.getState();
-    //   if (JSON.stringify(currentState) !== JSON.stringify(p2pState)) {
-    //     console.log('🔄 State mismatch detected, updating UI...');
-    //     setP2PState(currentState);
-    //   }
-    // }, 2000); // Check every 2 seconds
+    // Add a delayed state check to catch initialization completion
+    const delayedStateCheck = setTimeout(() => {
+      const currentState = p2pService.getState();
+      console.log('🔄 Delayed state check:', currentState);
+      if (currentState.isInitialized && !p2pState?.isInitialized) {
+        console.log('🔄 State sync: P2P service initialized, updating UI...');
+        setP2PState(currentState);
+      }
+    }, 2000); // Check after 2 seconds
 
-    // return () => {
-    //   clearInterval(stateCheckInterval);
-    // };
+    return () => {
+      clearTimeout(delayedStateCheck);
+    };
   }, []); // Removed p2pState dependency to prevent loops
 
   const initializeAndAutoStartDiscovery = async () => {
@@ -175,6 +187,14 @@ const WiFiDirectDiscovery: React.FC<WiFiDirectDiscoveryProps> = ({
         ]);
       } else {
         console.log('✅ P2P service initialized successfully');
+        
+        // Force state synchronization after successful initialization
+        setTimeout(() => {
+          const currentState = p2pService.getState();
+          console.log('🔄 Post-initialization state sync:', currentState);
+          setP2PState(currentState);
+        }, 500);
+        
         // Auto-start discovery after successful initialization
         console.log('🔍 Auto-starting discovery in 1 second...');
         setTimeout(() => {
@@ -388,6 +408,25 @@ const WiFiDirectDiscovery: React.FC<WiFiDirectDiscoveryProps> = ({
     await p2pService.stopDiscovery();
   }, []);
 
+  const handleDisconnect = useCallback(async () => {
+    try {
+      console.log('🔌 Disconnecting from current device...');
+      await p2pService.removeGroup();
+      Alert.alert(
+        'Disconnected',
+        'Successfully disconnected from the current device.',
+        [{ text: 'OK' }]
+      );
+    } catch (error) {
+      console.error('Disconnect error:', error);
+      Alert.alert(
+        'Disconnect Error',
+        'Failed to disconnect. Please try again.',
+        [{ text: 'OK' }]
+      );
+    }
+  }, []);
+
   const handleRequestPermissions = useCallback(async () => {
     console.log('🔐 Starting permission request process...');
     
@@ -529,9 +568,9 @@ const WiFiDirectDiscovery: React.FC<WiFiDirectDiscoveryProps> = ({
       setConnectionProgress(0);
 
       try {
-        console.log('🔗 Attempting to connect to device:', device.deviceAddress);
-        // Direct connection without simulated progress
-        const success = await p2pService.connectToDevice(device.deviceAddress);
+        console.log('🔗 Attempting smart connection to device:', device.deviceAddress);
+        // Smart connection with automatic retry logic
+        const success = await p2pService.smartConnect(device.deviceAddress);
 
         if (success) {
           console.log('✅ Connection successful, updating progress');
@@ -625,9 +664,13 @@ const WiFiDirectDiscovery: React.FC<WiFiDirectDiscoveryProps> = ({
           const currentState = p2pService.getState();
           const errorMessage = currentState.error || 'Unknown connection error';
           
+          // Get smart error guidance
+          const guidance = p2pService.getErrorGuidance(errorMessage);
+          const guidanceText = guidance.actions.map((action, index) => `${index + 1}. ${action}`).join('\n');
+          
           Alert.alert(
-            'Connection Failed',
-            `Failed to connect to ${device.deviceName}.\n\nError: ${errorMessage}\n\nPlease ensure both devices are close to each other and try again.`,
+            guidance.title,
+            `${guidance.message}\n\nTroubleshooting steps:\n${guidanceText}`,
             [
               { text: 'OK', style: 'cancel' },
               { 
@@ -748,6 +791,22 @@ const WiFiDirectDiscovery: React.FC<WiFiDirectDiscoveryProps> = ({
     // Allow connection if the device is available or in a state where connection is possible
     const canConnect = isAvailable || item.status === 3; // Allow connection even during discovery
 
+    // Simulate signal strength based on device status
+    const getSignalStrength = () => {
+      if (isOutOfRange) return 0;
+      if (isFailed) return 1;
+      if (isConnecting || !isAvailable) return 2;
+      return 3; // Available devices have good signal
+    };
+
+    const signalBars = getSignalStrength();
+    const getSignalColor = () => {
+      if (signalBars === 0) return '#8B8B8B';
+      if (signalBars === 1) return '#F44336';
+      if (signalBars === 2) return '#FF9800';
+      return '#4CAF50';
+    };
+
     return (
       <Animated.View
         style={[
@@ -814,6 +873,30 @@ const WiFiDirectDiscovery: React.FC<WiFiDirectDiscoveryProps> = ({
                   TAP TO CONNECT
                 </Text>
               )}
+            </View>
+            
+            {/* Signal Strength Indicator */}
+            <View style={styles.signalStrengthContainer}>
+              <View style={styles.signalBars}>
+                {[1, 2, 3, 4].map((bar) => (
+                  <View
+                    key={bar}
+                    style={[
+                      styles.signalBar,
+                      {
+                        backgroundColor: bar <= signalBars ? getSignalColor() : '#333333',
+                        height: bar * 3 + 6,
+                      },
+                    ]}
+                  />
+                ))}
+              </View>
+              <Text style={styles.signalStrengthText}>
+                {signalBars === 0 ? 'No Signal' : 
+                 signalBars === 1 ? 'Weak' :
+                 signalBars === 2 ? 'Fair' :
+                 signalBars === 3 ? 'Good' : 'Excellent'}
+              </Text>
             </View>
           </View>
 
@@ -935,9 +1018,17 @@ const WiFiDirectDiscovery: React.FC<WiFiDirectDiscoveryProps> = ({
         <Text style={styles.headerTitle}>
           {selectedVideo ? 'Send Video' : 'WiFi Direct'}
         </Text>
-        <TouchableOpacity
-          style={styles.quickActionsButton}
-          onPress={async () => {
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={onBack}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <MaterialIcons name="close" size={24} color="#8B8B8B" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.quickActionsButton}
+            onPress={async () => {
             try {
               if (!p2pState?.isInitialized) {
                 Alert.alert(
@@ -965,6 +1056,7 @@ const WiFiDirectDiscovery: React.FC<WiFiDirectDiscoveryProps> = ({
         >
           <MaterialIcons name="refresh" size={24} color="#F45303" />
         </TouchableOpacity>
+        </View>
       </View>
 
       {renderAutoConnectStatus()}
@@ -1018,6 +1110,22 @@ const WiFiDirectDiscovery: React.FC<WiFiDirectDiscoveryProps> = ({
               <Text style={styles.statusText}>Connected</Text>
             </View>
           )}
+          {p2pState.isRetrying && (
+            <View style={styles.statusItem}>
+              <View style={[styles.statusDot, { backgroundColor: '#FF9800' }]} />
+              <Text style={styles.statusText}>
+                Retrying ({p2pState.retryAttempts}/{p2pState.maxRetryAttempts})
+              </Text>
+            </View>
+          )}
+          {p2pState.transferProgress && (
+            <View style={styles.statusItem}>
+              <View style={[styles.statusDot, { backgroundColor: '#2196F3' }]} />
+              <Text style={styles.statusText}>
+                {p2pState.transferRate > 0 ? `${p2pState.transferRate.toFixed(1)} MB/s` : 'Transferring...'}
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Control Buttons */}
@@ -1064,36 +1172,49 @@ const WiFiDirectDiscovery: React.FC<WiFiDirectDiscoveryProps> = ({
 
           {/* Main Action Button - Full Width */}
           <View style={styles.mainActionContainer}>
-            {!p2pState?.isDiscovering ? (
-              <TouchableOpacity
-                style={[styles.mainActionButton, styles.discoveryButton]}
+            {p2pState?.isConnected ? (
+              <Android12Button
+                title="Disconnect"
+                onPress={handleDisconnect}
+                iconName="link-off"
+                style={styles.mainActionButton}
+                textStyle={styles.mainActionButtonText}
+                buttonColor="#FF5252"
+                pressedColor="#D32F2F"
+                releasedColor="#4CAF50"
+              />
+            ) : !p2pState?.isDiscovering ? (
+              <Android12Button
+                title={p2pState?.discoveredDevices.length > 0
+                  ? 'Refresh Search'
+                  : 'Start Discovery'}
                 onPress={handleStartDiscovery}
+                iconName="search"
+                style={styles.mainActionButton}
+                textStyle={styles.mainActionButtonText}
+                buttonColor="#F45303"
+                pressedColor="#D43D00"
+                releasedColor="#4CAF50"
                 disabled={!p2pState?.isInitialized}
-                activeOpacity={0.8}
-              >
-                <MaterialIcons name="search" size={24} color="#FFFFFF" />
-                <Text style={styles.mainActionButtonText}>
-                  {p2pState?.discoveredDevices.length > 0
-                    ? 'Refresh Search'
-                    : 'Start Discovery'}
-                </Text>
-              </TouchableOpacity>
+              />
             ) : (
-              <TouchableOpacity
-                style={[styles.mainActionButton, styles.stopButton]}
+              <Android12Button
+                title="Stop Discovery"
                 onPress={handleStopDiscovery}
-                activeOpacity={0.8}
-              >
-                <ActivityIndicator size="small" color="#FFFFFF" />
-                <Text style={styles.mainActionButtonText}>Stop Discovery</Text>
-              </TouchableOpacity>
+                iconName="stop"
+                style={styles.mainActionButton}
+                textStyle={styles.mainActionButtonText}
+                buttonColor="#FF5252"
+                pressedColor="#D32F2F"
+                releasedColor="#4CAF50"
+              />
             )}
           </View>
 
           {/* Quick Action Buttons */}
           <View style={styles.quickActionsContainer}>
-            <TouchableOpacity
-              style={styles.quickActionButton}
+            <Android12Button
+              title="Refresh"
               onPress={async () => {
                 try {
                   if (!p2pState?.isInitialized) {
@@ -1108,15 +1229,18 @@ const WiFiDirectDiscovery: React.FC<WiFiDirectDiscoveryProps> = ({
                   console.error('Refresh device list error:', error);
                 }
               }}
+              iconName="refresh"
+              style={styles.quickActionButton}
+              textStyle={styles.quickActionText}
+              buttonColor="#F45303"
+              pressedColor="#D43D00"
+              releasedColor="#4CAF50"
               disabled={!p2pState?.isInitialized || p2pState?.isDiscovering}
-              activeOpacity={0.8}
-            >
-              <MaterialIcons name="refresh" size={18} color="#F45303" />
-              <Text style={styles.quickActionText}>Refresh</Text>
-            </TouchableOpacity>
+              size="small"
+            />
             
-            <TouchableOpacity
-              style={[styles.quickActionButton, { backgroundColor: '#4CAF50' }]}
+            <Android12Button
+              title="Validate"
               onPress={async () => {
                 try {
                   console.log('🔍 Manual connection validation...');
@@ -1131,15 +1255,86 @@ const WiFiDirectDiscovery: React.FC<WiFiDirectDiscoveryProps> = ({
                   Alert.alert('Error', `Validation failed: ${error.message}`);
                 }
               }}
+              iconName="link"
+              style={styles.quickActionButton}
+              textStyle={styles.quickActionText}
+              buttonColor="#4CAF50"
+              pressedColor="#388E3C"
+              releasedColor="#4CAF50"
               disabled={!p2pState?.isInitialized}
-              activeOpacity={0.8}
-            >
-              <MaterialIcons name="link" size={18} color="#FFFFFF" />
-              <Text style={[styles.quickActionText, { color: '#FFFFFF' }]}>Validate</Text>
-            </TouchableOpacity>
+              size="small"
+            />
             
-            <TouchableOpacity
-              style={[styles.quickActionButton, { backgroundColor: '#FF9800' }]}
+            <Android12Button
+              title="Start Server"
+              onPress={async () => {
+                try {
+                  console.log('📥 Starting receive server manually...');
+                  const success = await p2pService.startReceiveServer();
+                  Alert.alert(
+                    'Receive Server',
+                    `Server ${success ? 'STARTED' : 'FAILED TO START'}\n\nThis is needed for file transfers to work.`,
+                    [{ text: 'OK' }]
+                  );
+                } catch (error) {
+                  console.error('Start server error:', error);
+                  Alert.alert('Error', `Failed to start server: ${error.message}`);
+                }
+              }}
+              iconName="cloud-download"
+              style={styles.quickActionButton}
+              textStyle={styles.quickActionText}
+              buttonColor="#2196F3"
+              pressedColor="#1976D2"
+              releasedColor="#4CAF50"
+              disabled={!p2pState?.isInitialized}
+              size="small"
+            />
+            
+            <Android12Button
+              title="Set Spred Name"
+              onPress={async () => {
+                try {
+                  console.log('📱 Setting Spred device name...');
+                  const success = await p2pService.setSpredDeviceName();
+                  Alert.alert(
+                    'Spred Device Name',
+                    `Device name ${success ? 'SET' : 'FAILED TO SET'}\n\nThis helps other Spred users identify your device.`,
+                    [{ text: 'OK' }]
+                  );
+                } catch (error) {
+                  console.error('Set device name error:', error);
+                  Alert.alert('Error', `Failed to set device name: ${error.message}`);
+                }
+              }}
+              iconName="person"
+              style={styles.quickActionButton}
+              textStyle={styles.quickActionText}
+              buttonColor="#9C27B0"
+              pressedColor="#7B1FA2"
+              releasedColor="#4CAF50"
+              disabled={!p2pState?.isInitialized}
+              size="small"
+            />
+
+            {/* Disconnect Button - Only show when connected */}
+            {p2pState?.isConnected && (
+              <Android12Button
+                title="Disconnect"
+                onPress={handleDisconnect}
+                iconName="link-off"
+                style={styles.quickActionButton}
+                textStyle={styles.quickActionText}
+                buttonColor="#FF5252"
+                pressedColor="#D32F2F"
+                releasedColor="#4CAF50"
+                disabled={!p2pState?.isInitialized}
+                size="small"
+              />
+            )}
+            
+            <Android12Button
+              title="Force UI"
               onPress={() => {
                 console.log('🔄 Force refreshing UI state...');
                 const currentState = p2pService.getState();
@@ -1147,12 +1342,15 @@ const WiFiDirectDiscovery: React.FC<WiFiDirectDiscoveryProps> = ({
                 setP2PState(currentState);
                 Alert.alert('UI Refresh', 'UI state has been refreshed. Check debug panel for current state.');
               }}
+              iconName="refresh"
+              style={styles.quickActionButton}
+              textStyle={styles.quickActionText}
+              buttonColor="#FF9800"
+              pressedColor="#F57C00"
+              releasedColor="#4CAF50"
               disabled={!p2pState?.isInitialized}
-              activeOpacity={0.8}
-            >
-              <MaterialIcons name="refresh" size={18} color="#FFFFFF" />
-              <Text style={[styles.quickActionText, { color: '#FFFFFF' }]}>Force UI</Text>
-            </TouchableOpacity>
+              size="small"
+            />
           </View>
 
           {/* Debug Section */}
@@ -1397,6 +1595,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFFFFF',
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  closeButton: {
+    padding: 4,
+  },
   quickActionsButton: {
     padding: 8,
   },
@@ -1597,6 +1803,27 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#CCCCCC',
     marginRight: 12,
+  },
+  signalStrengthContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  signalBars: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 2,
+    marginRight: 8,
+  },
+  signalBar: {
+    width: 3,
+    borderRadius: 1.5,
+    marginHorizontal: 0.5,
+  },
+  signalStrengthText: {
+    fontSize: 10,
+    color: '#8B8B8B',
+    fontWeight: '500',
   },
   deviceType: {
     fontSize: 12,

@@ -6,7 +6,6 @@ import {
   Modal,
   Dimensions,
   Text,
-  TouchableOpacity,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -16,6 +15,7 @@ import P2PVideoSelector from '../../components/WiFiDirect/P2PVideoSelector';
 import P2PReceiveScreen from '../../components/WiFiDirect/P2PReceiveScreen';
 import SpredFileService from '../../services/SpredFileService';
 import logger from '../../utils/logger';
+import { Android12Button } from '../../components/Android12Button';
 
 const { width, height } = Dimensions.get('window');
 
@@ -80,7 +80,16 @@ const WiFiDirectScreen: React.FC<WiFiDirectScreenProps> = () => {
     }
   }, [routeParams]);
 
-  const handleBack = useCallback(() => {
+  const handleBack = useCallback(async () => {
+    try {
+      // Clean up P2P connections when leaving the screen
+      if (p2pService.getState().isConnected || p2pService.getState().isGroupOwner) {
+        console.log('🔌 Cleaning up P2P connections before leaving...');
+        await p2pService.disconnect();
+      }
+    } catch (error) {
+      console.warn('⚠️ Error during cleanup:', error);
+    }
     navigation.goBack();
   }, [navigation]);
 
@@ -361,18 +370,24 @@ const WiFiDirectScreen: React.FC<WiFiDirectScreenProps> = () => {
           )}
 
           <View style={styles.transferActions}>
-            <TouchableOpacity
-              style={[styles.transferButton, styles.cancelButton]}
+            <Android12Button
+              title="Cancel"
               onPress={() => {
                 setShowTransferModal(false);
                 setShowFileSelection(false);
                 setShowVideoSelector(false);
                 setShowReceiveScreen(false);
               }}
-            >
-              <MaterialIcons name="close" size={20} color="#FFFFFF" />
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
+              iconName="close"
+              style={[styles.transferButton, styles.cancelButton]}
+              textStyle={styles.cancelButtonText}
+              buttonColor="#F44336"
+              pressedColor="#D32F2F"
+              releasedColor="#EF5350"
+              iconColor="#FFFFFF"
+              iconSize={20}
+              size="medium"
+            />
           </View>
         </View>
       </View>
@@ -415,6 +430,7 @@ const WiFiDirectScreen: React.FC<WiFiDirectScreenProps> = () => {
         </View>
       </View>
     );
+    
   };
 
   return (
@@ -445,31 +461,40 @@ const WiFiDirectScreen: React.FC<WiFiDirectScreenProps> = () => {
               <Text style={styles.modalTitle}>
                 Select File to Share with {selectedDevice?.deviceName}
               </Text>
-              <TouchableOpacity
-                style={styles.closeButton}
+              <Android12Button
+                title=""
                 onPress={() => setShowFileSelection(false)}
-              >
-                <MaterialIcons name="close" size={24} color="#8B8B8B" />
-              </TouchableOpacity>
+                iconName="close"
+                style={styles.closeButton}
+                buttonColor="transparent"
+                pressedColor="#E0E0E0"
+                releasedColor="transparent"
+                iconColor="#8B8B8B"
+                iconSize={24}
+                size="small"
+              />
             </View>
 
             <View style={styles.fileOptions}>
-              <TouchableOpacity
-                style={styles.fileOption}
+              <Android12Button
+                title="Select Downloaded Video"
                 onPress={() => {
                   setShowVideoSelector(true);
                   setShowFileSelection(false);
                 }}
-              >
-                <MaterialIcons name="video-library" size={32} color="#F45303" />
-                <Text style={styles.fileOptionTitle}>
-                  Select Downloaded Video
-                </Text>
-                <Text style={styles.fileOptionSubtitle} />
-              </TouchableOpacity>
-
-              <TouchableOpacity
+                iconName="video-library"
                 style={styles.fileOption}
+                textStyle={styles.fileOptionTitle}
+                buttonColor="transparent"
+                pressedColor="#F0F0F0"
+                releasedColor="transparent"
+                iconColor="#F45303"
+                iconSize={32}
+                size="large"
+              />
+
+              <Android12Button
+                title="Browse Files"
                 onPress={() => {
                   // Navigate to file selection (you can integrate with existing file picker)
                   Alert.alert(
@@ -487,23 +512,30 @@ const WiFiDirectScreen: React.FC<WiFiDirectScreenProps> = () => {
                     ],
                   );
                 }}
-              >
-                <MaterialIcons name="folder" size={32} color="#D69E2E" />
-                <Text style={styles.fileOptionTitle}>Browse Files</Text>
-                <Text style={styles.fileOptionSubtitle} />
-              </TouchableOpacity>
-
-              <TouchableOpacity
+                iconName="folder"
                 style={styles.fileOption}
+                textStyle={styles.fileOptionTitle}
+                buttonColor="transparent"
+                pressedColor="#F0F0F0"
+                releasedColor="transparent"
+                iconColor="#D69E2E"
+                iconSize={32}
+                size="large"
+              />
+
+              <Android12Button
+                title="Receive File"
                 onPress={handleReceiveFile}
-              >
-                <MaterialIcons name="file-download" size={32} color="#4CAF50" />
-                <Text style={styles.fileOptionTitle}>Receive File</Text>
-                <Text style={styles.fileOptionSubtitle}>
-                  {' '}
-                  {selectedDevice?.deviceName}
-                </Text>
-              </TouchableOpacity>
+                iconName="file-download"
+                style={styles.fileOption}
+                textStyle={styles.fileOptionTitle}
+                buttonColor="transparent"
+                pressedColor="#F0F0F0"
+                releasedColor="transparent"
+                iconColor="#4CAF50"
+                iconSize={32}
+                size="large"
+              />
             </View>
           </View>
         </View>
