@@ -64,3 +64,58 @@ yarn-error.log
 
 # testing
 /coverage
+
+# React Native specific
+*.log
+*.tmp
+*.temp
+.react-native/
+
+# Development files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+android/app/build/
+android/build/
+ios/build/
+
+# APK files
+*.apk
+*.aab
+
+# Yalc
+.yalc/
+yalc.lock
+
+# Performance monitoring
+monitoring-*.json
+
+# Bundle analysis
+bundle-analysis.json
+
+# Documentation builds
+docs/build/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Crash logs
+crash_log.txt
+*.crash
+
+# Test outputs
+test-results/
+jest-results/
+
+# Backup files
+*.backup
+*~
