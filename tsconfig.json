@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "jsx": "react-native",
+    "lib": ["es2017"],
+    "module": "es2020",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "target": "esnext",
+    "resolveJsonModule": true,
+    "types": ["node"],
+    "typeRoots": [
+      "@types",
+      "./node_modules/@types"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "types/*": ["./@types/*"]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "src(template)",
+    "src-old",
+    ".yalc",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js"
+  ]
+}

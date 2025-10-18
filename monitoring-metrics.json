@@ -1,0 +1,41 @@
+{
+  "timestamp": 1760574359142,
+  "performance": {
+    "score": 70,
+    "renderTime": 5.801757051747021,
+    "memoryUsage": 27.287709822007745,
+    "frameDrops": 5,
+    "cpuUsage": 82.97559134973484
+  },
+  "network": {
+    "totalRequests": 7285,
+    "successfulRequests": 5534,
+    "failedRequests": 0,
+    "averageLatency": 969.5646239658554,
+    "cacheHitRate": 80.2506143403362
+  },
+  "cache": {
+    "totalItems": 547,
+    "totalSize": 16816744.86964906,
+    "hitRate": 21.610777676233937,
+    "missRate": 92.44756637904258,
+    "evictions": 21
+  },
+  "user": {
+    "sessionId": "monitor_session",
+    "screenName": "monitor",
+    "deviceInfo": {
+      "platform": "monitor",
+      "version": "1.0.0",
+      "model": "Monitor Device",
+      "screenSize": "1920x1080",
+      "memory": 8192,
+      "isConnected": true
+    }
+  },
+  "errors": {
+    "totalErrors": 1831,
+    "recentErrors": [],
+    "errorRate": 7.030697405379243
+  }
+}

@@ -1,0 +1,21 @@
+appId: com.spred
+---
+- launchApp:
+    clearState: true
+- tapOn: My text
+- tapOn: My text
+- tapOn: My text
+- tapOn: My text
+- tapOn: shamedigital@gmail.com
+
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "Home Screen"
+    timeout: 10000 # Wait for up to 10 seconds
+    - assertVisible: My Button
+- startRecording:
+    path: logging_in
+    label: Begin collecting test evidence
+    optional: true
+- tapOn: Akiti, Short Films

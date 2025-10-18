@@ -1,0 +1,58 @@
+// Shared textual constants and tab keys for PlayVideos
+export const TEXT_CONSTANTS = {
+  LOADING_TRAILER: 'Loading trailer...',
+  VIDEO_UNAVAILABLE: 'Video unavailable',
+  DURATION: 'Duration:',
+  VIEWS: 'views',
+  DOWNLOADS: 'downloads',
+  ADD_TO_LIST: 'ADD TO LIST',
+  VIEW_DOWNLOADS: 'VIEW DOWNLOADS',
+  SHARE: 'SHARE',
+  DOWNLOAD: 'DOWNLOAD',
+  SPRED: 'SPRED',
+  SUBSCRIBE: 'Subscribe',
+  DONATE: 'Donate',
+  ABOUT: 'ABOUT',
+  CASTS_BTS: 'CASTS & BTS',
+  COMMENTS: 'COMMENTS',
+  DIRECTOR: 'Director:',
+  NOT_AVAILABLE: 'Not available',
+  CAST: 'Cast:',
+  CAST_INFO_NOT_AVAILABLE: 'Cast information not available',
+  NO_COMMENTS: 'No comments yet. Be the first to comment!',
+  DETAILS: 'Details',
+  LANGUAGE: 'Language',
+  ENGLISH: 'English',
+  YEAR: 'Year',
+  MORE_LIKE_THIS: 'More Like This',
+  SUGGESTED_FILMS: 'Suggested Films',
+  SHARE_MOVIE: 'Share Movie',
+  SHARE_TO_X: '𝕏 Share to X',
+  FACEBOOK: '📘 Facebook',
+  WHATSAPP: '💬 WhatsApp',
+  INSTAGRAM: '📷 Instagram',
+  COPY_LINK: 'Copy Link',
+  COPY_SHARE_MESSAGE: 'Copy Share Message',
+  MORE_OPTIONS: 'More Options',
+  BULLET: '•',
+  UNABLE_TO_LOAD: 'Unable to load video',
+  RETRY: 'Retry',
+  SHARES: 'shares',
+  DOWNLOAD_REQUIRED: 'Download Required',
+  CANCEL: 'Cancel',
+  RECEIVE: 'RECEIVE',
+  FOLLOWING: 'Following',
+  DEFAULT_VIEWS: '12.5K',
+  DEFAULT_DOWNLOADS: '3.2K',
+  DEFAULT_SHARES: '847',
+} as const;
+
+export const TAB_KEYS = {
+  ABOUT: 'about',
+  CASTS: 'casts',
+  COMMENTS: 'comments',
+} as const;
+
+export type TabKey = typeof TAB_KEYS[keyof typeof TAB_KEYS];
+
+export default TEXT_CONSTANTS;

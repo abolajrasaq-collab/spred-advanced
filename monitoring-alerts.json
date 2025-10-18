@@ -1,0 +1,5002 @@
+[
+  {
+    "id": "cache_warning_1760573892727",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 47.8%",
+    "timestamp": 1760573892727,
+    "metadata": {
+      "hitRate": 47.84624758698899
+    }
+  },
+  {
+    "id": "cache_critical_1760573896225",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 23.1%",
+    "timestamp": 1760573896225,
+    "metadata": {
+      "hitRate": 23.056742662859374
+    }
+  },
+  {
+    "id": "perf_warning_1760573897737",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760573897737,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760573897737",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1700ms",
+    "timestamp": 1760573897737,
+    "metadata": {
+      "latency": 1700.4607583857644
+    }
+  },
+  {
+    "id": "cache_critical_1760573897737",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 19.9%",
+    "timestamp": 1760573897737,
+    "metadata": {
+      "hitRate": 19.918078888292534
+    }
+  },
+  {
+    "id": "perf_critical_1760573900451",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760573900451,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "cache_warning_1760573900451",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 33.8%",
+    "timestamp": 1760573900451,
+    "metadata": {
+      "hitRate": 33.83204558434241
+    }
+  },
+  {
+    "id": "perf_critical_1760573901232",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760573901232,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_critical_1760573901232",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 4.9%",
+    "timestamp": 1760573901232,
+    "metadata": {
+      "hitRate": 4.92425540869319
+    }
+  },
+  {
+    "id": "perf_critical_1760573902745",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760573902745,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_critical_1760573902745",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 6.7%",
+    "timestamp": 1760573902745,
+    "metadata": {
+      "hitRate": 6.70896797175875
+    }
+  },
+  {
+    "id": "perf_critical_1760573905459",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760573905459,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "net_warning_1760573905459",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1039ms",
+    "timestamp": 1760573905459,
+    "metadata": {
+      "latency": 1039.2380449309953
+    }
+  },
+  {
+    "id": "cache_critical_1760573905459",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 20.0%",
+    "timestamp": 1760573905459,
+    "metadata": {
+      "hitRate": 20.01580298032333
+    }
+  },
+  {
+    "id": "perf_critical_1760573906240",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760573906240,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "net_warning_1760573906240",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1759ms",
+    "timestamp": 1760573906240,
+    "metadata": {
+      "latency": 1758.795092581074
+    }
+  },
+  {
+    "id": "cache_critical_1760573907751",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 29.5%",
+    "timestamp": 1760573907751,
+    "metadata": {
+      "hitRate": 29.502593901503516
+    }
+  },
+  {
+    "id": "perf_critical_1760573911254",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760573911254,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "mem_warning_1760573911254",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 89.2%",
+    "timestamp": 1760573911254,
+    "metadata": {
+      "memoryUsage": 89.1526240973827
+    }
+  },
+  {
+    "id": "cache_warning_1760573911254",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 40.9%",
+    "timestamp": 1760573911254,
+    "metadata": {
+      "hitRate": 40.94250140141771
+    }
+  },
+  {
+    "id": "perf_critical_1760573912752",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 25",
+    "timestamp": 1760573912752,
+    "metadata": {
+      "score": 25
+    }
+  },
+  {
+    "id": "net_warning_1760573912752",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1361ms",
+    "timestamp": 1760573912752,
+    "metadata": {
+      "latency": 1360.6530042177678
+    }
+  },
+  {
+    "id": "cache_critical_1760573916266",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 8.6%",
+    "timestamp": 1760573916266,
+    "metadata": {
+      "hitRate": 8.558127380725654
+    }
+  },
+  {
+    "id": "perf_critical_1760573917764",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760573917764,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "cache_warning_1760573917764",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 40.7%",
+    "timestamp": 1760573917764,
+    "metadata": {
+      "hitRate": 40.6677122353613
+    }
+  },
+  {
+    "id": "perf_warning_1760573921278",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760573921278,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760573921278",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1675ms",
+    "timestamp": 1760573921278,
+    "metadata": {
+      "latency": 1674.9159117882741
+    }
+  },
+  {
+    "id": "cache_warning_1760573921278",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 47.9%",
+    "timestamp": 1760573921278,
+    "metadata": {
+      "hitRate": 47.923088903564626
+    }
+  },
+  {
+    "id": "perf_critical_1760573922776",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760573922776,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "perf_critical_1760573925485",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760573925485,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "mem_critical_1760573925485",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 92.1%",
+    "timestamp": 1760573925485,
+    "metadata": {
+      "memoryUsage": 92.11471054354578
+    }
+  },
+  {
+    "id": "cache_warning_1760573925485",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 39.4%",
+    "timestamp": 1760573925485,
+    "metadata": {
+      "hitRate": 39.36573592042627
+    }
+  },
+  {
+    "id": "perf_critical_1760573926281",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760573926281,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "mem_critical_1760573926281",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 90.6%",
+    "timestamp": 1760573926281,
+    "metadata": {
+      "memoryUsage": 90.63539874518402
+    }
+  },
+  {
+    "id": "cache_warning_1760573930499",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 36.1%",
+    "timestamp": 1760573930499,
+    "metadata": {
+      "hitRate": 36.05111167688786
+    }
+  },
+  {
+    "id": "perf_critical_1760573931283",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 25",
+    "timestamp": 1760573931283,
+    "metadata": {
+      "score": 25
+    }
+  },
+  {
+    "id": "net_warning_1760573931283",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1984ms",
+    "timestamp": 1760573931283,
+    "metadata": {
+      "latency": 1984.3968414596638
+    }
+  },
+  {
+    "id": "cache_critical_1760573931283",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 21.3%",
+    "timestamp": 1760573931283,
+    "metadata": {
+      "hitRate": 21.27286990446762
+    }
+  },
+  {
+    "id": "net_warning_1760573932782",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1823ms",
+    "timestamp": 1760573932782,
+    "metadata": {
+      "latency": 1823.430474561679
+    }
+  },
+  {
+    "id": "cache_warning_1760573932782",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 40.9%",
+    "timestamp": 1760573932782,
+    "metadata": {
+      "hitRate": 40.89558027338014
+    }
+  },
+  {
+    "id": "perf_critical_1760573935500",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760573935500,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "perf_critical_1760573936293",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 15",
+    "timestamp": 1760573936293,
+    "metadata": {
+      "score": 15
+    }
+  },
+  {
+    "id": "mem_warning_1760573936293",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 80.4%",
+    "timestamp": 1760573936293,
+    "metadata": {
+      "memoryUsage": 80.37839303030007
+    }
+  },
+  {
+    "id": "net_critical_1760573936293",
+    "type": "network",
+    "severity": "critical",
+    "message": "Critical network latency: 2014ms",
+    "timestamp": 1760573936293,
+    "metadata": {
+      "latency": 2014.2722748042256
+    }
+  },
+  {
+    "id": "cache_critical_1760573936293",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 28.0%",
+    "timestamp": 1760573936293,
+    "metadata": {
+      "hitRate": 27.99361959634974
+    }
+  },
+  {
+    "id": "perf_critical_1760573940504",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760573940504,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "perf_critical_1760573941300",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 10",
+    "timestamp": 1760573941300,
+    "metadata": {
+      "score": 10
+    }
+  },
+  {
+    "id": "mem_warning_1760573941300",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 88.7%",
+    "timestamp": 1760573941300,
+    "metadata": {
+      "memoryUsage": 88.65307802999283
+    }
+  },
+  {
+    "id": "net_warning_1760573941300",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1788ms",
+    "timestamp": 1760573941300,
+    "metadata": {
+      "latency": 1788.2061741569653
+    }
+  },
+  {
+    "id": "perf_critical_1760573942802",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760573942802,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "net_warning_1760573942802",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1292ms",
+    "timestamp": 1760573942802,
+    "metadata": {
+      "latency": 1291.7728742104878
+    }
+  },
+  {
+    "id": "cache_warning_1760573942802",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 44.8%",
+    "timestamp": 1760573942802,
+    "metadata": {
+      "hitRate": 44.76484177145359
+    }
+  },
+  {
+    "id": "perf_critical_1760573945518",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760573945518,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "net_warning_1760573945518",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1718ms",
+    "timestamp": 1760573945518,
+    "metadata": {
+      "latency": 1718.4475678067795
+    }
+  },
+  {
+    "id": "perf_critical_1760573946300",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760573946300,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "perf_critical_1760573947802",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760573947802,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "mem_warning_1760573947802",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 82.0%",
+    "timestamp": 1760573947802,
+    "metadata": {
+      "memoryUsage": 81.98025487898157
+    }
+  },
+  {
+    "id": "perf_critical_1760573950533",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760573950533,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "perf_warning_1760573951315",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760573951315,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760573951315",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1528ms",
+    "timestamp": 1760573951315,
+    "metadata": {
+      "latency": 1527.9263616536446
+    }
+  },
+  {
+    "id": "cache_critical_1760573951315",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 3.7%",
+    "timestamp": 1760573951315,
+    "metadata": {
+      "hitRate": 3.722165755350404
+    }
+  },
+  {
+    "id": "net_critical_1760573952812",
+    "type": "network",
+    "severity": "critical",
+    "message": "Critical network latency: 2046ms",
+    "timestamp": 1760573952813,
+    "metadata": {
+      "latency": 2046.3243305066671
+    }
+  },
+  {
+    "id": "perf_critical_1760573956329",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760573956329,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_critical_1760573956329",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 15.6%",
+    "timestamp": 1760573956329,
+    "metadata": {
+      "hitRate": 15.601734964611724
+    }
+  },
+  {
+    "id": "perf_warning_1760573957827",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760573957827,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "perf_critical_1760573960548",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760573960548,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "net_warning_1760573960548",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1862ms",
+    "timestamp": 1760573960548,
+    "metadata": {
+      "latency": 1861.7572162599654
+    }
+  },
+  {
+    "id": "perf_critical_1760573961344",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760573961344,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "cache_critical_1760573962841",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 19.9%",
+    "timestamp": 1760573962841,
+    "metadata": {
+      "hitRate": 19.912766195140776
+    }
+  },
+  {
+    "id": "net_warning_1760573965553",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1455ms",
+    "timestamp": 1760573965553,
+    "metadata": {
+      "latency": 1455.0740620923784
+    }
+  },
+  {
+    "id": "perf_critical_1760573966349",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 25",
+    "timestamp": 1760573966349,
+    "metadata": {
+      "score": 25
+    }
+  },
+  {
+    "id": "net_warning_1760573966349",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1099ms",
+    "timestamp": 1760573966349,
+    "metadata": {
+      "latency": 1098.8347077036178
+    }
+  },
+  {
+    "id": "cache_critical_1760573966349",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 2.9%",
+    "timestamp": 1760573966349,
+    "metadata": {
+      "hitRate": 2.8592621091859227
+    }
+  },
+  {
+    "id": "perf_critical_1760573967849",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760573967849,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "mem_warning_1760573967849",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 84.1%",
+    "timestamp": 1760573967849,
+    "metadata": {
+      "memoryUsage": 84.11785867580517
+    }
+  },
+  {
+    "id": "net_warning_1760573967849",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1554ms",
+    "timestamp": 1760573967849,
+    "metadata": {
+      "latency": 1554.4157354555534
+    }
+  },
+  {
+    "id": "cache_critical_1760573967849",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 29.0%",
+    "timestamp": 1760573967849,
+    "metadata": {
+      "hitRate": 29.040102909748477
+    }
+  },
+  {
+    "id": "perf_warning_1760573970564",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760573970564,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760573970564",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1668ms",
+    "timestamp": 1760573970564,
+    "metadata": {
+      "latency": 1668.0570490924445
+    }
+  },
+  {
+    "id": "cache_critical_1760573971360",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 27.8%",
+    "timestamp": 1760573971360,
+    "metadata": {
+      "hitRate": 27.80443093607301
+    }
+  },
+  {
+    "id": "perf_critical_1760573972856",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 35",
+    "timestamp": 1760573972856,
+    "metadata": {
+      "score": 35
+    }
+  },
+  {
+    "id": "mem_warning_1760573972856",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 81.7%",
+    "timestamp": 1760573972856,
+    "metadata": {
+      "memoryUsage": 81.66946607076694
+    }
+  },
+  {
+    "id": "net_warning_1760573972856",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1384ms",
+    "timestamp": 1760573972856,
+    "metadata": {
+      "latency": 1383.9728918472804
+    }
+  },
+  {
+    "id": "cache_warning_1760573972856",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 42.9%",
+    "timestamp": 1760573972856,
+    "metadata": {
+      "hitRate": 42.85336391681489
+    }
+  },
+  {
+    "id": "cache_warning_1760573975578",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 30.4%",
+    "timestamp": 1760573975578,
+    "metadata": {
+      "hitRate": 30.411338759708606
+    }
+  },
+  {
+    "id": "perf_critical_1760573976365",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760573976365,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "perf_warning_1760573977862",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760573977862,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "net_warning_1760573977862",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1888ms",
+    "timestamp": 1760573977862,
+    "metadata": {
+      "latency": 1887.8377370016437
+    }
+  },
+  {
+    "id": "cache_warning_1760573977862",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 44.7%",
+    "timestamp": 1760573977862,
+    "metadata": {
+      "hitRate": 44.70157279576743
+    }
+  },
+  {
+    "id": "perf_critical_1760573980584",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760573980584,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_critical_1760573980584",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 5.9%",
+    "timestamp": 1760573980584,
+    "metadata": {
+      "hitRate": 5.919885046266771
+    }
+  },
+  {
+    "id": "cache_critical_1760573982865",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 15.0%",
+    "timestamp": 1760573982865,
+    "metadata": {
+      "hitRate": 14.9901370395914
+    }
+  },
+  {
+    "id": "perf_critical_1760573985590",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760573985590,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "cache_warning_1760573985590",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 31.8%",
+    "timestamp": 1760573985590,
+    "metadata": {
+      "hitRate": 31.753541935328975
+    }
+  },
+  {
+    "id": "perf_critical_1760573986391",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760573986391,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "mem_critical_1760573986391",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 94.9%",
+    "timestamp": 1760573986391,
+    "metadata": {
+      "memoryUsage": 94.88053855294345
+    }
+  },
+  {
+    "id": "perf_critical_1760573987876",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760573987876,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "cache_critical_1760573987876",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 4.0%",
+    "timestamp": 1760573987876,
+    "metadata": {
+      "hitRate": 3.989455877124848
+    }
+  },
+  {
+    "id": "perf_critical_1760573990592",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760573990592,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "net_warning_1760573990592",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1665ms",
+    "timestamp": 1760573990592,
+    "metadata": {
+      "latency": 1664.6024669857477
+    }
+  },
+  {
+    "id": "cache_critical_1760573990592",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 16.4%",
+    "timestamp": 1760573990592,
+    "metadata": {
+      "hitRate": 16.353078848578285
+    }
+  },
+  {
+    "id": "perf_critical_1760573991405",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760573991405,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_critical_1760573991405",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 19.6%",
+    "timestamp": 1760573991405,
+    "metadata": {
+      "hitRate": 19.568978186967033
+    }
+  },
+  {
+    "id": "perf_critical_1760573992877",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760573992877,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "net_warning_1760573992877",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1728ms",
+    "timestamp": 1760573992877,
+    "metadata": {
+      "latency": 1728.391867513655
+    }
+  },
+  {
+    "id": "perf_critical_1760573995597",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 25",
+    "timestamp": 1760573995597,
+    "metadata": {
+      "score": 25
+    }
+  },
+  {
+    "id": "net_warning_1760573995597",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1909ms",
+    "timestamp": 1760573995597,
+    "metadata": {
+      "latency": 1909.0101765224747
+    }
+  },
+  {
+    "id": "cache_warning_1760573995597",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 43.0%",
+    "timestamp": 1760573995597,
+    "metadata": {
+      "hitRate": 42.96095056415374
+    }
+  },
+  {
+    "id": "net_critical_1760573996412",
+    "type": "network",
+    "severity": "critical",
+    "message": "Critical network latency: 2054ms",
+    "timestamp": 1760573996412,
+    "metadata": {
+      "latency": 2054.205076381055
+    }
+  },
+  {
+    "id": "perf_warning_1760573997886",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760573997886,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "mem_critical_1760573997886",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 92.9%",
+    "timestamp": 1760573997886,
+    "metadata": {
+      "memoryUsage": 92.871787937763
+    }
+  },
+  {
+    "id": "net_warning_1760573997886",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1276ms",
+    "timestamp": 1760573997886,
+    "metadata": {
+      "latency": 1275.8559612123024
+    }
+  },
+  {
+    "id": "perf_critical_1760574000604",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 25",
+    "timestamp": 1760574000604,
+    "metadata": {
+      "score": 25
+    }
+  },
+  {
+    "id": "mem_critical_1760574000604",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 90.6%",
+    "timestamp": 1760574000604,
+    "metadata": {
+      "memoryUsage": 90.64759164354261
+    }
+  },
+  {
+    "id": "net_warning_1760574000604",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1858ms",
+    "timestamp": 1760574000604,
+    "metadata": {
+      "latency": 1858.486064125103
+    }
+  },
+  {
+    "id": "perf_critical_1760574001416",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 35",
+    "timestamp": 1760574001416,
+    "metadata": {
+      "score": 35
+    }
+  },
+  {
+    "id": "mem_warning_1760574001416",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 85.2%",
+    "timestamp": 1760574001416,
+    "metadata": {
+      "memoryUsage": 85.23073623074767
+    }
+  },
+  {
+    "id": "net_critical_1760574001416",
+    "type": "network",
+    "severity": "critical",
+    "message": "Critical network latency: 2036ms",
+    "timestamp": 1760574001416,
+    "metadata": {
+      "latency": 2035.6268684903375
+    }
+  },
+  {
+    "id": "cache_critical_1760574001416",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 4.5%",
+    "timestamp": 1760574001416,
+    "metadata": {
+      "hitRate": 4.4667511867505505
+    }
+  },
+  {
+    "id": "perf_critical_1760574005614",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 0",
+    "timestamp": 1760574005614,
+    "metadata": {
+      "score": 0
+    }
+  },
+  {
+    "id": "mem_warning_1760574005614",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 82.2%",
+    "timestamp": 1760574005614,
+    "metadata": {
+      "memoryUsage": 82.16975385280467
+    }
+  },
+  {
+    "id": "net_critical_1760574005614",
+    "type": "network",
+    "severity": "critical",
+    "message": "Critical network latency: 2069ms",
+    "timestamp": 1760574005614,
+    "metadata": {
+      "latency": 2069.163562302787
+    }
+  },
+  {
+    "id": "perf_warning_1760574006431",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574006431,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574006431",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1170ms",
+    "timestamp": 1760574006431,
+    "metadata": {
+      "latency": 1169.6078775233589
+    }
+  },
+  {
+    "id": "cache_warning_1760574006431",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 40.7%",
+    "timestamp": 1760574006431,
+    "metadata": {
+      "hitRate": 40.73463842431184
+    }
+  },
+  {
+    "id": "perf_critical_1760574007901",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 35",
+    "timestamp": 1760574007901,
+    "metadata": {
+      "score": 35
+    }
+  },
+  {
+    "id": "mem_critical_1760574007901",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 95.5%",
+    "timestamp": 1760574007901,
+    "metadata": {
+      "memoryUsage": 95.49184261687994
+    }
+  },
+  {
+    "id": "net_warning_1760574007901",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1765ms",
+    "timestamp": 1760574007901,
+    "metadata": {
+      "latency": 1764.6406864774685
+    }
+  },
+  {
+    "id": "perf_critical_1760574010627",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574010627,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_critical_1760574010627",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 5.9%",
+    "timestamp": 1760574010627,
+    "metadata": {
+      "hitRate": 5.893762567340777
+    }
+  },
+  {
+    "id": "perf_critical_1760574011442",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 25",
+    "timestamp": 1760574011442,
+    "metadata": {
+      "score": 25
+    }
+  },
+  {
+    "id": "mem_warning_1760574011442",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 86.6%",
+    "timestamp": 1760574011442,
+    "metadata": {
+      "memoryUsage": 86.63793455884179
+    }
+  },
+  {
+    "id": "net_warning_1760574011442",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1482ms",
+    "timestamp": 1760574011442,
+    "metadata": {
+      "latency": 1481.8102215220342
+    }
+  },
+  {
+    "id": "perf_critical_1760574015634",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574015634,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_warning_1760574015634",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 35.7%",
+    "timestamp": 1760574015634,
+    "metadata": {
+      "hitRate": 35.73520976212827
+    }
+  },
+  {
+    "id": "perf_critical_1760574016452",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 35",
+    "timestamp": 1760574016452,
+    "metadata": {
+      "score": 35
+    }
+  },
+  {
+    "id": "net_warning_1760574016452",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1777ms",
+    "timestamp": 1760574016452,
+    "metadata": {
+      "latency": 1776.8557708289688
+    }
+  },
+  {
+    "id": "perf_critical_1760574017920",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760574017920,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "net_warning_1760574017920",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1344ms",
+    "timestamp": 1760574017920,
+    "metadata": {
+      "latency": 1344.2685559705558
+    }
+  },
+  {
+    "id": "cache_warning_1760574017920",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 37.6%",
+    "timestamp": 1760574017920,
+    "metadata": {
+      "hitRate": 37.569745806868205
+    }
+  },
+  {
+    "id": "perf_critical_1760574020639",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574020639,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_critical_1760574020639",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 3.0%",
+    "timestamp": 1760574020639,
+    "metadata": {
+      "hitRate": 2.9825170389047972
+    }
+  },
+  {
+    "id": "perf_warning_1760574021465",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574021465,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "perf_warning_1760574022933",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760574022933,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "net_warning_1760574022933",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1767ms",
+    "timestamp": 1760574022933,
+    "metadata": {
+      "latency": 1766.7499138418425
+    }
+  },
+  {
+    "id": "cache_critical_1760574022933",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 23.2%",
+    "timestamp": 1760574022933,
+    "metadata": {
+      "hitRate": 23.165130347350615
+    }
+  },
+  {
+    "id": "perf_critical_1760574025652",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 30",
+    "timestamp": 1760574025652,
+    "metadata": {
+      "score": 30
+    }
+  },
+  {
+    "id": "mem_warning_1760574025652",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 82.6%",
+    "timestamp": 1760574025652,
+    "metadata": {
+      "memoryUsage": 82.59036362863532
+    }
+  },
+  {
+    "id": "net_warning_1760574025652",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1444ms",
+    "timestamp": 1760574025652,
+    "metadata": {
+      "latency": 1444.1741335370705
+    }
+  },
+  {
+    "id": "perf_critical_1760574027942",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760574027942,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "perf_critical_1760574030666",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 15",
+    "timestamp": 1760574030666,
+    "metadata": {
+      "score": 15
+    }
+  },
+  {
+    "id": "mem_warning_1760574030666",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 84.5%",
+    "timestamp": 1760574030666,
+    "metadata": {
+      "memoryUsage": 84.4918465305539
+    }
+  },
+  {
+    "id": "net_warning_1760574030666",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1372ms",
+    "timestamp": 1760574030666,
+    "metadata": {
+      "latency": 1371.6521512722775
+    }
+  },
+  {
+    "id": "cache_critical_1760574030666",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 16.2%",
+    "timestamp": 1760574030666,
+    "metadata": {
+      "hitRate": 16.17747613226632
+    }
+  },
+  {
+    "id": "perf_critical_1760574031482",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 20",
+    "timestamp": 1760574031482,
+    "metadata": {
+      "score": 20
+    }
+  },
+  {
+    "id": "mem_warning_1760574031482",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 81.5%",
+    "timestamp": 1760574031482,
+    "metadata": {
+      "memoryUsage": 81.47036860967178
+    }
+  },
+  {
+    "id": "net_warning_1760574031482",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1893ms",
+    "timestamp": 1760574031482,
+    "metadata": {
+      "latency": 1892.7468135462918
+    }
+  },
+  {
+    "id": "cache_critical_1760574031482",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 17.9%",
+    "timestamp": 1760574031482,
+    "metadata": {
+      "hitRate": 17.873323348356784
+    }
+  },
+  {
+    "id": "perf_critical_1760574032950",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574032950,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "mem_critical_1760574032950",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 95.4%",
+    "timestamp": 1760574032950,
+    "metadata": {
+      "memoryUsage": 95.40828783748087
+    }
+  },
+  {
+    "id": "perf_warning_1760574035678",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574035678,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574035678",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1458ms",
+    "timestamp": 1760574035678,
+    "metadata": {
+      "latency": 1457.6012591575575
+    }
+  },
+  {
+    "id": "cache_critical_1760574035678",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 24.9%",
+    "timestamp": 1760574035678,
+    "metadata": {
+      "hitRate": 24.850510284326543
+    }
+  },
+  {
+    "id": "perf_critical_1760574036491",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574036491,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "net_warning_1760574036491",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1203ms",
+    "timestamp": 1760574036491,
+    "metadata": {
+      "latency": 1203.3232423712352
+    }
+  },
+  {
+    "id": "cache_warning_1760574036491",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 38.7%",
+    "timestamp": 1760574036491,
+    "metadata": {
+      "hitRate": 38.73171667961508
+    }
+  },
+  {
+    "id": "perf_critical_1760574040684",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 25",
+    "timestamp": 1760574040684,
+    "metadata": {
+      "score": 25
+    }
+  },
+  {
+    "id": "net_warning_1760574040684",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1054ms",
+    "timestamp": 1760574040684,
+    "metadata": {
+      "latency": 1053.5800450353595
+    }
+  },
+  {
+    "id": "net_warning_1760574041504",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1858ms",
+    "timestamp": 1760574041504,
+    "metadata": {
+      "latency": 1858.3406044712735
+    }
+  },
+  {
+    "id": "perf_warning_1760574042974",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574042974,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574046506",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1916ms",
+    "timestamp": 1760574046506,
+    "metadata": {
+      "latency": 1916.2031141455564
+    }
+  },
+  {
+    "id": "perf_critical_1760574047989",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574047989,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "cache_warning_1760574050691",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 48.1%",
+    "timestamp": 1760574050691,
+    "metadata": {
+      "hitRate": 48.10072793308973
+    }
+  },
+  {
+    "id": "perf_critical_1760574051512",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760574051512,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "net_warning_1760574051512",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1839ms",
+    "timestamp": 1760574051512,
+    "metadata": {
+      "latency": 1839.343067417408
+    }
+  },
+  {
+    "id": "cache_critical_1760574051512",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 5.9%",
+    "timestamp": 1760574051512,
+    "metadata": {
+      "hitRate": 5.9487433060214645
+    }
+  },
+  {
+    "id": "net_warning_1760574052991",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1430ms",
+    "timestamp": 1760574052991,
+    "metadata": {
+      "latency": 1429.7082534383046
+    }
+  },
+  {
+    "id": "cache_warning_1760574052991",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 38.2%",
+    "timestamp": 1760574052991,
+    "metadata": {
+      "hitRate": 38.23498655937358
+    }
+  },
+  {
+    "id": "perf_critical_1760574055706",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 35",
+    "timestamp": 1760574055706,
+    "metadata": {
+      "score": 35
+    }
+  },
+  {
+    "id": "net_warning_1760574055706",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1850ms",
+    "timestamp": 1760574055706,
+    "metadata": {
+      "latency": 1850.465897883554
+    }
+  },
+  {
+    "id": "perf_critical_1760574056521",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 30",
+    "timestamp": 1760574056521,
+    "metadata": {
+      "score": 30
+    }
+  },
+  {
+    "id": "mem_warning_1760574056521",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 84.2%",
+    "timestamp": 1760574056521,
+    "metadata": {
+      "memoryUsage": 84.17112172330626
+    }
+  },
+  {
+    "id": "perf_critical_1760574058004",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574058004,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "mem_critical_1760574058004",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 92.0%",
+    "timestamp": 1760574058004,
+    "metadata": {
+      "memoryUsage": 91.96560878168182
+    }
+  },
+  {
+    "id": "net_warning_1760574058004",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1870ms",
+    "timestamp": 1760574058004,
+    "metadata": {
+      "latency": 1870.2123232795964
+    }
+  },
+  {
+    "id": "cache_critical_1760574058004",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 6.4%",
+    "timestamp": 1760574058004,
+    "metadata": {
+      "hitRate": 6.37043698292572
+    }
+  },
+  {
+    "id": "perf_critical_1760574060716",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760574060716,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "net_warning_1760574060716",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1593ms",
+    "timestamp": 1760574060716,
+    "metadata": {
+      "latency": 1593.197655811493
+    }
+  },
+  {
+    "id": "perf_critical_1760574061529",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760574061529,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "perf_warning_1760574063017",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574063017,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574063017",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1153ms",
+    "timestamp": 1760574063017,
+    "metadata": {
+      "latency": 1152.8793426166087
+    }
+  },
+  {
+    "id": "cache_critical_1760574063017",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 26.6%",
+    "timestamp": 1760574063017,
+    "metadata": {
+      "hitRate": 26.569299169712867
+    }
+  },
+  {
+    "id": "perf_critical_1760574065726",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760574065726,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "perf_critical_1760574066537",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574066537,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "net_warning_1760574066537",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1680ms",
+    "timestamp": 1760574066537,
+    "metadata": {
+      "latency": 1679.9291008570772
+    }
+  },
+  {
+    "id": "perf_warning_1760574068023",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760574068023,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "net_warning_1760574068023",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1253ms",
+    "timestamp": 1760574068023,
+    "metadata": {
+      "latency": 1253.2367416912596
+    }
+  },
+  {
+    "id": "cache_critical_1760574068023",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 4.0%",
+    "timestamp": 1760574068023,
+    "metadata": {
+      "hitRate": 4.020211613038538
+    }
+  },
+  {
+    "id": "perf_critical_1760574070736",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760574070736,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "net_warning_1760574070736",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1982ms",
+    "timestamp": 1760574070736,
+    "metadata": {
+      "latency": 1981.8876289656528
+    }
+  },
+  {
+    "id": "cache_warning_1760574071538",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 49.5%",
+    "timestamp": 1760574071538,
+    "metadata": {
+      "hitRate": 49.476190071066895
+    }
+  },
+  {
+    "id": "cache_critical_1760574073027",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 16.6%",
+    "timestamp": 1760574073027,
+    "metadata": {
+      "hitRate": 16.57659819100448
+    }
+  },
+  {
+    "id": "cache_critical_1760574075750",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 6.7%",
+    "timestamp": 1760574075750,
+    "metadata": {
+      "hitRate": 6.712692946757848
+    }
+  },
+  {
+    "id": "perf_critical_1760574076551",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 35",
+    "timestamp": 1760574076551,
+    "metadata": {
+      "score": 35
+    }
+  },
+  {
+    "id": "mem_warning_1760574076551",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 87.3%",
+    "timestamp": 1760574076551,
+    "metadata": {
+      "memoryUsage": 87.31567573680981
+    }
+  },
+  {
+    "id": "net_warning_1760574076551",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1643ms",
+    "timestamp": 1760574076551,
+    "metadata": {
+      "latency": 1643.292019633218
+    }
+  },
+  {
+    "id": "cache_warning_1760574078036",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 42.2%",
+    "timestamp": 1760574078036,
+    "metadata": {
+      "hitRate": 42.21531483451662
+    }
+  },
+  {
+    "id": "perf_critical_1760574080759",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760574080759,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "cache_warning_1760574080759",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 35.2%",
+    "timestamp": 1760574080759,
+    "metadata": {
+      "hitRate": 35.21969260439792
+    }
+  },
+  {
+    "id": "cache_warning_1760574081557",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 36.4%",
+    "timestamp": 1760574081557,
+    "metadata": {
+      "hitRate": 36.395406859969185
+    }
+  },
+  {
+    "id": "perf_critical_1760574083044",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 20",
+    "timestamp": 1760574083044,
+    "metadata": {
+      "score": 20
+    }
+  },
+  {
+    "id": "mem_critical_1760574083044",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 91.1%",
+    "timestamp": 1760574083044,
+    "metadata": {
+      "memoryUsage": 91.14915356397249
+    }
+  },
+  {
+    "id": "net_warning_1760574083044",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1911ms",
+    "timestamp": 1760574083044,
+    "metadata": {
+      "latency": 1911.1519388302436
+    }
+  },
+  {
+    "id": "cache_critical_1760574085770",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 23.3%",
+    "timestamp": 1760574085770,
+    "metadata": {
+      "hitRate": 23.284283396564586
+    }
+  },
+  {
+    "id": "perf_warning_1760574086569",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574086569,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "perf_warning_1760574088054",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574088054,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "perf_critical_1760574090770",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574090770,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "net_warning_1760574090770",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1090ms",
+    "timestamp": 1760574090770,
+    "metadata": {
+      "latency": 1090.1480258925185
+    }
+  },
+  {
+    "id": "cache_warning_1760574090770",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 43.8%",
+    "timestamp": 1760574090770,
+    "metadata": {
+      "hitRate": 43.76184270189141
+    }
+  },
+  {
+    "id": "cache_warning_1760574091569",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 30.6%",
+    "timestamp": 1760574091569,
+    "metadata": {
+      "hitRate": 30.621213322521324
+    }
+  },
+  {
+    "id": "perf_warning_1760574093068",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574093068,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574093068",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1460ms",
+    "timestamp": 1760574093068,
+    "metadata": {
+      "latency": 1459.8553955315556
+    }
+  },
+  {
+    "id": "net_warning_1760574096584",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1368ms",
+    "timestamp": 1760574096584,
+    "metadata": {
+      "latency": 1367.8321223426287
+    }
+  },
+  {
+    "id": "perf_critical_1760574100771",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 15",
+    "timestamp": 1760574100771,
+    "metadata": {
+      "score": 15
+    }
+  },
+  {
+    "id": "mem_critical_1760574100771",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 90.7%",
+    "timestamp": 1760574100771,
+    "metadata": {
+      "memoryUsage": 90.7489425673254
+    }
+  },
+  {
+    "id": "net_warning_1760574100771",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1541ms",
+    "timestamp": 1760574100771,
+    "metadata": {
+      "latency": 1540.6566277975141
+    }
+  },
+  {
+    "id": "cache_warning_1760574100771",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 48.5%",
+    "timestamp": 1760574100771,
+    "metadata": {
+      "hitRate": 48.468109068052726
+    }
+  },
+  {
+    "id": "net_critical_1760574101587",
+    "type": "network",
+    "severity": "critical",
+    "message": "Critical network latency: 2020ms",
+    "timestamp": 1760574101587,
+    "metadata": {
+      "latency": 2020.033766395448
+    }
+  },
+  {
+    "id": "perf_critical_1760574105782",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574105782,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "mem_warning_1760574105782",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 83.4%",
+    "timestamp": 1760574105782,
+    "metadata": {
+      "memoryUsage": 83.37848767341013
+    }
+  },
+  {
+    "id": "net_warning_1760574105782",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1775ms",
+    "timestamp": 1760574105782,
+    "metadata": {
+      "latency": 1774.8875412444436
+    }
+  },
+  {
+    "id": "perf_warning_1760574106598",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574106598,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574106598",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1111ms",
+    "timestamp": 1760574106598,
+    "metadata": {
+      "latency": 1110.692914823724
+    }
+  },
+  {
+    "id": "perf_critical_1760574110787",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 0",
+    "timestamp": 1760574110787,
+    "metadata": {
+      "score": 0
+    }
+  },
+  {
+    "id": "mem_critical_1760574110787",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 92.7%",
+    "timestamp": 1760574110787,
+    "metadata": {
+      "memoryUsage": 92.71083922311718
+    }
+  },
+  {
+    "id": "net_warning_1760574110787",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1601ms",
+    "timestamp": 1760574110787,
+    "metadata": {
+      "latency": 1601.2417063575967
+    }
+  },
+  {
+    "id": "net_critical_1760574113101",
+    "type": "network",
+    "severity": "critical",
+    "message": "Critical network latency: 2051ms",
+    "timestamp": 1760574113101,
+    "metadata": {
+      "latency": 2050.6298300775197
+    }
+  },
+  {
+    "id": "perf_critical_1760574115787",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760574115787,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "cache_critical_1760574115787",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 24.3%",
+    "timestamp": 1760574115787,
+    "metadata": {
+      "hitRate": 24.341405153990348
+    }
+  },
+  {
+    "id": "cache_warning_1760574118112",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 43.1%",
+    "timestamp": 1760574118112,
+    "metadata": {
+      "hitRate": 43.14593895526071
+    }
+  },
+  {
+    "id": "perf_critical_1760574120792",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574120792,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "net_warning_1760574120792",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1167ms",
+    "timestamp": 1760574120792,
+    "metadata": {
+      "latency": 1166.669272110968
+    }
+  },
+  {
+    "id": "perf_critical_1760574121623",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574121623,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "net_warning_1760574121623",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1178ms",
+    "timestamp": 1760574121623,
+    "metadata": {
+      "latency": 1178.2592368894082
+    }
+  },
+  {
+    "id": "cache_critical_1760574121623",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 29.3%",
+    "timestamp": 1760574121623,
+    "metadata": {
+      "hitRate": 29.308094251664187
+    }
+  },
+  {
+    "id": "perf_critical_1760574123124",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 35",
+    "timestamp": 1760574123124,
+    "metadata": {
+      "score": 35
+    }
+  },
+  {
+    "id": "cache_critical_1760574123124",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 5.9%",
+    "timestamp": 1760574123124,
+    "metadata": {
+      "hitRate": 5.908796383548465
+    }
+  },
+  {
+    "id": "perf_warning_1760574125795",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574125795,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574125795",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1176ms",
+    "timestamp": 1760574125795,
+    "metadata": {
+      "latency": 1175.9370076733483
+    }
+  },
+  {
+    "id": "cache_critical_1760574125795",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 22.9%",
+    "timestamp": 1760574125795,
+    "metadata": {
+      "hitRate": 22.865167632661134
+    }
+  },
+  {
+    "id": "perf_critical_1760574128131",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760574128131,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "net_warning_1760574128131",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1861ms",
+    "timestamp": 1760574128131,
+    "metadata": {
+      "latency": 1861.2453317411685
+    }
+  },
+  {
+    "id": "cache_critical_1760574128131",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 2.9%",
+    "timestamp": 1760574128131,
+    "metadata": {
+      "hitRate": 2.876327873416562
+    }
+  },
+  {
+    "id": "perf_critical_1760574131629",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574131629,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "net_warning_1760574131629",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1673ms",
+    "timestamp": 1760574131629,
+    "metadata": {
+      "latency": 1672.9301028140258
+    }
+  },
+  {
+    "id": "cache_critical_1760574131629",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 24.7%",
+    "timestamp": 1760574131629,
+    "metadata": {
+      "hitRate": 24.662575433560406
+    }
+  },
+  {
+    "id": "cache_critical_1760574133142",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 14.3%",
+    "timestamp": 1760574133142,
+    "metadata": {
+      "hitRate": 14.333860176510926
+    }
+  },
+  {
+    "id": "perf_critical_1760574135813",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 15",
+    "timestamp": 1760574135813,
+    "metadata": {
+      "score": 15
+    }
+  },
+  {
+    "id": "mem_warning_1760574135813",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 83.1%",
+    "timestamp": 1760574135813,
+    "metadata": {
+      "memoryUsage": 83.13559089341081
+    }
+  },
+  {
+    "id": "net_warning_1760574135813",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1744ms",
+    "timestamp": 1760574135813,
+    "metadata": {
+      "latency": 1744.204171828044
+    }
+  },
+  {
+    "id": "net_warning_1760574136640",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1744ms",
+    "timestamp": 1760574136640,
+    "metadata": {
+      "latency": 1743.7777293566858
+    }
+  },
+  {
+    "id": "net_warning_1760574138145",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1878ms",
+    "timestamp": 1760574138145,
+    "metadata": {
+      "latency": 1877.7191522028102
+    }
+  },
+  {
+    "id": "cache_critical_1760574140819",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 29.9%",
+    "timestamp": 1760574140819,
+    "metadata": {
+      "hitRate": 29.913455586310178
+    }
+  },
+  {
+    "id": "perf_critical_1760574141653",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574141653,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_warning_1760574141653",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 46.9%",
+    "timestamp": 1760574141653,
+    "metadata": {
+      "hitRate": 46.88906767919292
+    }
+  },
+  {
+    "id": "perf_warning_1760574143159",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760574143159,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "perf_warning_1760574145823",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574145823,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574145823",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1254ms",
+    "timestamp": 1760574145823,
+    "metadata": {
+      "latency": 1254.497124780927
+    }
+  },
+  {
+    "id": "cache_warning_1760574145823",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 36.6%",
+    "timestamp": 1760574145823,
+    "metadata": {
+      "hitRate": 36.56478620428156
+    }
+  },
+  {
+    "id": "perf_critical_1760574146654",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760574146654,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "net_critical_1760574146654",
+    "type": "network",
+    "severity": "critical",
+    "message": "Critical network latency: 2019ms",
+    "timestamp": 1760574146654,
+    "metadata": {
+      "latency": 2018.7720855532739
+    }
+  },
+  {
+    "id": "cache_critical_1760574146654",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 29.1%",
+    "timestamp": 1760574146654,
+    "metadata": {
+      "hitRate": 29.07031940323379
+    }
+  },
+  {
+    "id": "perf_warning_1760574150833",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574150833,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574150833",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1346ms",
+    "timestamp": 1760574150833,
+    "metadata": {
+      "latency": 1346.1085466383888
+    }
+  },
+  {
+    "id": "cache_critical_1760574150833",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 17.9%",
+    "timestamp": 1760574150833,
+    "metadata": {
+      "hitRate": 17.9108122417021
+    }
+  },
+  {
+    "id": "perf_warning_1760574151660",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574151660,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574151660",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1322ms",
+    "timestamp": 1760574151660,
+    "metadata": {
+      "latency": 1322.4745081280646
+    }
+  },
+  {
+    "id": "perf_critical_1760574153176",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760574153176,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "cache_critical_1760574153176",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 1.3%",
+    "timestamp": 1760574153176,
+    "metadata": {
+      "hitRate": 1.3120373279125852
+    }
+  },
+  {
+    "id": "net_warning_1760574155835",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1259ms",
+    "timestamp": 1760574155835,
+    "metadata": {
+      "latency": 1259.1985899015924
+    }
+  },
+  {
+    "id": "perf_critical_1760574156663",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760574156663,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "cache_critical_1760574156663",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 7.3%",
+    "timestamp": 1760574156663,
+    "metadata": {
+      "hitRate": 7.273120800947019
+    }
+  },
+  {
+    "id": "perf_critical_1760574158187",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574158187,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "mem_critical_1760574158187",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 91.8%",
+    "timestamp": 1760574158187,
+    "metadata": {
+      "memoryUsage": 91.80160190848197
+    }
+  },
+  {
+    "id": "cache_critical_1760574158187",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 9.3%",
+    "timestamp": 1760574158187,
+    "metadata": {
+      "hitRate": 9.295133350721741
+    }
+  },
+  {
+    "id": "perf_critical_1760574160843",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 35",
+    "timestamp": 1760574160843,
+    "metadata": {
+      "score": 35
+    }
+  },
+  {
+    "id": "mem_critical_1760574160843",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 97.6%",
+    "timestamp": 1760574160843,
+    "metadata": {
+      "memoryUsage": 97.57342017451435
+    }
+  },
+  {
+    "id": "cache_warning_1760574161674",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 39.6%",
+    "timestamp": 1760574161674,
+    "metadata": {
+      "hitRate": 39.59535492518358
+    }
+  },
+  {
+    "id": "perf_warning_1760574163188",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574163188,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574163188",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1616ms",
+    "timestamp": 1760574163188,
+    "metadata": {
+      "latency": 1616.3406773454265
+    }
+  },
+  {
+    "id": "cache_critical_1760574163188",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 15.9%",
+    "timestamp": 1760574163188,
+    "metadata": {
+      "hitRate": 15.90516610706112
+    }
+  },
+  {
+    "id": "perf_critical_1760574165845",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 0",
+    "timestamp": 1760574165845,
+    "metadata": {
+      "score": 0
+    }
+  },
+  {
+    "id": "mem_warning_1760574165845",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 87.8%",
+    "timestamp": 1760574165845,
+    "metadata": {
+      "memoryUsage": 87.79533983738791
+    }
+  },
+  {
+    "id": "net_warning_1760574165845",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1219ms",
+    "timestamp": 1760574165845,
+    "metadata": {
+      "latency": 1219.4311370507232
+    }
+  },
+  {
+    "id": "net_warning_1760574166674",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1514ms",
+    "timestamp": 1760574166674,
+    "metadata": {
+      "latency": 1514.0929517438137
+    }
+  },
+  {
+    "id": "perf_critical_1760574168197",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 35",
+    "timestamp": 1760574168197,
+    "metadata": {
+      "score": 35
+    }
+  },
+  {
+    "id": "mem_critical_1760574168197",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 91.3%",
+    "timestamp": 1760574168197,
+    "metadata": {
+      "memoryUsage": 91.27810062615363
+    }
+  },
+  {
+    "id": "net_warning_1760574168197",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1946ms",
+    "timestamp": 1760574168197,
+    "metadata": {
+      "latency": 1945.945719008346
+    }
+  },
+  {
+    "id": "cache_warning_1760574168197",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 46.4%",
+    "timestamp": 1760574168197,
+    "metadata": {
+      "hitRate": 46.41568058646224
+    }
+  },
+  {
+    "id": "perf_critical_1760574170849",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574170849,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "mem_critical_1760574170849",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 90.0%",
+    "timestamp": 1760574170849,
+    "metadata": {
+      "memoryUsage": 90.00108159836684
+    }
+  },
+  {
+    "id": "perf_critical_1760574171674",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574171674,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "net_warning_1760574171674",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1742ms",
+    "timestamp": 1760574171674,
+    "metadata": {
+      "latency": 1742.4083320071516
+    }
+  },
+  {
+    "id": "net_warning_1760574173208",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1627ms",
+    "timestamp": 1760574173208,
+    "metadata": {
+      "latency": 1626.8549047441402
+    }
+  },
+  {
+    "id": "perf_critical_1760574175850",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574175850,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "mem_critical_1760574175850",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 99.4%",
+    "timestamp": 1760574175850,
+    "metadata": {
+      "memoryUsage": 99.43775936459487
+    }
+  },
+  {
+    "id": "cache_warning_1760574175850",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 49.9%",
+    "timestamp": 1760574175850,
+    "metadata": {
+      "hitRate": 49.94670380040021
+    }
+  },
+  {
+    "id": "perf_warning_1760574176676",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574176676,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_critical_1760574176676",
+    "type": "network",
+    "severity": "critical",
+    "message": "Critical network latency: 2086ms",
+    "timestamp": 1760574176676,
+    "metadata": {
+      "latency": 2085.7112438466966
+    }
+  },
+  {
+    "id": "perf_critical_1760574178209",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 10",
+    "timestamp": 1760574178210,
+    "metadata": {
+      "score": 10
+    }
+  },
+  {
+    "id": "mem_warning_1760574178210",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 88.0%",
+    "timestamp": 1760574178210,
+    "metadata": {
+      "memoryUsage": 88.0327701042762
+    }
+  },
+  {
+    "id": "cache_critical_1760574178210",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 12.2%",
+    "timestamp": 1760574178210,
+    "metadata": {
+      "hitRate": 12.169526982399525
+    }
+  },
+  {
+    "id": "perf_warning_1760574180864",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760574180864,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "mem_critical_1760574180864",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 91.9%",
+    "timestamp": 1760574180864,
+    "metadata": {
+      "memoryUsage": 91.86523575231493
+    }
+  },
+  {
+    "id": "net_warning_1760574180864",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1704ms",
+    "timestamp": 1760574180864,
+    "metadata": {
+      "latency": 1703.6938755222327
+    }
+  },
+  {
+    "id": "net_warning_1760574181677",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1525ms",
+    "timestamp": 1760574181677,
+    "metadata": {
+      "latency": 1524.967777121455
+    }
+  },
+  {
+    "id": "perf_critical_1760574183222",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 25",
+    "timestamp": 1760574183222,
+    "metadata": {
+      "score": 25
+    }
+  },
+  {
+    "id": "net_warning_1760574183222",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1199ms",
+    "timestamp": 1760574183222,
+    "metadata": {
+      "latency": 1198.7159741221517
+    }
+  },
+  {
+    "id": "perf_critical_1760574185865",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760574185865,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "mem_warning_1760574185865",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 80.7%",
+    "timestamp": 1760574185865,
+    "metadata": {
+      "memoryUsage": 80.68000642767612
+    }
+  },
+  {
+    "id": "net_warning_1760574185865",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1330ms",
+    "timestamp": 1760574185865,
+    "metadata": {
+      "latency": 1330.493283403095
+    }
+  },
+  {
+    "id": "cache_critical_1760574185865",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 8.4%",
+    "timestamp": 1760574185865,
+    "metadata": {
+      "hitRate": 8.409648184662654
+    }
+  },
+  {
+    "id": "perf_critical_1760574186681",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760574186681,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "net_warning_1760574186681",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1671ms",
+    "timestamp": 1760574186681,
+    "metadata": {
+      "latency": 1671.1003334957122
+    }
+  },
+  {
+    "id": "cache_warning_1760574186681",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 39.8%",
+    "timestamp": 1760574186681,
+    "metadata": {
+      "hitRate": 39.83170855499023
+    }
+  },
+  {
+    "id": "perf_critical_1760574188224",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760574188224,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "perf_warning_1760574190878",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574190878,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574190878",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1603ms",
+    "timestamp": 1760574190878,
+    "metadata": {
+      "latency": 1603.0245189798154
+    }
+  },
+  {
+    "id": "cache_critical_1760574190878",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 6.1%",
+    "timestamp": 1760574190878,
+    "metadata": {
+      "hitRate": 6.110471570798781
+    }
+  },
+  {
+    "id": "cache_critical_1760574191690",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 7.4%",
+    "timestamp": 1760574191690,
+    "metadata": {
+      "hitRate": 7.389324220222848
+    }
+  },
+  {
+    "id": "perf_critical_1760574193231",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574193231,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "mem_warning_1760574193231",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 87.1%",
+    "timestamp": 1760574193231,
+    "metadata": {
+      "memoryUsage": 87.12245017300553
+    }
+  },
+  {
+    "id": "net_warning_1760574193231",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1155ms",
+    "timestamp": 1760574193231,
+    "metadata": {
+      "latency": 1155.0037160747534
+    }
+  },
+  {
+    "id": "perf_critical_1760574195889",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 25",
+    "timestamp": 1760574195889,
+    "metadata": {
+      "score": 25
+    }
+  },
+  {
+    "id": "mem_warning_1760574195889",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 87.5%",
+    "timestamp": 1760574195889,
+    "metadata": {
+      "memoryUsage": 87.50006801343504
+    }
+  },
+  {
+    "id": "cache_critical_1760574195889",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 22.3%",
+    "timestamp": 1760574195889,
+    "metadata": {
+      "hitRate": 22.290161048606393
+    }
+  },
+  {
+    "id": "perf_critical_1760574196700",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 25",
+    "timestamp": 1760574196700,
+    "metadata": {
+      "score": 25
+    }
+  },
+  {
+    "id": "net_warning_1760574196700",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1589ms",
+    "timestamp": 1760574196700,
+    "metadata": {
+      "latency": 1589.1158613190726
+    }
+  },
+  {
+    "id": "cache_warning_1760574196700",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 41.3%",
+    "timestamp": 1760574196700,
+    "metadata": {
+      "hitRate": 41.2668629782889
+    }
+  },
+  {
+    "id": "perf_warning_1760574198239",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760574198239,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "net_warning_1760574198239",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1649ms",
+    "timestamp": 1760574198239,
+    "metadata": {
+      "latency": 1649.0793597780166
+    }
+  },
+  {
+    "id": "cache_critical_1760574198239",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 26.3%",
+    "timestamp": 1760574198239,
+    "metadata": {
+      "hitRate": 26.28852797034098
+    }
+  },
+  {
+    "id": "perf_critical_1760574201709",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 10",
+    "timestamp": 1760574201709,
+    "metadata": {
+      "score": 10
+    }
+  },
+  {
+    "id": "mem_warning_1760574201709",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 88.3%",
+    "timestamp": 1760574201710,
+    "metadata": {
+      "memoryUsage": 88.30141999418669
+    }
+  },
+  {
+    "id": "cache_critical_1760574201710",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 17.2%",
+    "timestamp": 1760574201710,
+    "metadata": {
+      "hitRate": 17.21503693983881
+    }
+  },
+  {
+    "id": "perf_critical_1760574203240",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574203240,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_warning_1760574203240",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 34.3%",
+    "timestamp": 1760574203240,
+    "metadata": {
+      "hitRate": 34.315980184929
+    }
+  },
+  {
+    "id": "perf_warning_1760574205906",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760574205906,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "net_warning_1760574205906",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1420ms",
+    "timestamp": 1760574205906,
+    "metadata": {
+      "latency": 1420.1498847225457
+    }
+  },
+  {
+    "id": "cache_warning_1760574205906",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 32.0%",
+    "timestamp": 1760574205906,
+    "metadata": {
+      "hitRate": 32.01773590884447
+    }
+  },
+  {
+    "id": "perf_warning_1760574206725",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760574206725,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "mem_warning_1760574206725",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 83.5%",
+    "timestamp": 1760574206725,
+    "metadata": {
+      "memoryUsage": 83.54223221055355
+    }
+  },
+  {
+    "id": "cache_critical_1760574206725",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 6.8%",
+    "timestamp": 1760574206725,
+    "metadata": {
+      "hitRate": 6.797754883307672
+    }
+  },
+  {
+    "id": "perf_critical_1760574208253",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574208253,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "net_warning_1760574208253",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1001ms",
+    "timestamp": 1760574208253,
+    "metadata": {
+      "latency": 1001.1933582785509
+    }
+  },
+  {
+    "id": "perf_critical_1760574210908",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 25",
+    "timestamp": 1760574210908,
+    "metadata": {
+      "score": 25
+    }
+  },
+  {
+    "id": "net_critical_1760574210908",
+    "type": "network",
+    "severity": "critical",
+    "message": "Critical network latency: 2081ms",
+    "timestamp": 1760574210908,
+    "metadata": {
+      "latency": 2081.341015996876
+    }
+  },
+  {
+    "id": "perf_critical_1760574211740",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 35",
+    "timestamp": 1760574211740,
+    "metadata": {
+      "score": 35
+    }
+  },
+  {
+    "id": "net_warning_1760574211740",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1792ms",
+    "timestamp": 1760574211740,
+    "metadata": {
+      "latency": 1792.4590989197861
+    }
+  },
+  {
+    "id": "perf_critical_1760574213259",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574213259,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_critical_1760574213259",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 28.8%",
+    "timestamp": 1760574213259,
+    "metadata": {
+      "hitRate": 28.78495294670318
+    }
+  },
+  {
+    "id": "perf_critical_1760574215913",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574215913,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "mem_critical_1760574215913",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 92.8%",
+    "timestamp": 1760574215913,
+    "metadata": {
+      "memoryUsage": 92.80958021800056
+    }
+  },
+  {
+    "id": "cache_warning_1760574215913",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 40.0%",
+    "timestamp": 1760574215913,
+    "metadata": {
+      "hitRate": 40.00183203745016
+    }
+  },
+  {
+    "id": "perf_critical_1760574216740",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760574216740,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "net_warning_1760574216740",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1144ms",
+    "timestamp": 1760574216740,
+    "metadata": {
+      "latency": 1144.41570634785
+    }
+  },
+  {
+    "id": "cache_critical_1760574216740",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 15.0%",
+    "timestamp": 1760574216740,
+    "metadata": {
+      "hitRate": 15.021661435713218
+    }
+  },
+  {
+    "id": "perf_critical_1760574220928",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574220928,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "net_warning_1760574220928",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1327ms",
+    "timestamp": 1760574220928,
+    "metadata": {
+      "latency": 1326.5785815373883
+    }
+  },
+  {
+    "id": "perf_warning_1760574221747",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760574221747,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "perf_warning_1760574223277",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574223277,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "perf_critical_1760574225942",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574225942,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "net_critical_1760574225942",
+    "type": "network",
+    "severity": "critical",
+    "message": "Critical network latency: 2037ms",
+    "timestamp": 1760574225942,
+    "metadata": {
+      "latency": 2036.9018923015697
+    }
+  },
+  {
+    "id": "cache_critical_1760574225942",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 3.3%",
+    "timestamp": 1760574225942,
+    "metadata": {
+      "hitRate": 3.281615150780559
+    }
+  },
+  {
+    "id": "perf_critical_1760574228279",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760574228279,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "net_warning_1760574228279",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1889ms",
+    "timestamp": 1760574228279,
+    "metadata": {
+      "latency": 1888.6910701802915
+    }
+  },
+  {
+    "id": "cache_critical_1760574230953",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 13.3%",
+    "timestamp": 1760574230953,
+    "metadata": {
+      "hitRate": 13.290057986152416
+    }
+  },
+  {
+    "id": "net_warning_1760574231767",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1340ms",
+    "timestamp": 1760574231767,
+    "metadata": {
+      "latency": 1339.8813460284855
+    }
+  },
+  {
+    "id": "net_warning_1760574233284",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1727ms",
+    "timestamp": 1760574233284,
+    "metadata": {
+      "latency": 1726.957535565726
+    }
+  },
+  {
+    "id": "perf_critical_1760574235958",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 20",
+    "timestamp": 1760574235958,
+    "metadata": {
+      "score": 20
+    }
+  },
+  {
+    "id": "mem_warning_1760574235958",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 86.9%",
+    "timestamp": 1760574235958,
+    "metadata": {
+      "memoryUsage": 86.91198969541323
+    }
+  },
+  {
+    "id": "net_warning_1760574235958",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1003ms",
+    "timestamp": 1760574235958,
+    "metadata": {
+      "latency": 1003.026424955919
+    }
+  },
+  {
+    "id": "cache_critical_1760574235958",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 2.7%",
+    "timestamp": 1760574235958,
+    "metadata": {
+      "hitRate": 2.6610188470538976
+    }
+  },
+  {
+    "id": "net_warning_1760574236772",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1983ms",
+    "timestamp": 1760574236772,
+    "metadata": {
+      "latency": 1982.529063765379
+    }
+  },
+  {
+    "id": "net_critical_1760574238299",
+    "type": "network",
+    "severity": "critical",
+    "message": "Critical network latency: 2008ms",
+    "timestamp": 1760574238299,
+    "metadata": {
+      "latency": 2007.788895621136
+    }
+  },
+  {
+    "id": "perf_critical_1760574240970",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 35",
+    "timestamp": 1760574240970,
+    "metadata": {
+      "score": 35
+    }
+  },
+  {
+    "id": "perf_warning_1760574241782",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574241782,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574241782",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1236ms",
+    "timestamp": 1760574241782,
+    "metadata": {
+      "latency": 1236.1308889166773
+    }
+  },
+  {
+    "id": "cache_critical_1760574241782",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 21.4%",
+    "timestamp": 1760574241782,
+    "metadata": {
+      "hitRate": 21.35459899386918
+    }
+  },
+  {
+    "id": "perf_critical_1760574243302",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760574243302,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "net_warning_1760574243303",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1897ms",
+    "timestamp": 1760574243303,
+    "metadata": {
+      "latency": 1896.5118165780846
+    }
+  },
+  {
+    "id": "cache_critical_1760574243303",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 6.6%",
+    "timestamp": 1760574243303,
+    "metadata": {
+      "hitRate": 6.638766885814151
+    }
+  },
+  {
+    "id": "net_warning_1760574245973",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1274ms",
+    "timestamp": 1760574245973,
+    "metadata": {
+      "latency": 1273.8769385206797
+    }
+  },
+  {
+    "id": "cache_warning_1760574246787",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 44.9%",
+    "timestamp": 1760574246787,
+    "metadata": {
+      "hitRate": 44.89990209831507
+    }
+  },
+  {
+    "id": "perf_critical_1760574248311",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 35",
+    "timestamp": 1760574248311,
+    "metadata": {
+      "score": 35
+    }
+  },
+  {
+    "id": "cache_warning_1760574248311",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 31.2%",
+    "timestamp": 1760574248311,
+    "metadata": {
+      "hitRate": 31.249193938758424
+    }
+  },
+  {
+    "id": "perf_critical_1760574250973",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 35",
+    "timestamp": 1760574250973,
+    "metadata": {
+      "score": 35
+    }
+  },
+  {
+    "id": "cache_critical_1760574250973",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 13.9%",
+    "timestamp": 1760574250973,
+    "metadata": {
+      "hitRate": 13.861947759384673
+    }
+  },
+  {
+    "id": "perf_critical_1760574251801",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 50",
+    "timestamp": 1760574251801,
+    "metadata": {
+      "score": 50
+    }
+  },
+  {
+    "id": "cache_warning_1760574251801",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 49.3%",
+    "timestamp": 1760574251801,
+    "metadata": {
+      "hitRate": 49.28260959578383
+    }
+  },
+  {
+    "id": "perf_warning_1760574253315",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574253315,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "perf_warning_1760574255985",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760574255985,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "net_warning_1760574255985",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1363ms",
+    "timestamp": 1760574255985,
+    "metadata": {
+      "latency": 1363.4627828983387
+    }
+  },
+  {
+    "id": "cache_critical_1760574255985",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 26.4%",
+    "timestamp": 1760574255985,
+    "metadata": {
+      "hitRate": 26.395386733193437
+    }
+  },
+  {
+    "id": "perf_warning_1760574256813",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574256813,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574256813",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1429ms",
+    "timestamp": 1760574256813,
+    "metadata": {
+      "latency": 1428.9102458167247
+    }
+  },
+  {
+    "id": "perf_critical_1760574258326",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574258326,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_critical_1760574258326",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 25.5%",
+    "timestamp": 1760574258326,
+    "metadata": {
+      "hitRate": 25.487559676585114
+    }
+  },
+  {
+    "id": "cache_critical_1760574260985",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 2.3%",
+    "timestamp": 1760574260985,
+    "metadata": {
+      "hitRate": 2.297055944896642
+    }
+  },
+  {
+    "id": "net_warning_1760574261826",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1846ms",
+    "timestamp": 1760574261826,
+    "metadata": {
+      "latency": 1845.5047665718037
+    }
+  },
+  {
+    "id": "perf_critical_1760574263326",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 0",
+    "timestamp": 1760574263326,
+    "metadata": {
+      "score": 0
+    }
+  },
+  {
+    "id": "mem_warning_1760574263326",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 88.2%",
+    "timestamp": 1760574263326,
+    "metadata": {
+      "memoryUsage": 88.22818447301479
+    }
+  },
+  {
+    "id": "net_warning_1760574263326",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1401ms",
+    "timestamp": 1760574263326,
+    "metadata": {
+      "latency": 1400.607813381158
+    }
+  },
+  {
+    "id": "cache_warning_1760574263326",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 47.0%",
+    "timestamp": 1760574263326,
+    "metadata": {
+      "hitRate": 47.02164803458688
+    }
+  },
+  {
+    "id": "perf_critical_1760574265991",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760574265991,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "net_warning_1760574265991",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1424ms",
+    "timestamp": 1760574265991,
+    "metadata": {
+      "latency": 1424.2181090843785
+    }
+  },
+  {
+    "id": "cache_critical_1760574265991",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 18.3%",
+    "timestamp": 1760574265991,
+    "metadata": {
+      "hitRate": 18.298828349552743
+    }
+  },
+  {
+    "id": "perf_warning_1760574266837",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574266837,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574266837",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1844ms",
+    "timestamp": 1760574266837,
+    "metadata": {
+      "latency": 1843.96709976692
+    }
+  },
+  {
+    "id": "cache_warning_1760574266837",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 33.5%",
+    "timestamp": 1760574266837,
+    "metadata": {
+      "hitRate": 33.48531354349584
+    }
+  },
+  {
+    "id": "net_warning_1760574268327",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1366ms",
+    "timestamp": 1760574268327,
+    "metadata": {
+      "latency": 1366.0423755299362
+    }
+  },
+  {
+    "id": "perf_warning_1760574271000",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574271000,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574271000",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1150ms",
+    "timestamp": 1760574271000,
+    "metadata": {
+      "latency": 1150.0908971902493
+    }
+  },
+  {
+    "id": "cache_critical_1760574271846",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 18.5%",
+    "timestamp": 1760574271846,
+    "metadata": {
+      "hitRate": 18.507853850132783
+    }
+  },
+  {
+    "id": "perf_warning_1760574273335",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760574273335,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "net_warning_1760574273335",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1003ms",
+    "timestamp": 1760574273335,
+    "metadata": {
+      "latency": 1002.5191558069677
+    }
+  },
+  {
+    "id": "cache_critical_1760574273335",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 12.4%",
+    "timestamp": 1760574273335,
+    "metadata": {
+      "hitRate": 12.442814118141321
+    }
+  },
+  {
+    "id": "cache_warning_1760574276005",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 47.5%",
+    "timestamp": 1760574276005,
+    "metadata": {
+      "hitRate": 47.514136720742115
+    }
+  },
+  {
+    "id": "perf_critical_1760574276857",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574276857,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "mem_warning_1760574276857",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 87.2%",
+    "timestamp": 1760574276857,
+    "metadata": {
+      "memoryUsage": 87.20571103003026
+    }
+  },
+  {
+    "id": "perf_critical_1760574281018",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760574281018,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "net_warning_1760574281018",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1945ms",
+    "timestamp": 1760574281018,
+    "metadata": {
+      "latency": 1945.1083533748308
+    }
+  },
+  {
+    "id": "cache_warning_1760574281018",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 39.6%",
+    "timestamp": 1760574281018,
+    "metadata": {
+      "hitRate": 39.61760941624968
+    }
+  },
+  {
+    "id": "perf_critical_1760574281862",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 30",
+    "timestamp": 1760574281862,
+    "metadata": {
+      "score": 30
+    }
+  },
+  {
+    "id": "mem_warning_1760574281862",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 81.8%",
+    "timestamp": 1760574281862,
+    "metadata": {
+      "memoryUsage": 81.806134446248
+    }
+  },
+  {
+    "id": "net_warning_1760574281862",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1224ms",
+    "timestamp": 1760574281862,
+    "metadata": {
+      "latency": 1223.8141862283078
+    }
+  },
+  {
+    "id": "perf_critical_1760574283350",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574283350,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "net_warning_1760574283350",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1341ms",
+    "timestamp": 1760574283350,
+    "metadata": {
+      "latency": 1341.178328338946
+    }
+  },
+  {
+    "id": "net_warning_1760574286020",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1136ms",
+    "timestamp": 1760574286020,
+    "metadata": {
+      "latency": 1136.4807535040995
+    }
+  },
+  {
+    "id": "perf_critical_1760574286865",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 30",
+    "timestamp": 1760574286865,
+    "metadata": {
+      "score": 30
+    }
+  },
+  {
+    "id": "mem_critical_1760574286865",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 94.3%",
+    "timestamp": 1760574286865,
+    "metadata": {
+      "memoryUsage": 94.32905803280292
+    }
+  },
+  {
+    "id": "net_warning_1760574286865",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1916ms",
+    "timestamp": 1760574286865,
+    "metadata": {
+      "latency": 1915.7332443111857
+    }
+  },
+  {
+    "id": "perf_critical_1760574288352",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 40",
+    "timestamp": 1760574288352,
+    "metadata": {
+      "score": 40
+    }
+  },
+  {
+    "id": "net_warning_1760574288352",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1173ms",
+    "timestamp": 1760574288352,
+    "metadata": {
+      "latency": 1172.9277207487726
+    }
+  },
+  {
+    "id": "cache_critical_1760574288352",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 15.4%",
+    "timestamp": 1760574288352,
+    "metadata": {
+      "hitRate": 15.389336605755899
+    }
+  },
+  {
+    "id": "net_warning_1760574291023",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1938ms",
+    "timestamp": 1760574291023,
+    "metadata": {
+      "latency": 1937.5320248275525
+    }
+  },
+  {
+    "id": "cache_warning_1760574291023",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 31.7%",
+    "timestamp": 1760574291023,
+    "metadata": {
+      "hitRate": 31.651474599298712
+    }
+  },
+  {
+    "id": "net_warning_1760574291869",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1761ms",
+    "timestamp": 1760574291869,
+    "metadata": {
+      "latency": 1760.6440576546527
+    }
+  },
+  {
+    "id": "perf_critical_1760574296030",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574296030,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "net_warning_1760574296030",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1396ms",
+    "timestamp": 1760574296030,
+    "metadata": {
+      "latency": 1395.6523815541211
+    }
+  },
+  {
+    "id": "cache_critical_1760574296030",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 28.9%",
+    "timestamp": 1760574296030,
+    "metadata": {
+      "hitRate": 28.915309242513377
+    }
+  },
+  {
+    "id": "perf_critical_1760574296877",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 20",
+    "timestamp": 1760574296877,
+    "metadata": {
+      "score": 20
+    }
+  },
+  {
+    "id": "mem_critical_1760574296877",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 93.3%",
+    "timestamp": 1760574296877,
+    "metadata": {
+      "memoryUsage": 93.28042071927558
+    }
+  },
+  {
+    "id": "net_warning_1760574296877",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1267ms",
+    "timestamp": 1760574296877,
+    "metadata": {
+      "latency": 1267.4052069719867
+    }
+  },
+  {
+    "id": "perf_critical_1760574298366",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574298366,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "mem_warning_1760574298366",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 81.7%",
+    "timestamp": 1760574298366,
+    "metadata": {
+      "memoryUsage": 81.67417435509525
+    }
+  },
+  {
+    "id": "cache_critical_1760574298366",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 14.5%",
+    "timestamp": 1760574298366,
+    "metadata": {
+      "hitRate": 14.501936619021528
+    }
+  },
+  {
+    "id": "net_warning_1760574301040",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1248ms",
+    "timestamp": 1760574301040,
+    "metadata": {
+      "latency": 1248.3352712957542
+    }
+  },
+  {
+    "id": "cache_warning_1760574301040",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 48.9%",
+    "timestamp": 1760574301040,
+    "metadata": {
+      "hitRate": 48.881988944251
+    }
+  },
+  {
+    "id": "perf_critical_1760574301880",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 35",
+    "timestamp": 1760574301880,
+    "metadata": {
+      "score": 35
+    }
+  },
+  {
+    "id": "net_warning_1760574303377",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1611ms",
+    "timestamp": 1760574303377,
+    "metadata": {
+      "latency": 1611.0047283459842
+    }
+  },
+  {
+    "id": "perf_critical_1760574306053",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574306053,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "mem_warning_1760574306053",
+    "type": "memory",
+    "severity": "warning",
+    "message": "High memory usage: 85.9%",
+    "timestamp": 1760574306053,
+    "metadata": {
+      "memoryUsage": 85.85441014401485
+    }
+  },
+  {
+    "id": "cache_critical_1760574306881",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 0.2%",
+    "timestamp": 1760574306882,
+    "metadata": {
+      "hitRate": 0.15574777528954975
+    }
+  },
+  {
+    "id": "net_warning_1760574308380",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1183ms",
+    "timestamp": 1760574308380,
+    "metadata": {
+      "latency": 1183.0276585074214
+    }
+  },
+  {
+    "id": "perf_warning_1760574311053",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574311053,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574311053",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1706ms",
+    "timestamp": 1760574311053,
+    "metadata": {
+      "latency": 1706.4290079495822
+    }
+  },
+  {
+    "id": "cache_warning_1760574311053",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 36.7%",
+    "timestamp": 1760574311053,
+    "metadata": {
+      "hitRate": 36.68038176010062
+    }
+  },
+  {
+    "id": "perf_warning_1760574311895",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574311895,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "perf_warning_1760574313393",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760574313393,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "mem_critical_1760574313393",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 93.0%",
+    "timestamp": 1760574313393,
+    "metadata": {
+      "memoryUsage": 92.97887570553517
+    }
+  },
+  {
+    "id": "net_warning_1760574313393",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1787ms",
+    "timestamp": 1760574313393,
+    "metadata": {
+      "latency": 1787.1620416467788
+    }
+  },
+  {
+    "id": "perf_warning_1760574316897",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760574316897,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "mem_critical_1760574316897",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 92.9%",
+    "timestamp": 1760574316897,
+    "metadata": {
+      "memoryUsage": 92.87154177246204
+    }
+  },
+  {
+    "id": "perf_warning_1760574318397",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760574318397,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "perf_critical_1760574321080",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574321080,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_critical_1760574321080",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 18.4%",
+    "timestamp": 1760574321080,
+    "metadata": {
+      "hitRate": 18.425515376279943
+    }
+  },
+  {
+    "id": "perf_critical_1760574326089",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574326089,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "mem_critical_1760574326089",
+    "type": "memory",
+    "severity": "critical",
+    "message": "Critical memory usage: 98.7%",
+    "timestamp": 1760574326089,
+    "metadata": {
+      "memoryUsage": 98.67539029437147
+    }
+  },
+  {
+    "id": "cache_critical_1760574326089",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 29.5%",
+    "timestamp": 1760574326089,
+    "metadata": {
+      "hitRate": 29.50185961717122
+    }
+  },
+  {
+    "id": "perf_critical_1760574326905",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 25",
+    "timestamp": 1760574326905,
+    "metadata": {
+      "score": 25
+    }
+  },
+  {
+    "id": "net_warning_1760574326905",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1763ms",
+    "timestamp": 1760574326905,
+    "metadata": {
+      "latency": 1763.4778922350733
+    }
+  },
+  {
+    "id": "perf_critical_1760574331093",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574331093,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_critical_1760574331093",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 20.1%",
+    "timestamp": 1760574331093,
+    "metadata": {
+      "hitRate": 20.050933113864367
+    }
+  },
+  {
+    "id": "perf_warning_1760574331909",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 65",
+    "timestamp": 1760574331909,
+    "metadata": {
+      "score": 65
+    }
+  },
+  {
+    "id": "net_warning_1760574331909",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1943ms",
+    "timestamp": 1760574331909,
+    "metadata": {
+      "latency": 1943.2121723048178
+    }
+  },
+  {
+    "id": "cache_critical_1760574331909",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 2.7%",
+    "timestamp": 1760574331909,
+    "metadata": {
+      "hitRate": 2.704059800367875
+    }
+  },
+  {
+    "id": "perf_warning_1760574336098",
+    "type": "performance",
+    "severity": "warning",
+    "message": "Low performance score: 60",
+    "timestamp": 1760574336098,
+    "metadata": {
+      "score": 60
+    }
+  },
+  {
+    "id": "net_warning_1760574336098",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1716ms",
+    "timestamp": 1760574336098,
+    "metadata": {
+      "latency": 1715.586112673047
+    }
+  },
+  {
+    "id": "cache_critical_1760574336098",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 12.4%",
+    "timestamp": 1760574336098,
+    "metadata": {
+      "hitRate": 12.42128840592307
+    }
+  },
+  {
+    "id": "cache_warning_1760574336923",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 49.2%",
+    "timestamp": 1760574336923,
+    "metadata": {
+      "hitRate": 49.21759566604311
+    }
+  },
+  {
+    "id": "net_warning_1760574341109",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1031ms",
+    "timestamp": 1760574341109,
+    "metadata": {
+      "latency": 1030.8328911741262
+    }
+  },
+  {
+    "id": "cache_warning_1760574341109",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 45.9%",
+    "timestamp": 1760574341109,
+    "metadata": {
+      "hitRate": 45.89946017032416
+    }
+  },
+  {
+    "id": "perf_critical_1760574346116",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 45",
+    "timestamp": 1760574346116,
+    "metadata": {
+      "score": 45
+    }
+  },
+  {
+    "id": "net_warning_1760574346116",
+    "type": "network",
+    "severity": "warning",
+    "message": "High network latency: 1593ms",
+    "timestamp": 1760574346116,
+    "metadata": {
+      "latency": 1593.4062382684217
+    }
+  },
+  {
+    "id": "cache_critical_1760574346116",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 4.1%",
+    "timestamp": 1760574346116,
+    "metadata": {
+      "hitRate": 4.142262392870055
+    }
+  },
+  {
+    "id": "perf_critical_1760574351130",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574351130,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_critical_1760574351130",
+    "type": "cache",
+    "severity": "critical",
+    "message": "Critical cache hit rate: 9.1%",
+    "timestamp": 1760574351130,
+    "metadata": {
+      "hitRate": 9.09180350270744
+    }
+  },
+  {
+    "id": "perf_critical_1760574356130",
+    "type": "performance",
+    "severity": "critical",
+    "message": "Critical performance score: 55",
+    "timestamp": 1760574356130,
+    "metadata": {
+      "score": 55
+    }
+  },
+  {
+    "id": "cache_warning_1760574356130",
+    "type": "cache",
+    "severity": "warning",
+    "message": "Low cache hit rate: 40.5%",
+    "timestamp": 1760574356130,
+    "metadata": {
+      "hitRate": 40.54235032440117
+    }
+  }
+]

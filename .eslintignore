@@ -1,0 +1,12 @@
+# Ignore web-based React components (not React Native)
+src/screens/SpredShare/spred_share_ui.tsx
+
+# Node modules
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Metro bundler
+.metro-health-check*
