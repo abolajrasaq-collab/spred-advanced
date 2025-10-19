@@ -18,7 +18,7 @@ import {
 } from 'p2p-file-transfer';
 import logger from '../utils/logger';
 
-// Import these functions directly from yalc source like the reference project
+// Import these functions directly from the p2p-file-transfer module
 import {
   startDiscoveringPeers,
   stopDiscoveringPeers,
@@ -27,7 +27,7 @@ import {
   subscribeOnFileReceive,
   sendFile,
   receiveFile,
-} from '../../.yalc/p2p-file-transfer/src';
+} from 'p2p-file-transfer';
 
 export type { Device, P2PFile, WifiP2pInfo };
 
@@ -257,11 +257,17 @@ export class P2PService {
   }
 
   private setupEventListeners() {
-    // Peers updates
+    // Peers updates with device persistence
     const peersSubscription = subscribeOnPeersUpdates(
       ({ devices }: { devices: Device[] }) => {
         console.log('📱 Peers update received:', devices.length, 'devices');
-        this.updateState({ discoveredDevices: devices });
+        
+        // Merge with existing devices to prevent disappearing
+        const currentDevices = this.state.discoveredDevices || [];
+        const mergedDevices = this.mergeDeviceLists(currentDevices, devices);
+        
+        console.log('📱 Merged device list:', mergedDevices.length, 'total devices');
+        this.updateState({ discoveredDevices: mergedDevices });
       },
     );
 
@@ -345,28 +351,51 @@ export class P2PService {
         error: currentState.error
       });
 
+      // Stop any existing discovery first
+      if (currentState.isDiscovering) {
+        logger.info('🔍 P2PService: Stopping existing discovery...');
+        try {
+          await this.stopDiscovery();
+          // Wait a moment for cleanup
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        } catch (stopError) {
+          logger.warn('⚠️ P2PService: Error stopping existing discovery:', stopError);
+        }
+      }
+
       if (!currentState.hasPermissions) {
         logger.info('🔍 P2PService: No permissions, requesting...');
         const granted = await this.requestPermissions();
         if (!granted) {
-          throw new Error('Permissions not granted');
+          throw new Error('Permissions not granted. Please enable Location and Nearby devices permissions.');
         }
       }
 
       if (!currentState.isWifiEnabled) {
-        throw new Error('WiFi is not enabled');
+        throw new Error('WiFi is not enabled. Please enable WiFi and try again.');
       }
 
       if (!currentState.isLocationEnabled) {
-        throw new Error('Location is not enabled');
+        throw new Error('Location is not enabled. Please enable Location services and try again.');
       }
 
       logger.info('🔍 P2PService: All checks passed, calling startDiscoveringPeers...');
-      await startDiscoveringPeers();
+      
+      // Add timeout to discovery to prevent hanging
+      const discoveryPromise = startDiscoveringPeers();
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Discovery timeout after 30 seconds')), 30000)
+      );
+      
+      await Promise.race([discoveryPromise, timeoutPromise]);
       logger.info('✅ P2PService: startDiscoveringPeers completed successfully');
       
       this.updateState({ isDiscovering: true, error: null });
       logger.info('✅ P2PService: Discovery state updated to true');
+      
+      // Start periodic refresh of peer list
+      this.startPeriodicPeerRefresh();
+      
       return true;
     } catch (error: any) {
       logger.error('❌ P2PService: Discovery failed:', error);
@@ -375,17 +404,105 @@ export class P2PService {
         stack: error.stack,
         name: error.name
       });
-      this.updateState({ error: error.message, isDiscovering: false });
+      
+      // Provide more specific error messages
+      let userFriendlyError = error.message;
+      if (error.message.includes('timeout')) {
+        userFriendlyError = 'Device discovery timed out. Please check that both devices have WiFi and Location enabled, then try again.';
+      } else if (error.message.includes('permission')) {
+        userFriendlyError = 'Missing permissions. Please grant Location and Nearby devices permissions in Settings.';
+      }
+      
+      this.updateState({ error: userFriendlyError, isDiscovering: false });
       return false;
     }
   }
 
+  private periodicRefreshInterval: NodeJS.Timeout | null = null;
+
+  private mergeDeviceLists(currentDevices: Device[], newDevices: Device[]): Device[] {
+    const deviceMap = new Map<string, Device & { lastSeen: number }>();
+    const now = Date.now();
+    
+    // Add current devices with their last seen time
+    currentDevices.forEach(device => {
+      const existingDevice = deviceMap.get(device.deviceAddress);
+      deviceMap.set(device.deviceAddress, {
+        ...device,
+        lastSeen: existingDevice?.lastSeen || now - 5000, // Default to 5 seconds ago
+      });
+    });
+    
+    // Update with new devices (mark as recently seen)
+    newDevices.forEach(device => {
+      deviceMap.set(device.deviceAddress, {
+        ...device,
+        lastSeen: now,
+      });
+    });
+    
+    // Filter out devices not seen for more than 30 seconds
+    const validDevices = Array.from(deviceMap.values()).filter(
+      device => now - device.lastSeen < 30000
+    );
+    
+    // Sort by last seen (most recent first)
+    validDevices.sort((a, b) => b.lastSeen - a.lastSeen);
+    
+    // Remove lastSeen property before returning
+    return validDevices.map(({ lastSeen, ...device }) => device);
+  }
+
+  private startPeriodicPeerRefresh() {
+    // Clear any existing interval
+    if (this.periodicRefreshInterval) {
+      clearInterval(this.periodicRefreshInterval);
+    }
+
+    // Refresh peer list every 5 seconds while discovering (more frequent)
+    this.periodicRefreshInterval = setInterval(async () => {
+      if (this.state.isDiscovering) {
+        try {
+          logger.info('🔄 P2PService: Refreshing peer list...');
+          const peers = await this.refreshDeviceList();
+          logger.info('🔄 P2PService: Found', peers.length, 'peers during refresh');
+          
+          // Also clean up old devices during refresh
+          const currentDevices = this.state.discoveredDevices || [];
+          const cleanedDevices = this.mergeDeviceLists(currentDevices, []);
+          if (cleanedDevices.length !== currentDevices.length) {
+            logger.info('🧹 P2PService: Cleaned up old devices:', currentDevices.length - cleanedDevices.length, 'removed');
+            this.updateState({ discoveredDevices: cleanedDevices });
+          }
+        } catch (error) {
+          logger.warn('⚠️ P2PService: Peer refresh failed:', error);
+        }
+      } else {
+        // Stop refreshing if not discovering
+        if (this.periodicRefreshInterval) {
+          clearInterval(this.periodicRefreshInterval);
+          this.periodicRefreshInterval = null;
+        }
+      }
+    }, 5000); // Reduced to 5 seconds for better responsiveness
+  }
+
   async stopDiscovery(): Promise<void> {
     try {
+      logger.info('🛑 P2PService: Stopping device discovery...');
+      
+      // Clear periodic refresh
+      if (this.periodicRefreshInterval) {
+        clearInterval(this.periodicRefreshInterval);
+        this.periodicRefreshInterval = null;
+      }
+      
       await stopDiscoveringPeers();
       this.updateState({ isDiscovering: false });
-    } catch (error) {
-      this.updateState({ error: error.message });
+      logger.info('✅ P2PService: Discovery stopped successfully');
+    } catch (error: any) {
+      logger.error('❌ P2PService: Error stopping discovery:', error);
+      this.updateState({ error: error.message, isDiscovering: false });
     }
   }
 
@@ -454,6 +571,69 @@ export class P2PService {
       this.updateState({ 
         isConnected: false,
         error: error.message || 'Connection failed' 
+      });
+      return false;
+    }
+  }
+
+  async smartConnect(deviceAddress: string): Promise<boolean> {
+    try {
+      logger.info('🧠 Smart connect to device:', deviceAddress);
+      
+      // First attempt: Direct connection
+      logger.info('🔗 Attempt 1: Direct connection');
+      let success = await this.connectToDevice(deviceAddress);
+      
+      if (success) {
+        logger.info('✅ Smart connect successful on first attempt');
+        return true;
+      }
+      
+      // Second attempt: Stop discovery and retry
+      logger.info('🔗 Attempt 2: Stop discovery and retry');
+      try {
+        await this.stopDiscovery();
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+        success = await this.connectToDevice(deviceAddress);
+        
+        if (success) {
+          logger.info('✅ Smart connect successful on second attempt');
+          return true;
+        }
+      } catch (retryError) {
+        logger.warn('⚠️ Second attempt failed:', retryError);
+      }
+      
+      // Third attempt: Create group and let other device connect
+      logger.info('🔗 Attempt 3: Create group for incoming connection');
+      try {
+        await this.createGroup();
+        await new Promise(resolve => setTimeout(resolve, 3000)); // Wait 3 seconds for group creation
+        
+        // Check if connection was established
+        const connectionInfo = await this.getConnectionInfo();
+        if (connectionInfo && connectionInfo.groupFormed) {
+          this.updateState({
+            isConnected: true,
+            connectionInfo: connectionInfo,
+            isGroupOwner: connectionInfo.isGroupOwner,
+            error: null
+          });
+          logger.info('✅ Smart connect successful via group creation');
+          return true;
+        }
+      } catch (groupError) {
+        logger.warn('⚠️ Group creation attempt failed:', groupError);
+      }
+      
+      logger.error('❌ Smart connect failed after all attempts');
+      return false;
+      
+    } catch (error: any) {
+      logger.error('❌ Smart connect error:', error);
+      this.updateState({ 
+        isConnected: false,
+        error: error.message || 'Smart connection failed' 
       });
       return false;
     }
@@ -768,11 +948,25 @@ export class P2PService {
 
   async refreshDeviceList(): Promise<Device[]> {
     try {
+      logger.info('🔄 P2PService: Getting available peers...');
       const { devices } = await getAvailablePeers();
-      this.updateState({ discoveredDevices: devices });
+      logger.info('🔄 P2PService: Native module returned', devices.length, 'devices');
+      
+      // Don't directly update state here - let the merge logic handle it
+      // this.updateState({ discoveredDevices: devices });
+      
+      // Instead, trigger a peer update event to go through the merge logic
+      if (devices.length > 0) {
+        const currentDevices = this.state.discoveredDevices || [];
+        const mergedDevices = this.mergeDeviceLists(currentDevices, devices);
+        this.updateState({ discoveredDevices: mergedDevices });
+      }
+      
       return devices;
-    } catch (error) {
-      this.updateState({ error: error.message });
+    } catch (error: any) {
+      logger.error('❌ P2PService: Error refreshing device list:', error);
+      // Don't clear the device list on error - keep existing devices
+      // this.updateState({ error: error.message });
       return [];
     }
   }
@@ -795,9 +989,99 @@ export class P2PService {
     }
   }
 
+  // Method to manually add a discovered device (for QR code pairing)
+  addDiscoveredDevice(device: Device) {
+    logger.info('➕ P2PService: Manually adding discovered device:', device.deviceName);
+    const currentDevices = this.state.discoveredDevices || [];
+    const mergedDevices = this.mergeDeviceLists(currentDevices, [device]);
+    this.updateState({ discoveredDevices: mergedDevices });
+  }
+
+  // Method to keep devices alive (reset their last seen time)
+  keepDevicesAlive() {
+    const currentDevices = this.state.discoveredDevices || [];
+    if (currentDevices.length > 0) {
+      logger.info('💓 P2PService: Keeping', currentDevices.length, 'devices alive');
+      const refreshedDevices = this.mergeDeviceLists(currentDevices, currentDevices);
+      this.updateState({ discoveredDevices: refreshedDevices });
+    }
+  }
+
+  getErrorGuidance(errorMessage: string): { title: string; message: string; actions: string[] } {
+    if (errorMessage.includes('permission')) {
+      return {
+        title: 'Permission Required',
+        message: 'WiFi Direct needs specific permissions to work properly.',
+        actions: [
+          'Go to Settings → Apps → SPRED → Permissions',
+          'Enable "Location" permission (required for device discovery)',
+          'Enable "Nearby devices" permission (if available)',
+          'Restart the app and try again'
+        ]
+      };
+    }
+    
+    if (errorMessage.includes('location') || errorMessage.includes('Location')) {
+      return {
+        title: 'Location Services Required',
+        message: 'WiFi Direct requires location services to discover nearby devices.',
+        actions: [
+          'Go to Settings → Location',
+          'Turn ON location services',
+          'Set accuracy to "High accuracy"',
+          'Restart the app and try again'
+        ]
+      };
+    }
+    
+    if (errorMessage.includes('wifi') || errorMessage.includes('WiFi')) {
+      return {
+        title: 'WiFi Required',
+        message: 'WiFi must be enabled for device-to-device connections.',
+        actions: [
+          'Go to Settings → WiFi',
+          'Turn ON WiFi',
+          'Make sure WiFi hotspot is OFF',
+          'Try connecting again'
+        ]
+      };
+    }
+    
+    if (errorMessage.includes('timeout') || errorMessage.includes('discover')) {
+      return {
+        title: 'Discovery Issues',
+        message: 'Unable to find nearby devices. This could be due to several factors.',
+        actions: [
+          'Make sure both devices are within 30 feet',
+          'Check that both devices have WiFi and Location enabled',
+          'Restart WiFi on both devices',
+          'Try using QR code pairing instead',
+          'Ensure no other WiFi Direct connections are active'
+        ]
+      };
+    }
+    
+    return {
+      title: 'Connection Error',
+      message: 'An unexpected error occurred during P2P operation.',
+      actions: [
+        'Check that both devices support WiFi Direct',
+        'Restart the app on both devices',
+        'Try moving devices closer together',
+        'Contact support if the problem persists'
+      ]
+    };
+  }
+
   async disconnect() {
     try {
       logger.info('🔌 Disconnecting P2P service...');
+      
+      // Clear periodic refresh
+      if (this.periodicRefreshInterval) {
+        clearInterval(this.periodicRefreshInterval);
+        this.periodicRefreshInterval = null;
+      }
       
       // Stop discovery if running
       if (this.state.isDiscovering) {
@@ -840,6 +1124,12 @@ export class P2PService {
       });
       this.subscriptions = [];
       this.listeners = [];
+      
+      // Clear periodic refresh even on error
+      if (this.periodicRefreshInterval) {
+        clearInterval(this.periodicRefreshInterval);
+        this.periodicRefreshInterval = null;
+      }
     }
   }
 }

@@ -61,6 +61,9 @@ const OfflineVideos = lazy(
 const WiFiDirectScreen = lazy(
   () => import('../screens/WiFiDirect/WiFiDirectScreen'),
 );
+const TestNearbySharing = lazy(
+  () => import('../screens/TestNearbySharing'),
+);
 
 const Stack = createNativeStackNavigator();
 
@@ -219,6 +222,17 @@ const MainNavigator = () => {
           name="WiFiDirect"
           component={WiFiDirectScreen}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="TestNearbySharing"
+          component={TestNearbySharing}
+          options={{ 
+            headerShown: true,
+            title: 'Nearby API Test Lab',
+            headerStyle: { backgroundColor: '#1A1A1A' },
+            headerTintColor: '#FFFFFF',
+            headerTitleStyle: { fontWeight: '600' },
+          }}
         />
       </Stack.Navigator>
     </Suspense>

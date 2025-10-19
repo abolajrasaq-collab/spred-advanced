@@ -29,8 +29,10 @@ import {
   Icon,
   VideoCard,
 } from '../../components';
+import UniversalSharingModal from '../../components/UniversalSharingModal';
 import TEXT_CONSTANTS, { TAB_KEYS, TabKey } from './constants';
 import P2PReceiveScreen from '../../components/WiFiDirect/P2PReceiveScreen';
+import ReceiverModeManager from '../../services/ReceiverModeManager';
 import { useThemeColors, useSpacing } from '../../theme/ThemeProvider';
 import DownloadItems from '../DownloadItems/DownloadItems';
 import SpredFileService from '../../services/SpredFileService';
@@ -152,10 +154,13 @@ const PlayVideos = (props: any) => {
   const [showDownloadRequiredModal, setShowDownloadRequiredModal] =
     useState(false);
   const [showReceiveModal, setShowReceiveModal] = useState(false);
+  const [showUniversalSharingModal, setShowUniversalSharingModal] = useState(false);
   const [suggestedFilms, setSuggestedFilms] = useState([]);
   const [watchLater, setWatchLater] = useState<any[]>([]);
   const [allVideos, setAllVideos] = useState<any[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isReceiverModeActive, setIsReceiverModeActive] = useState(false);
+  const [resolvedVideoPath, setResolvedVideoPath] = useState<string>('');
   // Track fullscreen state for the video player so UI (like floating back button) can hide/show
 
   // Unified alert modal state
@@ -202,8 +207,53 @@ const PlayVideos = (props: any) => {
     [],
   );
 
-  // Function to handle SPRED sharing with enhanced P2P user flow
-  const handleSpredShare = useCallback(() => {
+  // Function to get video path for sharing
+  const getVideoPath = useCallback(async () => {
+    try {
+      // First try to get the actual downloaded video file path
+      const { P2PService } = await import('../../services/P2PService');
+      const p2pService = P2PService.getInstance();
+      const localPath = await p2pService.getLocalVideoPath(item);
+      
+      if (localPath) {
+        logger.info('✅ Found local video path:', localPath);
+        return localPath;
+      }
+      
+      // If no local file found, return empty string to trigger proper error handling
+      logger.warn('⚠️ No local video file found - video must be downloaded first');
+      return '';
+    } catch (error) {
+      logger.error('❌ Error getting video path:', error);
+      return '';
+    }
+  }, [item]);
+
+  // Function to handle share completion
+  const handleShareComplete = useCallback((result: any) => {
+    logger.info('📤 Share completed:', result);
+    
+    if (result.success) {
+      const method = result.method === 'nearby' ? 'direct device sharing' : 'QR code sharing';
+      showAlert(
+        'Share Successful!',
+        `Video shared successfully via ${method}${result.deviceName ? ` to ${result.deviceName}` : ''}.`,
+        'success'
+      );
+    } else {
+      showAlert(
+        'Share Failed',
+        result.error || 'Failed to share video. Please try again.',
+        'error'
+      );
+    }
+    
+    // Close the modal
+    setShowUniversalSharingModal(false);
+  }, [showAlert]);
+
+  // Function to handle SPRED sharing with Universal Sharing Modal
+  const handleSpredShare = useCallback(async () => {
     try {
       // Check if video is downloaded before allowing SPRED sharing
       if (!isVideoDownloaded) {
@@ -211,7 +261,7 @@ const PlayVideos = (props: any) => {
         return;
       }
 
-      logger.info('🎯 SPRED button pressed - starting enhanced P2P user flow');
+      logger.info('🎯 SPRED button pressed - opening Universal Sharing Modal');
 
       // Validate required data exists
       if (!item) {
@@ -235,52 +285,29 @@ const PlayVideos = (props: any) => {
         return;
       }
 
-      // Additional validation for navigation
-      if (!navigation) {
+      logger.info('✅ All validations passed, resolving video path...');
+
+      // Resolve video path before opening modal
+      const videoPath = await getVideoPath();
+      
+      if (!videoPath) {
         showAlert(
-          'Error',
-          'Navigation not available. Please restart the app.',
-          'error',
+          'Video Not Downloaded',
+          'This video must be downloaded before it can be shared to nearby devices. Please download the video first.',
+          'error'
         );
         return;
       }
+      
+      setResolvedVideoPath(videoPath);
+      logger.info('✅ Video path resolved, opening Universal Sharing Modal');
 
-      logger.info(
-        '✅ All validations passed, showing P2P SEND/RECEIVE options',
-      );
-
-      // Enhanced P2P User Flow: Show SEND and RECEIVE options
-      Alert.alert(
-        'SPRED P2P Transfer',
-        `Ready to share "${videoTitle}" via SPRED\n\nChoose your role:`,
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: '📡 SEND VIDEO',
-            onPress: () => {
-              logger.info('🚀 User chose SEND - will create WiFi Direct group');
-              handleSendVideo();
-            },
-            style: 'default',
-          },
-          {
-            text: '📥 RECEIVE VIDEO',
-            onPress: () => {
-              logger.info('📥 User chose RECEIVE - will open receive modal');
-              openReceiveModal();
-            },
-            style: 'default',
-          },
-        ],
-        { cancelable: false },
-      );
+      // Open Universal Sharing Modal for one-tap sharing
+      setShowUniversalSharingModal(true);
     } catch (error) {
       showAlert(
         'Sharing Error',
-        `Failed to prepare P2P transfer: ${error.message || 'Unknown error'}`,
+        `Failed to prepare sharing: ${error.message || 'Unknown error'}`,
         'error',
       );
     }
@@ -288,13 +315,57 @@ const PlayVideos = (props: any) => {
     isVideoDownloaded,
     item,
     title,
-    thumbnailUrl,
-    duration,
-    navigation,
     showAlert,
-    handleSendVideo,
-    openReceiveModal,
   ]);
+
+  // Function to handle Receiver Mode toggle
+  const handleReceiverMode = useCallback(async () => {
+    try {
+      logger.info('📥 Receiver mode button pressed');
+
+      if (isReceiverModeActive) {
+        // Stop receiver mode
+        const receiverManager = ReceiverModeManager.getInstance();
+        await receiverManager.cleanup();
+        setIsReceiverModeActive(false);
+        
+        showAlert(
+          'Receiver Mode Stopped',
+          'Device is no longer discoverable for receiving files',
+          'info'
+        );
+        logger.info('🛑 Receiver mode stopped');
+      } else {
+        // Start receiver mode
+        const receiverManager = ReceiverModeManager.getInstance();
+        const initialized = await receiverManager.initialize();
+        
+        if (initialized) {
+          setIsReceiverModeActive(true);
+          showAlert(
+            'Receiver Mode Started',
+            'Device is now discoverable and ready to receive files from nearby devices',
+            'success'
+          );
+          logger.info('✅ Receiver mode started successfully');
+        } else {
+          showAlert(
+            'Receiver Mode Failed',
+            'Could not initialize receiver mode. Check permissions and WiFi.',
+            'error'
+          );
+          logger.error('❌ Receiver mode failed to start');
+        }
+      }
+    } catch (error) {
+      logger.error('❌ Receiver mode error:', error);
+      showAlert(
+        'Receiver Mode Error',
+        `Failed to toggle receiver mode: ${error.message || 'Unknown error'}`,
+        'error'
+      );
+    }
+  }, [isReceiverModeActive, showAlert]);
 
   // Function to handle SEND VIDEO (Group Creator)
   const handleSendVideo = useCallback(() => {
@@ -1150,6 +1221,30 @@ ${generateShareUrl()}`;
             <Icon name="arrow-left" size={20} color="#FFFFFF" />
           </TouchableOpacity>
         )}
+
+        {/* Floating Nearby Sharing Button - only show when not in fullscreen */}
+        {!isFullscreen && (
+          <TouchableOpacity
+            onPress={handleSpredShare}
+            style={styles.floatingNearbyButton}
+            activeOpacity={0.7}
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+          >
+            <MaterialIcons name="send" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+        )}
+
+        {/* Floating Receiver Mode Button - only show when not in fullscreen */}
+        {!isFullscreen && (
+          <TouchableOpacity
+            onPress={handleReceiverMode}
+            style={styles.floatingReceiverButton}
+            activeOpacity={0.7}
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+          >
+            <MaterialIcons name="wifi-tethering" size={20} color="#FFFFFF" />
+          </TouchableOpacity>
+        )}
         {videoLoading ? (
           <View
             style={[styles.videoLoadingContainer, { height: getVideoPlayerHeight() }]}
@@ -1962,6 +2057,15 @@ ${generateShareUrl()}`;
         </View>
       </Modal>
 
+      {/* Universal Sharing Modal */}
+      <UniversalSharingModal
+        visible={showUniversalSharingModal}
+        onClose={() => setShowUniversalSharingModal(false)}
+        videoPath={resolvedVideoPath}
+        videoTitle={cleanMovieTitle(title)}
+        onShareComplete={handleShareComplete}
+      />
+
       {/* Unified Alert Modal */}
       <Modal
         visible={alertModal.visible}
@@ -2126,6 +2230,40 @@ ${generateShareUrl()}`;
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     borderRadius: 20,
     padding: 8,
+  },
+  floatingNearbyButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    zIndex: 10,
+    backgroundColor: 'rgba(244, 83, 3, 0.9)', // SPRED orange color with transparency
+    borderRadius: 25,
+    padding: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  floatingReceiverButton: {
+    position: 'absolute',
+    top: 80, // Below the nearby sharing button
+    right: 20,
+    zIndex: 10,
+    backgroundColor: 'rgba(76, 175, 80, 0.9)', // Green color for receiver mode
+    borderRadius: 22,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   videoLoadingContainer: {
     justifyContent: 'center',

@@ -77,7 +77,7 @@ const Account = () => {
   const navigation = useNavigation<AccountNavigationProp>();
   const colors = useThemeColors();
   const { spacing } = useSpacing();
-  
+
   // Get user data from Redux state as fallback
   const authUser = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
@@ -152,7 +152,7 @@ const Account = () => {
       }
     } catch (error) {
       console.error('❌ Error loading user data:', error);
-      
+
       // Use Redux state as fallback
       if (authUser) {
         console.log('🔄 Using Redux user data as fallback');
@@ -244,10 +244,10 @@ const Account = () => {
           storeDataJson('User', null);
           storeDataJson('UserInfo', null);
           storeDataJson('Profile', null);
-          
+
           // Dispatch Redux logout action
           dispatch(logout());
-          
+
           // Navigate to SignIn
           navigation.navigate('SignIn');
         },
@@ -310,6 +310,12 @@ const Account = () => {
       icon: 'setting',
       title: 'Settings',
       onPress: () => navigation.navigate('Settings'),
+    },
+    {
+      icon: 'science',
+      title: '🧪 Test Nearby API',
+      onPress: () => navigation.navigate('TestNearbySharing'),
+      isP2P: true,
     },
     {
       icon: 'refresh',
@@ -453,8 +459,8 @@ const Account = () => {
                     >
                       {getInitials(
                         (userInfo?.firstName || userInfo?.username || 'User') +
-                          ' ' +
-                          (userInfo?.lastName || ''),
+                        ' ' +
+                        (userInfo?.lastName || ''),
                       )}
                     </CustomText>
                   </View>
@@ -854,13 +860,13 @@ const Account = () => {
                   backgroundColor: item.isP2P
                     ? '#10B981'
                     : item.isDestructive
-                    ? 'rgba(255, 68, 68, 0.1)'
-                    : '#2A2A2A',
+                      ? 'rgba(255, 68, 68, 0.1)'
+                      : '#2A2A2A',
                   borderColor: item.isP2P
                     ? '#059669'
                     : item.isDestructive
-                    ? 'rgba(255, 68, 68, 0.2)'
-                    : 'rgba(255, 255, 255, 0.1)',
+                      ? 'rgba(255, 68, 68, 0.2)'
+                      : 'rgba(255, 255, 255, 0.1)',
                   borderWidth: item.isP2P ? 2 : 1,
                   paddingVertical: spacing.md,
                   paddingHorizontal: spacing.md,
@@ -877,8 +883,8 @@ const Account = () => {
                       backgroundColor: item.isP2P
                         ? 'rgba(255, 255, 255, 0.2)'
                         : item.isDestructive
-                        ? 'rgba(255, 68, 68, 0.2)'
-                        : 'rgba(244, 83, 3, 0.2)',
+                          ? 'rgba(255, 68, 68, 0.2)'
+                          : 'rgba(244, 83, 3, 0.2)',
                       marginRight: spacing.md,
                     },
                   ]}
@@ -888,32 +894,32 @@ const Account = () => {
                       item.icon === 'edit'
                         ? 'edit'
                         : item.icon === 'dashboard'
-                        ? 'dashboard'
-                        : item.icon === 'wallet'
-                        ? 'account-balance-wallet'
-                        : item.icon === 'sharealt'
-                        ? 'share'
-                        : item.icon === 'share'
-                        ? 'share'
-                        : item.icon === 'download'
-                        ? 'download'
-                        : item.icon === 'notification'
-                        ? 'notifications'
-                        : item.icon === 'setting'
-                        ? 'settings'
-                        : item.icon === 'questioncircleo'
-                        ? 'help-outline'
-                        : item.icon === 'logout'
-                        ? 'logout'
-                        : item.icon
+                          ? 'dashboard'
+                          : item.icon === 'wallet'
+                            ? 'account-balance-wallet'
+                            : item.icon === 'sharealt'
+                              ? 'share'
+                              : item.icon === 'share'
+                                ? 'share'
+                                : item.icon === 'download'
+                                  ? 'download'
+                                  : item.icon === 'notification'
+                                    ? 'notifications'
+                                    : item.icon === 'setting'
+                                      ? 'settings'
+                                      : item.icon === 'questioncircleo'
+                                        ? 'help-outline'
+                                        : item.icon === 'logout'
+                                          ? 'logout'
+                                          : item.icon
                     }
                     size={20}
                     color={
                       item.isP2P
                         ? '#FFFFFF'
                         : item.isDestructive
-                        ? '#FF4444'
-                        : '#F45303'
+                          ? '#FF4444'
+                          : '#F45303'
                     }
                   />
                 </View>
@@ -924,8 +930,8 @@ const Account = () => {
                     item.isP2P
                       ? '#FFFFFF'
                       : item.isDestructive
-                      ? '#FF4444'
-                      : '#FFFFFF'
+                        ? '#FF4444'
+                        : '#FFFFFF'
                   }
                 >
                   {item.title}

@@ -1,5 +1,10 @@
 // import 'react-native-gesture-handler';
 // import { logger } from './utils/ProductionLogger';
+
+// EMERGENCY PATCH: Apply permission API patch BEFORE any other imports
+// This prevents the native permission crash that occurs when permission methods return null
+import './utils/PermissionPatch';
+
 // TextEncoder polyfill for QR code library
 if (typeof global.TextEncoder === 'undefined') {
   global.TextEncoder = require('text-encoding-polyfill').TextEncoder;
@@ -21,6 +26,8 @@ import { ThemeProvider } from './theme/ThemeProvider';
 import PerformanceManager from './services/PerformanceManager';
 // Permission Handler
 import { PermissionHandler } from './utils/PermissionHandler';
+// Receiver Mode Manager
+import ReceiverModeManager from './services/ReceiverModeManager';
 // Performance Optimizations
 import { LogBox } from 'react-native';
 // Simple Real-time Monitoring Dashboard - DISABLED
@@ -91,9 +98,41 @@ const App = () => {
     // Request permissions after a short delay to ensure app is ready
     setTimeout(requestPermissions, 1000);
 
+    // Initialize ReceiverModeManager for background sharing
+    const initializeReceiverMode = async () => {
+      try {
+        console.log('📥 Initializing receiver mode...');
+        const receiverManager = ReceiverModeManager.getInstance();
+        
+        // Add a delay to ensure permissions are requested first
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        const initialized = await receiverManager.initialize();
+        
+        if (initialized) {
+          console.log('✅ Receiver mode initialized successfully');
+        } else {
+          console.warn('⚠️ Receiver mode initialization failed, but app continues normally');
+        }
+      } catch (error) {
+        console.error('❌ Receiver mode initialization error:', error);
+        // Don't block app startup if receiver mode fails
+        console.log('⚠️ Continuing app startup despite receiver mode errors');
+      }
+    };
+
+    // Initialize receiver mode after permissions - DISABLED to prevent crashes
+    // setTimeout(initializeReceiverMode, 2500);
+    console.log('📥 Receiver mode initialization disabled - use floating button instead');
+
     return () => {
       // Cleanup on app unmount
       performanceManager.forceCleanup();
+      
+      // Cleanup receiver mode
+      ReceiverModeManager.getInstance().cleanup().catch(error => {
+        console.error('❌ Error cleaning up receiver mode:', error);
+      });
     };
   }, []);
 

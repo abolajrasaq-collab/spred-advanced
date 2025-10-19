@@ -2,6 +2,10 @@
  * @format
  */
 
+// EMERGENCY PATCH: Apply permission API patch at the very beginning
+// This prevents the native permission crash that occurs when permission methods return null
+import './src/utils/PermissionPatch';
+
 // Suppress annoying warnings
 console.warn = (() => {
   const originalWarn = console.warn;
