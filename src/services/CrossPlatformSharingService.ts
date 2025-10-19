@@ -187,6 +187,10 @@ export class CrossPlatformSharingService {
         return nearbyResult;
       }
 
+      // If nearby sharing failed, try QR fallback
+      const nearbyState = this.nearbyService.getState();
+
+      // Only use QR fallback for real scenarios where nearby sharing actually failed
       logger.info('📱 Nearby sharing failed, trying QR fallback...');
       
       // Method 2: Fallback to QR code sharing
@@ -345,13 +349,24 @@ export class CrossPlatformSharingService {
             
             const sent = await this.nearbyService.sendFile(videoPath, targetDevice.id);
             if (sent) {
-              return {
+              // Determine the actual method used based on the service state
+              const nearbyState = this.nearbyService.getState();
+              const actualMethod = nearbyState.initializationMode === 'real' ? 'p2p' : 'nearby';
+              
+              const result = {
                 success: true,
-                method: 'nearby',
+                method: actualMethod as const,
                 deviceName: targetDevice.name,
                 deviceId: targetDevice.id,
                 duration: Date.now() - this.shareStartTime
               };
+              
+              console.log('🎉 Sharing success result:', { 
+                ...result, 
+                actualService: nearbyState.initializationMode,
+                serviceType: nearbyState.initializationMode === 'real' ? 'P2P WiFi Direct' : 'Fallback'
+              });
+              return result;
             }
           }
         }
@@ -361,6 +376,9 @@ export class CrossPlatformSharingService {
       await new Promise(resolve => setTimeout(resolve, 500));
       attempts++;
     }
+    
+    // Get the current nearby service state
+    const nearbyState = this.nearbyService.getState();
     
     throw new Error('No devices found or connection failed');
   }

@@ -29,9 +29,9 @@ export interface NearbyConfig {
 
 // Default configuration
 export const defaultNearbyConfig: NearbyConfig = {
-  // Toggle this to switch between mock and real API
-  // ENABLED FOR REAL DEVICE TESTING - crash protection is still active
-  useMockMode: false, // Set to true for testing, false for production
+  // Mock mode DISABLED - only real API or clear failure messages
+  // No more confusing mock data that pretends to work
+  useMockMode: false, // Always false - no mock mode
   
   serviceId: 'SPRED_VIDEO_SHARE',
   deviceName: 'SPRED_Device',

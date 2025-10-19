@@ -234,10 +234,36 @@ const PlayVideos = (props: any) => {
     logger.info('📤 Share completed:', result);
     
     if (result.success) {
-      const method = result.method === 'nearby' ? 'direct device sharing' : 'QR code sharing';
+      let method: string;
+      let message: string;
+      
+      switch (result.method) {
+        case 'nearby':
+          if (result.deviceName && !result.deviceName.includes('Demo')) {
+            method = 'direct device sharing';
+            message = `Video shared successfully via ${method} to ${result.deviceName}.`;
+          } else if (result.deviceName && result.deviceName.includes('Demo')) {
+            method = 'demo mode';
+            message = `Demo sharing test completed successfully! (No actual file transfer occurred)`;
+          } else {
+            method = 'nearby sharing';
+            message = `Nearby sharing process completed.`;
+          }
+          break;
+        case 'qr_local':
+        case 'qr_cloud':
+          method = 'QR code sharing';
+          message = `QR code generated successfully for video sharing.`;
+          break;
+        default:
+          method = 'sharing test';
+          message = `Video sharing test completed successfully!`;
+          break;
+      }
+      
       showAlert(
         'Share Successful!',
-        `Video shared successfully via ${method}${result.deviceName ? ` to ${result.deviceName}` : ''}.`,
+        message,
         'success'
       );
     } else {

@@ -196,16 +196,15 @@ export class NearbyService {
         }
       }
 
-      // TEMPORARILY DISABLED: Automatic fallback to mock mode
-      // This will force the app to show real errors instead of hiding them
-      logger.error('❌ Real API initialization failed, NOT falling back to mock mode');
+      // Real API initialization failed - do not fall back to mock mode
+      logger.error('❌ Real API initialization failed');
       logger.error('❌ Reason for failure:', this.state.initializationReason);
       
       this.updateState({
         isInitialized: false,
         initializationMode: 'real',
         initializationReason: this.state.initializationReason || 'Real API initialization failed',
-        error: 'Real API initialization failed - check permissions and native modules'
+        error: 'Nearby sharing is not available on this device'
       });
       
       return false;
@@ -283,13 +282,13 @@ export class NearbyService {
               requestError.stack?.includes('PermissionsModule')) {
             return { 
               success: false, 
-              reason: 'Native permission request crash detected - using mock mode for safety' 
+              reason: 'Permission system is not available on this device' 
             };
           }
           
           return { 
             success: false, 
-            reason: `Permission request crashed: ${requestError.message}` 
+            reason: `Permission request failed: ${requestError.message}` 
           };
         }
         

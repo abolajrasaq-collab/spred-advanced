@@ -48,6 +48,11 @@ export class NearbyService {
       discoveredDevices: [],
       connectedDevices: [],
     };
+    
+    // Log warning if mock service is being used
+    if (this.isMockMode) {
+      logger.warn('⚠️ MOCK SERVICE ACTIVE - This is for testing only, no real sharing will occur');
+    }
   }
 
   static getInstance(): NearbyService {
@@ -250,24 +255,24 @@ export class NearbyService {
     }
   }
 
-  // Mock device discovery for testing
+  // Mock device discovery for testing - DEMO MODE ONLY
   private simulateDeviceDiscovery() {
+    // Only simulate devices if explicitly in mock mode for testing
+    if (!this.isMockMode) {
+      logger.info('📱 Not in mock mode - no simulated devices');
+      return;
+    }
+
     const mockDevices: NearbyDevice[] = [
       {
-        id: 'device_1',
-        name: 'John\'s iPhone',
+        id: 'demo_device_1',
+        name: 'Demo Device (Test)',
         distance: 5,
-        status: 'discovered'
-      },
-      {
-        id: 'device_2', 
-        name: 'Sarah\'s Android',
-        distance: 8,
         status: 'discovered'
       }
     ];
 
-    logger.info('📱 Mock devices discovered:', mockDevices.length);
+    logger.info('📱 DEMO MODE: Simulated devices for testing:', mockDevices.length);
     this.updateState({ discoveredDevices: mockDevices });
   }
 
@@ -340,7 +345,7 @@ export class NearbyService {
       const totalBytes = 50 * 1024 * 1024; // Mock 50MB file
       
       for (let progress = 0; progress <= 100; progress += 10) {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 300)); // Faster for testing
         
         const transferProgress: FileTransferProgress = {
           deviceId,
@@ -352,7 +357,7 @@ export class NearbyService {
         };
         
         this.updateState({ currentTransfer: transferProgress });
-        logger.info(`📊 Transfer progress: ${progress}%`);
+        logger.info(`📊 Mock transfer progress: ${progress}%`);
       }
       
       this.updateState({ 
@@ -360,7 +365,7 @@ export class NearbyService {
         error: undefined 
       });
       
-      logger.info('✅ File sent successfully');
+      logger.info('✅ Mock file transfer completed successfully (test mode)');
       return true;
     } catch (error: any) {
       logger.error('❌ Failed to send file:', error);

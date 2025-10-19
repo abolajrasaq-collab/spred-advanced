@@ -219,40 +219,95 @@ const UniversalSharingModal: React.FC<UniversalSharingModalProps> = ({
     </View>
   );
 
-  const renderCompletedState = () => (
-    <View style={styles.stateContainer}>
-      <View style={[styles.iconContainer, styles.successIcon]}>
-        <MaterialIcons name="check-circle" size={64} color="#4CAF50" />
-      </View>
-      <Text style={styles.stateTitle}>Video sent successfully!</Text>
-      <Text style={styles.stateSubtitle}>
-        {shareResult?.method === 'nearby' 
-          ? `Sent to ${shareResult.deviceName}` 
-          : 'QR code is ready for scanning'
+  const renderCompletedState = () => {
+    // Determine the actual sharing method and create appropriate message
+    const getSuccessMessage = () => {
+      if (!shareResult) return 'Video sharing completed!';
+      
+      // Debug logging to understand what's happening
+      console.log('🔍 Success message debug:', {
+        method: shareResult.method,
+        deviceName: shareResult.deviceName,
+        qrData: shareResult.qrData,
+        modalMode,
+        hasQrData: !!sharingState?.qrData,
+        wasQRUsed: modalMode === 'qr_fallback' || !!sharingState?.qrData
+      });
+      
+      // Check if QR code was actually used
+      const wasQRUsed = modalMode === 'qr_fallback' || !!sharingState?.qrData;
+      
+      if (wasQRUsed) {
+        // Only show QR messages if QR was actually used
+        switch (shareResult.method) {
+          case 'qr_local':
+          case 'qr_cloud':
+            return 'QR code is ready for scanning';
+          default:
+            return 'QR code sharing completed';
         }
-      </Text>
+      } else {
+        // For direct sharing (P2P, WiFi Direct)
+        switch (shareResult.method) {
+          case 'p2p':
+            return shareResult.deviceName 
+              ? `Video sent to ${shareResult.deviceName}`
+              : 'Video sent successfully';
+          case 'nearby':
+            return shareResult.deviceName 
+              ? `Video sent to ${shareResult.deviceName}`
+              : 'Video sent successfully';
+          default:
+            return 'Video sent successfully';
+        }
+      }
+    };
+
+    const getSuccessTitle = () => {
+      if (!shareResult) return 'Success!';
       
-      {shareResult?.duration && (
-        <Text style={styles.durationText}>
-          Completed in {Math.round(shareResult.duration / 1000)}s
+      // Check if QR code was actually used
+      const wasQRUsed = modalMode === 'qr_fallback' || !!sharingState?.qrData;
+      
+      if (wasQRUsed) {
+        return 'QR Code Ready!';
+      } else {
+        return 'Video Sent!';
+      }
+    };
+
+    return (
+      <View style={styles.stateContainer}>
+        <View style={[styles.iconContainer, styles.successIcon]}>
+          <MaterialIcons name="check-circle" size={64} color="#4CAF50" />
+        </View>
+        <Text style={styles.stateTitle}>{getSuccessTitle()}</Text>
+        <Text style={styles.stateSubtitle}>
+          {getSuccessMessage()}
         </Text>
-      )}
-      
-      <Android12Button
-        title="Done"
-        onPress={handleClose}
-        iconName="done"
-        style={styles.doneButton}
-        textStyle={styles.doneButtonText}
-        buttonColor="#4CAF50"
-        pressedColor="#388E3C"
-        releasedColor="#4CAF50"
-        iconColor="#FFFFFF"
-        iconSize={20}
-        size="medium"
-      />
-    </View>
-  );
+        
+        {shareResult?.duration && (
+          <Text style={styles.durationText}>
+            Completed in {Math.round(shareResult.duration / 1000)}s
+          </Text>
+        )}
+        
+        <Android12Button
+          title="Done"
+          onPress={handleClose}
+          iconName="done"
+          style={styles.doneButton}
+          textStyle={styles.doneButtonText}
+          buttonColor="#4CAF50"
+          pressedColor="#388E3C"
+          releasedColor="#4CAF50"
+          iconColor="#FFFFFF"
+          iconSize={20}
+          size="medium"
+        />
+      </View>
+    );
+  };
 
   const renderErrorState = () => {
     const errorMessage = sharingState?.error || shareResult?.error || 'An error occurred while sharing the video';
