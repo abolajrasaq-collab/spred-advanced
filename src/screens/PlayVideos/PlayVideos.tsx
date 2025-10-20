@@ -29,9 +29,10 @@ import {
   Icon,
   VideoCard,
 } from '../../components';
-import UniversalSharingModal from '../../components/UniversalSharingModal';
+
+import ShareVideoScreen from '../ShareVideo';
 import TEXT_CONSTANTS, { TAB_KEYS, TabKey } from './constants';
-import P2PReceiveScreen from '../../components/WiFiDirect/P2PReceiveScreen';
+
 import ReceiverModeManager from '../../services/ReceiverModeManager';
 import { useThemeColors, useSpacing } from '../../theme/ThemeProvider';
 import DownloadItems from '../DownloadItems/DownloadItems';
@@ -153,14 +154,16 @@ const PlayVideos = (props: any) => {
   const [isVideoDownloaded, setIsVideoDownloaded] = useState(false);
   const [showDownloadRequiredModal, setShowDownloadRequiredModal] =
     useState(false);
-  const [showReceiveModal, setShowReceiveModal] = useState(false);
-  const [showUniversalSharingModal, setShowUniversalSharingModal] = useState(false);
+
+
   const [suggestedFilms, setSuggestedFilms] = useState([]);
   const [watchLater, setWatchLater] = useState<any[]>([]);
   const [allVideos, setAllVideos] = useState<any[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isReceiverModeActive, setIsReceiverModeActive] = useState(false);
+  const [showShareVideoScreen, setShowShareVideoScreen] = useState(false);
   const [resolvedVideoPath, setResolvedVideoPath] = useState<string>('');
+
   // Track fullscreen state for the video player so UI (like floating back button) can hide/show
 
   // Unified alert modal state
@@ -210,16 +213,90 @@ const PlayVideos = (props: any) => {
   // Function to get video path for sharing
   const getVideoPath = useCallback(async () => {
     try {
-      // First try to get the actual downloaded video file path
-      const { P2PService } = await import('../../services/P2PService');
-      const p2pService = P2PService.getInstance();
-      const localPath = await p2pService.getLocalVideoPath(item);
-      
-      if (localPath) {
-        logger.info('✅ Found local video path:', localPath);
-        return localPath;
+      // Use the same logic as checkIfVideoDownloaded for consistency
+      const foldersToCheck = [
+        'SpredVideos', // Android 10+ folder (newer downloads)
+        '.spredHiddenFolder', // Older Android/iOS folder (legacy downloads)
+      ];
+
+      const videoKeyToCheck = videoKey || trailerKey;
+      if (!videoKeyToCheck) {
+        logger.warn('❌ No video key available for path resolution');
+        return '';
       }
-      
+
+      logger.info('🔍 Getting video path for sharing...');
+      logger.info('  - Video key:', videoKeyToCheck);
+      logger.info('  - Title:', title);
+
+      for (const folderName of foldersToCheck) {
+        try {
+          const folderPath = `${RNFS.ExternalDirectoryPath}/${folderName}`;
+          const folderExists = await RNFS.exists(folderPath);
+
+          if (!folderExists) {
+            continue;
+          }
+
+          const files = await RNFS.readDir(folderPath);
+
+          // Create multiple variations of the title to check against
+          const cleanedTitle = cleanMovieTitle(title);
+          const titleVariations = [
+            cleanedTitle.toLowerCase(),
+            title.toLowerCase(),
+            cleanedTitle.replace(/\s+/g, '_').toLowerCase(),
+            title.replace(/\s+/g, '_').toLowerCase(),
+            cleanedTitle.replace(/\s+/g, '').toLowerCase(),
+            title.replace(/\s+/g, '').toLowerCase(),
+          ];
+
+          // Create variations of the video key to check against
+          const keyVariations = [
+            videoKeyToCheck.toLowerCase(),
+            videoKeyToCheck.replace(/[^a-zA-Z0-9]/g, '').toLowerCase(),
+          ];
+
+          const downloadedFile = files.find(file => {
+            const fileName = file.name.toLowerCase();
+
+            // Check against all key variations
+            for (const keyVar of keyVariations) {
+              if (
+                fileName.includes(keyVar) ||
+                fileName.includes(`${keyVar}.mp4`) ||
+                fileName.includes(`${keyVar}.mov`) ||
+                fileName.includes(`${keyVar}.m4v`)
+              ) {
+                return true;
+              }
+            }
+
+            // Check against all title variations
+            for (const titleVar of titleVariations) {
+              if (
+                fileName.includes(titleVar) ||
+                fileName.includes(`${titleVar}.mp4`) ||
+                fileName.includes(`${titleVar}.mov`) ||
+                fileName.includes(`${titleVar}.m4v`)
+              ) {
+                return true;
+              }
+            }
+
+            return false;
+          });
+
+          if (downloadedFile) {
+            logger.info('✅ Found downloaded video file for sharing:', downloadedFile.path);
+            return downloadedFile.path;
+          }
+        } catch (error) {
+          logger.warn(`  - Error checking ${folderName}:`, error);
+          continue;
+        }
+      }
+
       // If no local file found, return empty string to trigger proper error handling
       logger.warn('⚠️ No local video file found - video must be downloaded first');
       return '';
@@ -227,56 +304,9 @@ const PlayVideos = (props: any) => {
       logger.error('❌ Error getting video path:', error);
       return '';
     }
-  }, [item]);
+  }, [videoKey, trailerKey, title]);
 
-  // Function to handle share completion
-  const handleShareComplete = useCallback((result: any) => {
-    logger.info('📤 Share completed:', result);
-    
-    if (result.success) {
-      let method: string;
-      let message: string;
-      
-      switch (result.method) {
-        case 'nearby':
-          if (result.deviceName && !result.deviceName.includes('Demo')) {
-            method = 'direct device sharing';
-            message = `Video shared successfully via ${method} to ${result.deviceName}.`;
-          } else if (result.deviceName && result.deviceName.includes('Demo')) {
-            method = 'demo mode';
-            message = `Demo sharing test completed successfully! (No actual file transfer occurred)`;
-          } else {
-            method = 'nearby sharing';
-            message = `Nearby sharing process completed.`;
-          }
-          break;
-        case 'qr_local':
-        case 'qr_cloud':
-          method = 'QR code sharing';
-          message = `QR code generated successfully for video sharing.`;
-          break;
-        default:
-          method = 'sharing test';
-          message = `Video sharing test completed successfully!`;
-          break;
-      }
-      
-      showAlert(
-        'Share Successful!',
-        message,
-        'success'
-      );
-    } else {
-      showAlert(
-        'Share Failed',
-        result.error || 'Failed to share video. Please try again.',
-        'error'
-      );
-    }
-    
-    // Close the modal
-    setShowUniversalSharingModal(false);
-  }, [showAlert]);
+
 
   // Function to handle SPRED sharing with Universal Sharing Modal
   const handleSpredShare = useCallback(async () => {
@@ -315,7 +345,7 @@ const PlayVideos = (props: any) => {
 
       // Resolve video path before opening modal
       const videoPath = await getVideoPath();
-      
+
       if (!videoPath) {
         showAlert(
           'Video Not Downloaded',
@@ -324,12 +354,12 @@ const PlayVideos = (props: any) => {
         );
         return;
       }
-      
+
       setResolvedVideoPath(videoPath);
       logger.info('✅ Video path resolved, opening Universal Sharing Modal');
 
-      // Open Universal Sharing Modal for one-tap sharing
-      setShowUniversalSharingModal(true);
+      // Open Share Video Screen for one-tap sharing
+      setShowShareVideoScreen(true);
     } catch (error) {
       showAlert(
         'Sharing Error',
@@ -342,7 +372,58 @@ const PlayVideos = (props: any) => {
     item,
     title,
     showAlert,
+    getVideoPath,
   ]);
+
+  // Function to handle share completion
+  const handleShareComplete = useCallback((result: any) => {
+    logger.info('📤 Share completed:', result);
+
+    if (result.success) {
+      let message: string;
+
+      switch (result.method) {
+        case 'p2p':
+          message = result.deviceName
+            ? `Video sent to ${result.deviceName}`
+            : 'Video sent successfully';
+          break;
+        case 'nearby':
+          message = result.deviceName
+            ? `Video sent to ${result.deviceName}`
+            : 'Video sent successfully';
+          break;
+        case 'qr_local':
+        case 'qr_cloud':
+          // Don't show QR success - show no devices found instead
+          showAlert(
+            'No Devices Found',
+            'No nearby devices are available to receive the video. Make sure other devices have receiver mode enabled and are nearby.',
+            'info'
+          );
+          setShowShareVideoScreen(false);
+          return;
+        default:
+          message = 'Video sent successfully';
+          break;
+      }
+
+      showAlert(
+        'Share Successful!',
+        message,
+        'success'
+      );
+    } else {
+      showAlert(
+        'Share Failed',
+        result.error || 'Failed to share video. Please try again.',
+        'error'
+      );
+    }
+
+    // Close the screen
+    setShowShareVideoScreen(false);
+  }, [showAlert]);
 
   // Function to handle Receiver Mode toggle
   const handleReceiverMode = useCallback(async () => {
@@ -354,7 +435,7 @@ const PlayVideos = (props: any) => {
         const receiverManager = ReceiverModeManager.getInstance();
         await receiverManager.cleanup();
         setIsReceiverModeActive(false);
-        
+
         showAlert(
           'Receiver Mode Stopped',
           'Device is no longer discoverable for receiving files',
@@ -365,7 +446,7 @@ const PlayVideos = (props: any) => {
         // Start receiver mode
         const receiverManager = ReceiverModeManager.getInstance();
         const initialized = await receiverManager.initialize();
-        
+
         if (initialized) {
           setIsReceiverModeActive(true);
           showAlert(
@@ -393,62 +474,11 @@ const PlayVideos = (props: any) => {
     }
   }, [isReceiverModeActive, showAlert]);
 
-  // Function to handle SEND VIDEO (Group Creator)
-  const handleSendVideo = useCallback(() => {
-    try {
-      if (!item) {
-        showAlert('Error', 'Video data not available. Please try again.', 'error');
-        return;
-      }
-
-      logger.info('🚀 Creating WiFi Direct group as SENDER');
-
-      const videoUrl = item.videoKey || item.trailerKey || item.src || '';
-      const videoTitle = cleanMovieTitle(item.title) || 'Unknown Video';
-
-      // Prepare video data for P2P transfer
-      const videoInfo = {
-        title: videoTitle,
-        thumbnail: item.thumbnailUrl || '',
-        duration: item.duration || '0:00',
-        size: item.size || 0,
-        videoKey: item.videoKey || item.trailerKey || '',
-        src: item.src || '',
-      };
-
-      logger.info(
-        '📤 Sending video info: ' +
-          JSON.stringify({
-            title: videoInfo.title,
-            size: videoInfo.size,
-            duration: videoInfo.duration,
-          }),
-      );
-
-      // Navigate to WiFi Direct screen as SENDER with auto-start
-      (navigation as any).navigate('WiFiDirect', {
-        mode: 'send',
-        selectedFile: videoInfo,
-        autoStart: true, // Auto-start P2P group creation
-      });
-
-      logger.info('✅ Navigated to WiFi Direct as SENDER with auto-start');
-    } catch (error) {
-      logger.error('❌ Error in handleSendVideo:', error);
-      showAlert(
-        'P2P Send Error',
-        `Failed to start P2P sending: ${error.message || 'Unknown error'}`,
-        'error',
-      );
-    }
-  }, [item, navigation, showAlert]);
 
 
 
-  // Function to open the P2P receive modal
-  const openReceiveModal = useCallback(() => {
-    setShowReceiveModal(true);
-  }, []);
+
+
 
   // Helper function to format subscriber count
   const formatSubscriberCount = useCallback(
@@ -755,7 +785,7 @@ const PlayVideos = (props: any) => {
       const config = { headers: customHeaders(user?.token) };
       let response = await axios.get(api.getAllMovies, config);
       setAllVideos(response?.data?.data);
-    } catch (err) {}
+    } catch (err) { }
   }, []);
 
   const fetchWatchLater = useCallback(async () => {
@@ -883,13 +913,7 @@ const PlayVideos = (props: any) => {
     fetchWatchLater();
     checkFollowingStatus();
     checkIfVideoDownloaded();
-  }, [
-    fetchVideoUrl,
-    fetchAllVideos,
-    fetchWatchLater,
-    checkFollowingStatus,
-    checkIfVideoDownloaded,
-  ]);
+  }, [item]); // Only depend on item changes, not the functions
 
   // Re-check download status when download modal closes
   useEffect(() => {
@@ -1133,7 +1157,7 @@ ${generateShareUrl()}`;
           : [];
         logger.info(
           '📊 Total available videos for suggestions: ' +
-            allAvailableVideos.length,
+          allAvailableVideos.length,
         );
 
         // Filter out the current video being played
@@ -1143,7 +1167,7 @@ ${generateShareUrl()}`;
 
         logger.info(
           '✂️ Filtered videos after removing current item: ' +
-            filteredVideos.length,
+          filteredVideos.length,
         );
 
         // Select up to 6 random videos for suggestions
@@ -1162,7 +1186,7 @@ ${generateShareUrl()}`;
         } else {
           logger.error(
             '❌ Error fetching suggested films: ' +
-              (error.message || 'Unknown error'),
+            (error.message || 'Unknown error'),
           );
         }
         // Fallback to mock suggestions if API call fails
@@ -1198,7 +1222,7 @@ ${generateShareUrl()}`;
         setSuggestedFilms(fallbackSuggestions);
         logger.info(
           '✅ Error fallback suggested films set: ' +
-            fallbackSuggestions.length,
+          fallbackSuggestions.length,
         );
       }
     };
@@ -1212,7 +1236,7 @@ ${generateShareUrl()}`;
       );
       setSuggestedFilms([]);
     }
-  }, [item, userToken]);
+  }, [item?._ID, item?.key]); // Only depend on item ID, not full item or userToken
 
   // Render function for suggested films
 
@@ -1248,29 +1272,9 @@ ${generateShareUrl()}`;
           </TouchableOpacity>
         )}
 
-        {/* Floating Nearby Sharing Button - only show when not in fullscreen */}
-        {!isFullscreen && (
-          <TouchableOpacity
-            onPress={handleSpredShare}
-            style={styles.floatingNearbyButton}
-            activeOpacity={0.7}
-            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-          >
-            <MaterialIcons name="send" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-        )}
 
-        {/* Floating Receiver Mode Button - only show when not in fullscreen */}
-        {!isFullscreen && (
-          <TouchableOpacity
-            onPress={handleReceiverMode}
-            style={styles.floatingReceiverButton}
-            activeOpacity={0.7}
-            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-          >
-            <MaterialIcons name="wifi-tethering" size={20} color="#FFFFFF" />
-          </TouchableOpacity>
-        )}
+
+
         {videoLoading ? (
           <View
             style={[styles.videoLoadingContainer, { height: getVideoPlayerHeight() }]}
@@ -1363,487 +1367,487 @@ ${generateShareUrl()}`;
           overScrollMode="never"
         >
 
-        {/* Video Info Section */}
-        <View style={styles.videoInfoContainer}>
-          {/* Video Title */}
-          <CustomText
-            fontSize={getResponsiveFontSize(24)}
-            fontWeight="700"
-            color="#FFFFFF"
-            style={styles.title}
-            numberOfLines={isSmallScreen ? 2 : 3}
-            ellipsizeMode="tail"
-          >
-            {cleanMovieTitle(title)}
-          </CustomText>
-
-          {/* Video Metadata */}
-          <View
-            style={styles.metaDataContainer}
-          >
+          {/* Video Info Section */}
+          <View style={styles.videoInfoContainer}>
+            {/* Video Title */}
             <CustomText
-              fontSize={getResponsiveFontSize(14)}
-              color="#CCCCCC"
-              style={styles.metaDataText}
+              fontSize={getResponsiveFontSize(24)}
+              fontWeight="700"
+              color="#FFFFFF"
+              style={styles.title}
+              numberOfLines={isSmallScreen ? 2 : 3}
+              ellipsizeMode="tail"
             >
-              {year} {TEXT_CONSTANTS.DURATION} {duration}
+              {cleanMovieTitle(title)}
             </CustomText>
-            {getGenreName(genreId) && (
-              <CustomText fontSize={getResponsiveFontSize(14)} color="#CCCCCC">
-                {getGenreName(genreId)}
-              </CustomText>
-            )}
-          </View>
 
-          {/* Video Engagement Metrics */}
-          <View
-            style={styles.engagementContainer}
-          >
+            {/* Video Metadata */}
             <View
-              style={styles.engagementMetric}
+              style={styles.metaDataContainer}
             >
-              <Icon
-                name="eye"
-                size={16}
-                color="#8B8B8B"
-                style={styles.engagementIcon}
-              />
               <CustomText
-                fontSize={12}
-                color="#8B8B8B"
-                style={styles.engagementText}
+                fontSize={getResponsiveFontSize(14)}
+                color="#CCCCCC"
+                style={styles.metaDataText}
               >
-                {item.views || TEXT_CONSTANTS.DEFAULT_VIEWS} {TEXT_CONSTANTS.VIEWS}
+                {year} {TEXT_CONSTANTS.DURATION} {duration}
               </CustomText>
+              {getGenreName(genreId) && (
+                <CustomText fontSize={getResponsiveFontSize(14)} color="#CCCCCC">
+                  {getGenreName(genreId)}
+                </CustomText>
+              )}
             </View>
+
+            {/* Video Engagement Metrics */}
             <View
-              style={styles.engagementMetric}
+              style={styles.engagementContainer}
             >
-              <Icon
-                name="download"
-                size={16}
-                color="#8B8B8B"
-                style={styles.engagementIcon}
-              />
-              <CustomText
-                fontSize={12}
-                color="#8B8B8B"
-                style={styles.engagementText}
-              >
-                {item.downloads || TEXT_CONSTANTS.DEFAULT_DOWNLOADS} {TEXT_CONSTANTS.DOWNLOADS}
-              </CustomText>
-            </View>
-            <View style={styles.engagementMetric}>
-              <Icon
-                name="whatshot"
-                size={16}
-                color="#8B8B8B"
-                style={styles.engagementIcon}
-              />
-              <CustomText fontSize={12} color="#8B8B8B">
-                {item.offlineShares || TEXT_CONSTANTS.DEFAULT_SHARES} {TEXT_CONSTANTS.SHARES}
-              </CustomText>
-            </View>
-          </View>
-
-          {/* Additional Action Buttons */}
-          <View
-            style={styles.additionalActionsContainer}
-          >
-            <TouchableOpacity
-              onPress={handleAddWatchLater}
-              style={styles.additionalActionButton}
-            >
-              <Icon
-                name="plus"
-                size={12}
-                color="#FFFFFF"
-                style={styles.additionalActionIcon}
-              />
-              <CustomText
-                fontSize={10}
-                fontWeight="500"
-                color="#FFFFFF"
-                numberOfLines={1}
-              >
-                {TEXT_CONSTANTS.ADD_TO_LIST}
-              </CustomText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Download')}
-              style={styles.additionalActionButton}
-            >
-              <Icon
-                name="download"
-                size={12}
-                color="#FFFFFF"
-                style={styles.additionalActionIcon}
-              />
-              <CustomText
-                fontSize={10}
-                fontWeight="500"
-                color="#FFFFFF"
-                numberOfLines={1}
-              >
-                {TEXT_CONSTANTS.VIEW_DOWNLOADS}
-              </CustomText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setShowShareModal(true)}
-              style={styles.additionalActionButton}
-            >
-              <Icon
-                name="share"
-                size={12}
-                color="#FFFFFF"
-                style={styles.additionalActionIcon}
-              />
-              <CustomText
-                fontSize={10}
-                fontWeight="500"
-                color="#FFFFFF"
-                numberOfLines={1}
-              >
-                {TEXT_CONSTANTS.SHARE}
-              </CustomText>
-            </TouchableOpacity>
-          </View>
-
-          {/* Action Buttons */}
-          {showDownload ? (
-            <DownloadItems
-              url={videoKey || trailerKey}
-              title={cleanMovieTitle(title)}
-            />
-          ) : (
-            <View>
-              {/* Simplified Action Buttons */}
               <View
-                style={styles.actionButtonsContainer}
+                style={styles.engagementMetric}
               >
-                <TouchableOpacity
-                  onPress={() => setShowDownload(true)}
-                  style={styles.downloadButton}
+                <Icon
+                  name="eye"
+                  size={16}
+                  color="#8B8B8B"
+                  style={styles.engagementIcon}
+                />
+                <CustomText
+                  fontSize={12}
+                  color="#8B8B8B"
+                  style={styles.engagementText}
                 >
-                  <Icon
-                    name="download"
-                    size={20}
-                    color="#FFFFFF"
-                    style={styles.downloadButtonIcon}
-                  />
-                  <CustomText fontSize={16} fontWeight="600" color="#FFFFFF">
-                    {TEXT_CONSTANTS.DOWNLOAD}
-                  </CustomText>
-                </TouchableOpacity>
+                  {item.views || TEXT_CONSTANTS.DEFAULT_VIEWS} {TEXT_CONSTANTS.VIEWS}
+                </CustomText>
+              </View>
+              <View
+                style={styles.engagementMetric}
+              >
+                <Icon
+                  name="download"
+                  size={16}
+                  color="#8B8B8B"
+                  style={styles.engagementIcon}
+                />
+                <CustomText
+                  fontSize={12}
+                  color="#8B8B8B"
+                  style={styles.engagementText}
+                >
+                  {item.downloads || TEXT_CONSTANTS.DEFAULT_DOWNLOADS} {TEXT_CONSTANTS.DOWNLOADS}
+                </CustomText>
+              </View>
+              <View style={styles.engagementMetric}>
+                <Icon
+                  name="whatshot"
+                  size={16}
+                  color="#8B8B8B"
+                  style={styles.engagementIcon}
+                />
+                <CustomText fontSize={12} color="#8B8B8B">
+                  {item.offlineShares || TEXT_CONSTANTS.DEFAULT_SHARES} {TEXT_CONSTANTS.SHARES}
+                </CustomText>
+              </View>
+            </View>
 
-                <TouchableOpacity
-                  onPress={handleSpredShare}
-                  style={styles.spredButton}
-                  // NEVER add disabled={!isVideoDownloaded} - keep button clickable for alert dialogs
+            {/* Additional Action Buttons */}
+            <View
+              style={styles.additionalActionsContainer}
+            >
+              <TouchableOpacity
+                onPress={handleAddWatchLater}
+                style={styles.additionalActionButton}
+              >
+                <Icon
+                  name="plus"
+                  size={12}
+                  color="#FFFFFF"
+                  style={styles.additionalActionIcon}
+                />
+                <CustomText
+                  fontSize={10}
+                  fontWeight="500"
+                  color="#FFFFFF"
+                  numberOfLines={1}
                 >
-                  <Image
-                    source={require('../../../assets/spred-white.png')}
-                    style={styles.spredButtonIcon}
-                  />
+                  {TEXT_CONSTANTS.ADD_TO_LIST}
+                </CustomText>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Download')}
+                style={styles.additionalActionButton}
+              >
+                <Icon
+                  name="download"
+                  size={12}
+                  color="#FFFFFF"
+                  style={styles.additionalActionIcon}
+                />
+                <CustomText
+                  fontSize={10}
+                  fontWeight="500"
+                  color="#FFFFFF"
+                  numberOfLines={1}
+                >
+                  {TEXT_CONSTANTS.VIEW_DOWNLOADS}
+                </CustomText>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setShowShareModal(true)}
+                style={styles.additionalActionButton}
+              >
+                <Icon
+                  name="share"
+                  size={12}
+                  color="#FFFFFF"
+                  style={styles.additionalActionIcon}
+                />
+                <CustomText
+                  fontSize={10}
+                  fontWeight="500"
+                  color="#FFFFFF"
+                  numberOfLines={1}
+                >
+                  {TEXT_CONSTANTS.SHARE}
+                </CustomText>
+              </TouchableOpacity>
+            </View>
+
+            {/* Action Buttons */}
+            {showDownload ? (
+              <DownloadItems
+                url={videoKey || trailerKey}
+                title={cleanMovieTitle(title)}
+              />
+            ) : (
+              <View>
+                {/* Simplified Action Buttons */}
+                <View
+                  style={styles.actionButtonsContainer}
+                >
+                  <TouchableOpacity
+                    onPress={() => setShowDownload(true)}
+                    style={styles.downloadButton}
+                  >
+                    <Icon
+                      name="download"
+                      size={20}
+                      color="#FFFFFF"
+                      style={styles.downloadButtonIcon}
+                    />
+                    <CustomText fontSize={16} fontWeight="600" color="#FFFFFF">
+                      {TEXT_CONSTANTS.DOWNLOAD}
+                    </CustomText>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={handleSpredShare}
+                    style={styles.spredButton}
+                  // NEVER add disabled={!isVideoDownloaded} - keep button clickable for alert dialogs
+                  >
+                    <Image
+                      source={require('../../../assets/spred-white.png')}
+                      style={styles.spredButtonIcon}
+                    />
+                    <CustomText
+                      fontSize={16}
+                      fontWeight="600"
+                      color={isVideoDownloaded ? '#FFFFFF' : '#CCCCCC'}
+                    >
+                      {TEXT_CONSTANTS.SPRED}
+                    </CustomText>
+                    {!isVideoDownloaded && (
+                      <Icon
+                        name="download"
+                        size={16}
+                        color="#CCCCCC"
+                        style={styles.engagementIcon}
+                      />
+                    )}
+                  </TouchableOpacity>
+                </View>
+
+                {/* Creator Section */}
+                <View style={styles.creatorSection}>
+                  <View
+                    style={styles.creatorContainer}
+                  >
+                    <View
+                      style={styles.creatorInfoContainer}
+                    >
+                      <TouchableOpacity
+                        onPress={() =>
+                          navigation.navigate('CreatorProfile', {
+                            creatorName: uploaderInfo.name,
+                            creatorId: `creator_${uploaderInfo.name
+                              .toLowerCase()
+                              .replace(/\s+/g, '_')}`,
+                          })
+                        }
+                        style={styles.creatorAvatarContainer}
+                      >
+                        {uploaderInfo.avatar ? (
+                          <Image
+                            source={{ uri: uploaderInfo.avatar }}
+                            style={styles.creatorAvatar}
+                          />
+                        ) : (
+                          <View
+                            style={[styles.creatorAvatarPlaceholder, { backgroundColor: getAvatarColor(uploaderInfo.name) }]}
+                          >
+                            <CustomText
+                              fontSize={isSmallScreen ? 14 : 18}
+                              fontWeight="700"
+                              color="#FFFFFF"
+                            >
+                              {getInitials(uploaderInfo.name)}
+                            </CustomText>
+                          </View>
+                        )}
+                      </TouchableOpacity>
+                      <View
+                        style={styles.creatorNameContainer}
+                      >
+                        <CustomText
+                          fontSize={getResponsiveFontSize(16)}
+                          fontWeight="600"
+                          color="#FFFFFF"
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                        >
+                          {uploaderInfo.name}
+                        </CustomText>
+                        <CustomText
+                          fontSize={getResponsiveFontSize(12)}
+                          color="#CCCCCC"
+                          style={styles.creatorName}
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                        >
+                          {formatSubscriberCount(uploaderInfo.subscribers)}
+                        </CustomText>
+                      </View>
+                    </View>
+                    <View
+                      style={styles.subscribeButtonContainer}
+                    >
+                      <TouchableOpacity
+                        onPress={handleFollowToggle}
+                        disabled={followingLoading}
+                        style={styles.subscribeButton}
+                      >
+                        <CustomText
+                          fontSize={getResponsiveFontSize(14)}
+                          fontWeight="600"
+                          color="#FFFFFF"
+                          style={styles.subscribeButtonText}
+                        >
+                          {followingLoading
+                            ? TEXT_CONSTANTS.LOADING_TRAILER
+                            : isFollowing
+                              ? TEXT_CONSTANTS.FOLLOWING
+                              : TEXT_CONSTANTS.SUBSCRIBE}
+                        </CustomText>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+
+                {/* About Section with Tabs */}
+                <View style={styles.aboutSection}>
+                  {/* Tab Headers */}
+                  <View
+                    style={styles.tabHeaders}
+                  >
+                    <TouchableOpacity
+                      onPress={() => setActiveTab(TAB_KEYS.ABOUT)}
+                      style={[
+                        styles.tab,
+                        activeTab === TAB_KEYS.ABOUT && styles.activeTab
+                      ]}
+                    >
+                      <CustomText
+                        fontSize={14}
+                        fontWeight={activeTab === TAB_KEYS.ABOUT ? '600' : '400'}
+                        color={activeTab === TAB_KEYS.ABOUT ? '#FFFFFF' : '#CCCCCC'}
+                      >
+                        {TEXT_CONSTANTS.ABOUT}
+                      </CustomText>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => setActiveTab(TAB_KEYS.CASTS)}
+                      style={[
+                        styles.tab,
+                        activeTab === TAB_KEYS.CASTS && styles.activeTab
+                      ]}
+                    >
+                      <CustomText
+                        fontSize={14}
+                        fontWeight={activeTab === TAB_KEYS.CASTS ? '600' : '400'}
+                        color={activeTab === TAB_KEYS.CASTS ? '#FFFFFF' : '#CCCCCC'}
+                      >
+                        {TEXT_CONSTANTS.CASTS_BTS}
+                      </CustomText>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => setActiveTab(TAB_KEYS.COMMENTS)}
+                      style={[
+                        styles.tab,
+                        activeTab === TAB_KEYS.COMMENTS && styles.activeTab
+                      ]}
+                    >
+                      <CustomText
+                        fontSize={14}
+                        fontWeight={activeTab === TAB_KEYS.COMMENTS ? '600' : '400'}
+                        color={activeTab === TAB_KEYS.COMMENTS ? '#FFFFFF' : '#CCCCCC'}
+                      >
+                        {TEXT_CONSTANTS.COMMENTS}
+                      </CustomText>
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Tab Content */}
+                  {activeTab === TAB_KEYS.ABOUT && (
+                    <View>
+                      <CustomText fontSize={14} color="#CCCCCC" lineHeight={20}>
+                        {description}
+                      </CustomText>
+                    </View>
+                  )}
+
+                  {activeTab === TAB_KEYS.CASTS && (
+                    <View>
+                      <CustomText
+                        fontSize={12}
+                        fontWeight="500"
+                        color="#CCCCCC"
+                        style={styles.detailValue}
+                      >
+                        {TEXT_CONSTANTS.DIRECTOR}
+                      </CustomText>
+                      <CustomText
+                        fontSize={14}
+                        color="#FFFFFF"
+                        style={styles.detailValue}
+                      >
+                        {director || TEXT_CONSTANTS.NOT_AVAILABLE}
+                      </CustomText>
+
+                      <CustomText
+                        fontSize={12}
+                        fontWeight="500"
+                        color="#CCCCCC"
+                        style={styles.detailValue}
+                      >
+                        {TEXT_CONSTANTS.CAST}
+                      </CustomText>
+                      <CustomText fontSize={14} color="#FFFFFF">
+                        {cast || TEXT_CONSTANTS.CAST_INFO_NOT_AVAILABLE}
+                      </CustomText>
+                    </View>
+                  )}
+
+                  {activeTab === TAB_KEYS.COMMENTS && (
+                    <View>
+                      <CustomText
+                        fontSize={14}
+                        color="#CCCCCC"
+                        fontStyle="italic"
+                      >
+                        {TEXT_CONSTANTS.NO_COMMENTS}
+                      </CustomText>
+                    </View>
+                  )}
+                </View>
+
+                {/* Video Details */}
+                <View style={styles.detailsSection}>
                   <CustomText
                     fontSize={16}
                     fontWeight="600"
-                    color={isVideoDownloaded ? '#FFFFFF' : '#CCCCCC'}
+                    color="#FFFFFF"
+                    style={styles.detailsTitle}
                   >
-                    {TEXT_CONSTANTS.SPRED}
+                    {TEXT_CONSTANTS.DETAILS}
                   </CustomText>
-                  {!isVideoDownloaded && (
-                    <Icon
-                      name="download"
-                      size={16}
-                      color="#CCCCCC"
-                      style={styles.engagementIcon}
-                    />
-                  )}
-                </TouchableOpacity>
-              </View>
-
-              {/* Creator Section */}
-              <View style={styles.creatorSection}>
-                <View
-                  style={styles.creatorContainer}
-                >
                   <View
-                    style={styles.creatorInfoContainer}
+                    style={styles.detailsContainer}
                   >
-                    <TouchableOpacity
-                      onPress={() =>
-                        navigation.navigate('CreatorProfile', {
-                          creatorName: uploaderInfo.name,
-                          creatorId: `creator_${uploaderInfo.name
-                            .toLowerCase()
-                            .replace(/\s+/g, '_')}`,
-                        })
-                      }
-                      style={styles.creatorAvatarContainer}
-                    >
-                      {uploaderInfo.avatar ? (
-                        <Image
-                          source={{ uri: uploaderInfo.avatar }}
-                          style={styles.creatorAvatar}
-                        />
-                      ) : (
+                    {[
+                      {
+                        label: TEXT_CONSTANTS.LANGUAGE,
+                        value: language || TEXT_CONSTANTS.ENGLISH,
+                      },
+                      { label: TEXT_CONSTANTS.DIRECTOR, value: director },
+                      { label: TEXT_CONSTANTS.YEAR, value: year },
+                      { label: TEXT_CONSTANTS.DURATION, value: duration },
+                    ]
+                      .filter(item => item.value)
+                      .map((item, index) => (
                         <View
-                          style={[styles.creatorAvatarPlaceholder, { backgroundColor: getAvatarColor(uploaderInfo.name) }]}
+                          key={index}
+                          style={styles.detailItem}
                         >
                           <CustomText
-                            fontSize={isSmallScreen ? 14 : 18}
-                            fontWeight="700"
-                            color="#FFFFFF"
+                            fontSize={12}
+                            fontWeight="500"
+                            color="#CCCCCC"
                           >
-                            {getInitials(uploaderInfo.name)}
+                            {item.label} {TEXT_CONSTANTS.BULLET} {item.value}
                           </CustomText>
                         </View>
-                      )}
-                    </TouchableOpacity>
-                    <View
-                      style={styles.creatorNameContainer}
-                    >
-                      <CustomText
-                        fontSize={getResponsiveFontSize(16)}
-                        fontWeight="600"
-                        color="#FFFFFF"
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                      >
-                        {uploaderInfo.name}
-                      </CustomText>
-                      <CustomText
-                        fontSize={getResponsiveFontSize(12)}
-                        color="#CCCCCC"
-                        style={styles.creatorName}
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                      >
-                        {formatSubscriberCount(uploaderInfo.subscribers)}
-                      </CustomText>
-                    </View>
-                  </View>
-                  <View
-                    style={styles.subscribeButtonContainer}
-                  >
-                    <TouchableOpacity
-                      onPress={handleFollowToggle}
-                      disabled={followingLoading}
-                      style={styles.subscribeButton}
-                    >
-                      <CustomText
-                        fontSize={getResponsiveFontSize(14)}
-                        fontWeight="600"
-                        color="#FFFFFF"
-                        style={styles.subscribeButtonText}
-                      >
-                        {followingLoading
-                          ? TEXT_CONSTANTS.LOADING_TRAILER
-                            : isFollowing
-                            ? TEXT_CONSTANTS.FOLLOWING
-                            : TEXT_CONSTANTS.SUBSCRIBE}
-                      </CustomText>
-                    </TouchableOpacity>
+                      ))}
                   </View>
                 </View>
-              </View>
-
-              {/* About Section with Tabs */}
-              <View style={styles.aboutSection}>
-                {/* Tab Headers */}
-                <View
-                  style={styles.tabHeaders}
-                >
-                  <TouchableOpacity
-                    onPress={() => setActiveTab(TAB_KEYS.ABOUT)}
-                    style={[
-                      styles.tab,
-                      activeTab === TAB_KEYS.ABOUT && styles.activeTab
-                    ]}
-                  >
+                {/* Recommendations Section */}
+                {RecommendedMovies.length > 0 && (
+                  <View style={styles.recommendationsSection}>
                     <CustomText
-                      fontSize={14}
-                      fontWeight={activeTab === TAB_KEYS.ABOUT ? '600' : '400'}
-                      color={activeTab === TAB_KEYS.ABOUT ? '#FFFFFF' : '#CCCCCC'}
-                    >
-                      {TEXT_CONSTANTS.ABOUT}
-                    </CustomText>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => setActiveTab(TAB_KEYS.CASTS)}
-                    style={[
-                      styles.tab,
-                      activeTab === TAB_KEYS.CASTS && styles.activeTab
-                    ]}
-                  >
-                    <CustomText
-                      fontSize={14}
-                      fontWeight={activeTab === TAB_KEYS.CASTS ? '600' : '400'}
-                      color={activeTab === TAB_KEYS.CASTS ? '#FFFFFF' : '#CCCCCC'}
-                    >
-                      {TEXT_CONSTANTS.CASTS_BTS}
-                    </CustomText>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => setActiveTab(TAB_KEYS.COMMENTS)}
-                    style={[
-                      styles.tab,
-                      activeTab === TAB_KEYS.COMMENTS && styles.activeTab
-                    ]}
-                  >
-                    <CustomText
-                      fontSize={14}
-                      fontWeight={activeTab === TAB_KEYS.COMMENTS ? '600' : '400'}
-                      color={activeTab === TAB_KEYS.COMMENTS ? '#FFFFFF' : '#CCCCCC'}
-                    >
-                      {TEXT_CONSTANTS.COMMENTS}
-                    </CustomText>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Tab Content */}
-                {activeTab === TAB_KEYS.ABOUT && (
-                  <View>
-                    <CustomText fontSize={14} color="#CCCCCC" lineHeight={20}>
-                      {description}
-                    </CustomText>
-                  </View>
-                )}
-
-                {activeTab === TAB_KEYS.CASTS && (
-                  <View>
-                    <CustomText
-                      fontSize={12}
-                      fontWeight="500"
-                      color="#CCCCCC"
-                      style={styles.detailValue}
-                    >
-                      {TEXT_CONSTANTS.DIRECTOR}
-                    </CustomText>
-                    <CustomText
-                      fontSize={14}
+                      fontSize={18}
+                      fontWeight="700"
                       color="#FFFFFF"
-                      style={styles.detailValue}
+                      style={styles.recommendationsTitle}
                     >
-                      {director || TEXT_CONSTANTS.NOT_AVAILABLE}
+                      {TEXT_CONSTANTS.MORE_LIKE_THIS}
                     </CustomText>
-
-                    <CustomText
-                      fontSize={12}
-                      fontWeight="500"
-                      color="#CCCCCC"
-                      style={styles.detailValue}
-                    >
-                      {TEXT_CONSTANTS.CAST}
-                    </CustomText>
-                    <CustomText fontSize={14} color="#FFFFFF">
-                      {cast || TEXT_CONSTANTS.CAST_INFO_NOT_AVAILABLE}
-                    </CustomText>
+                    <FlatList
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      data={RecommendedMovies}
+                      contentContainerStyle={styles.recommendationsList}
+                      renderItem={renderRecommendation}
+                    />
                   </View>
                 )}
 
-                {activeTab === TAB_KEYS.COMMENTS && (
-                  <View>
+                {/* Suggested Films Section - Using API data */}
+                {suggestedFilms.length > 0 && (
+                  <View style={styles.suggestedSection}>
                     <CustomText
-                      fontSize={14}
-                      color="#CCCCCC"
-                      fontStyle="italic"
+                      fontSize={18}
+                      fontWeight="700"
+                      color="#FFFFFF"
+                      style={styles.recommendationsTitle}
                     >
-                      {TEXT_CONSTANTS.NO_COMMENTS}
+                      {TEXT_CONSTANTS.SUGGESTED_FILMS}
                     </CustomText>
+                    <FlatList
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      data={suggestedFilms}
+                      contentContainerStyle={styles.recommendationsList}
+                      renderItem={renderSuggestedFilm}
+                      keyExtractor={(item, index) => `suggested-${index}`}
+                    />
                   </View>
                 )}
               </View>
-
-              {/* Video Details */}
-              <View style={styles.detailsSection}>
-                <CustomText
-                  fontSize={16}
-                  fontWeight="600"
-                  color="#FFFFFF"
-                  style={styles.detailsTitle}
-                >
-                  {TEXT_CONSTANTS.DETAILS}
-                </CustomText>
-                <View
-                  style={styles.detailsContainer}
-                >
-                  {[
-                    {
-                      label: TEXT_CONSTANTS.LANGUAGE,
-                      value: language || TEXT_CONSTANTS.ENGLISH,
-                    },
-                    { label: TEXT_CONSTANTS.DIRECTOR, value: director },
-                    { label: TEXT_CONSTANTS.YEAR, value: year },
-                    { label: TEXT_CONSTANTS.DURATION, value: duration },
-                  ]
-                    .filter(item => item.value)
-                    .map((item, index) => (
-                      <View
-                        key={index}
-                        style={styles.detailItem}
-                      >
-                        <CustomText
-                          fontSize={12}
-                          fontWeight="500"
-                          color="#CCCCCC"
-                        >
-                          {item.label} {TEXT_CONSTANTS.BULLET} {item.value}
-                        </CustomText>
-                      </View>
-                    ))}
-                </View>
-              </View>
-              {/* Recommendations Section */}
-              {RecommendedMovies.length > 0 && (
-                <View style={styles.recommendationsSection}>
-                  <CustomText
-                    fontSize={18}
-                    fontWeight="700"
-                    color="#FFFFFF"
-                    style={styles.recommendationsTitle}
-                  >
-                    {TEXT_CONSTANTS.MORE_LIKE_THIS}
-                  </CustomText>
-                  <FlatList
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    data={RecommendedMovies}
-                    contentContainerStyle={styles.recommendationsList}
-                    renderItem={renderRecommendation}
-                  />
-                </View>
-              )}
-
-              {/* Suggested Films Section - Using API data */}
-              {suggestedFilms.length > 0 && (
-                <View style={styles.suggestedSection}>
-                  <CustomText
-                    fontSize={18}
-                    fontWeight="700"
-                    color="#FFFFFF"
-                    style={styles.recommendationsTitle}
-                  >
-                    {TEXT_CONSTANTS.SUGGESTED_FILMS}
-                  </CustomText>
-                  <FlatList
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    data={suggestedFilms}
-                    contentContainerStyle={styles.recommendationsList}
-                    renderItem={renderSuggestedFilm}
-                    keyExtractor={(item, index) => `suggested-${index}`}
-                  />
-                </View>
-              )}
-            </View>
-          )}
-        </View>
+            )}
+          </View>
         </ScrollView>
       )}
 
@@ -2083,14 +2087,7 @@ ${generateShareUrl()}`;
         </View>
       </Modal>
 
-      {/* Universal Sharing Modal */}
-      <UniversalSharingModal
-        visible={showUniversalSharingModal}
-        onClose={() => setShowUniversalSharingModal(false)}
-        videoPath={resolvedVideoPath}
-        videoTitle={cleanMovieTitle(title)}
-        onShareComplete={handleShareComplete}
-      />
+
 
       {/* Unified Alert Modal */}
       <Modal
@@ -2116,20 +2113,20 @@ ${generateShareUrl()}`;
                   alertModal.type === 'error'
                     ? 'alert-circle'
                     : alertModal.type === 'success'
-                    ? 'check-circle'
-                    : alertModal.type === 'warning'
-                    ? 'alert-triangle'
-                    : 'info'
+                      ? 'check-circle'
+                      : alertModal.type === 'warning'
+                        ? 'alert-triangle'
+                        : 'info'
                 }
                 size={26}
                 color={
                   alertModal.type === 'error'
                     ? '#F45303'
                     : alertModal.type === 'success'
-                    ? '#4CAF50'
-                    : alertModal.type === 'warning'
-                    ? '#FF9800'
-                    : '#8B8B8B'
+                      ? '#4CAF50'
+                      : alertModal.type === 'warning'
+                        ? '#FF9800'
+                        : '#8B8B8B'
                 }
               />
             </View>
@@ -2196,48 +2193,50 @@ ${generateShareUrl()}`;
       {/* Floating RECEIVE Button - Hide when in fullscreen */}
       {!isFullscreen && (
         <TouchableOpacity
-          style={styles.receiveFloatingButton}
-          onPress={openReceiveModal}
+          style={[
+            styles.receiveFloatingButton,
+            { backgroundColor: isReceiverModeActive ? '#4CAF50' : '#F45303' }
+          ]}
+          onPress={handleReceiverMode}
         >
           <View style={styles.receiveButtonContent}>
             <View style={styles.spredLogoContainer}>
-              <MaterialIcons name="arrow-circle-down" size={16} color="#FFFFFF" />
+              <MaterialIcons name={isReceiverModeActive ? "wifi-tethering" : "arrow-circle-down"} size={16} color="#FFFFFF" />
             </View>
             <CustomText fontSize={14} fontWeight="700" color="#FFFFFF" style={styles.receiveButtonText}>
-              {TEXT_CONSTANTS.RECEIVE}
+              {isReceiverModeActive ? 'RECEIVING' : 'RECEIVE'}
             </CustomText>
           </View>
         </TouchableOpacity>
       )}
 
-      {/* P2P Receive Modal */}
-      <P2PReceiveScreen
-        visible={showReceiveModal}
-        onClose={() => setShowReceiveModal(false)}
-        deviceName="P2P Device"
-        onTransferStart={() => console.log('Transfer started')}
-        onTransferComplete={filePath => {
-          console.log('Transfer completed:', filePath);
-          setShowReceiveModal(false);
-        }}
+      {/* Share Video Screen */}
+      <ShareVideoScreen
+        visible={showShareVideoScreen}
+        onClose={() => setShowShareVideoScreen(false)}
+        videoPath={resolvedVideoPath}
+        videoTitle={cleanMovieTitle(title)}
+        videoSize={item?.size || 0}
+        videoThumbnail={item?.thumbnail || item?.image || ''}
       />
+
     </View>
   );
 };
 
 // Create dynamic styles that use theme colors
-  const createStyles = (colors: any) => StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background.primary, // Use theme color instead of hardcoded
-    },
-    contentSection: {
-      flex: 1,
-      backgroundColor: colors.background.primary,
-    },
-    scrollViewContent: {
-      paddingBottom: 100,
-    },
+const createStyles = (colors: any) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background.primary, // Use theme color instead of hardcoded
+  },
+  contentSection: {
+    flex: 1,
+    backgroundColor: colors.background.primary,
+  },
+  scrollViewContent: {
+    paddingBottom: 100,
+  },
   videoPlayerContainer: {
     backgroundColor: '#000', // Keep black for video player
   },
@@ -2257,40 +2256,8 @@ ${generateShareUrl()}`;
     borderRadius: 20,
     padding: 8,
   },
-  floatingNearbyButton: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
-    zIndex: 10,
-    backgroundColor: 'rgba(244, 83, 3, 0.9)', // SPRED orange color with transparency
-    borderRadius: 25,
-    padding: 12,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  floatingReceiverButton: {
-    position: 'absolute',
-    top: 80, // Below the nearby sharing button
-    right: 20,
-    zIndex: 10,
-    backgroundColor: 'rgba(76, 175, 80, 0.9)', // Green color for receiver mode
-    borderRadius: 22,
-    padding: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
+
+
   videoLoadingContainer: {
     justifyContent: 'center',
     alignItems: 'center',

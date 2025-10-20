@@ -2102,7 +2102,7 @@ const DownloadItems = ({ url, title }: { url: string; title?: string }) => {
   };
 
   return (
-    <View style={{ paddingHorizontal: 20, marginTop: 130 }}>
+    <View style={{ paddingHorizontal: 20, marginTop: 40 }}>
       <View
         style={{
           display: 'flex',
@@ -2110,6 +2110,14 @@ const DownloadItems = ({ url, title }: { url: string; title?: string }) => {
           justifyContent: 'space-between',
         }}
       >
+        <View>
+          <CustomText color="white" fontWeight="600" fontSize={10}>
+            Available Space 23.32GB
+          </CustomText>
+          <CustomText color="#F45305" lineHeight={20} fontSize={9}>
+            Buy more space
+          </CustomText>
+        </View>
         <View>
           <CustomText fontSize={15} fontWeight="700">
             Download Video
@@ -2125,18 +2133,10 @@ const DownloadItems = ({ url, title }: { url: string; title?: string }) => {
             </CustomText>
           )}
         </View>
-        <View>
-          <CustomText color="white" fontWeight="600" fontSize={10}>
-            Available Space 23.32GB
-          </CustomText>
-          <CustomText color="#F45305" lineHeight={10} fontSize={9}>
-            Buy more space
-          </CustomText>
-        </View>
       </View>
-      <View style={{ paddingTop: 20 }}>
+      <View style={{ paddingTop: 12 }}>
         <View
-          style={{ height: 1, backgroundColor: 'gray', marginVertical: 10 }}
+          style={{ height: 1, backgroundColor: 'gray', marginVertical: 0 }}
         />
       </View>
       <View style={{ paddingTop: 20 }}>

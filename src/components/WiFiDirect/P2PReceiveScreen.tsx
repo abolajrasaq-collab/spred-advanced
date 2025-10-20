@@ -13,7 +13,6 @@ import {
   Platform,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import RNFS from 'react-native-fs';
 import SpredFileService from '../../services/SpredFileService';
 import { P2PService } from '../../services/P2PService';
 import { Android12Button } from '../Android12Button';
@@ -123,7 +122,7 @@ const P2PReceiveScreen: React.FC<P2PReceiveScreenProps> = ({
   const startReceiving = async () => {
     try {
       console.log('🚀 Starting P2P receive process...');
-      
+
       // Check if running on emulator - show error immediately
       if (__DEV__ && Platform.OS === 'android') {
         console.warn('⚠️ Running on emulator - WiFi Direct not supported');
@@ -132,10 +131,18 @@ const P2PReceiveScreen: React.FC<P2PReceiveScreenProps> = ({
         setShowSettingsButton(false);
         return;
       }
-      
+
       setReceiveState('scanning');
       setErrorMessage('');
       setConnectionStatus('Initializing P2P service...');
+
+      // Clean up any previous state first
+      try {
+        await p2pService.disconnect();
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for cleanup
+      } catch (cleanupError) {
+        console.warn('⚠️ Cleanup warning (non-critical):', cleanupError);
+      }
 
       // Simple initialization without complex timeout logic
       const success = await p2pService.initializeService();
@@ -147,14 +154,66 @@ const P2PReceiveScreen: React.FC<P2PReceiveScreenProps> = ({
         return;
       }
 
-      setConnectionStatus('Searching for available SPRED members...');
-      await p2pService.startDiscovery();
-      
+      setConnectionStatus('Starting receiver mode...');
+
+      try {
+        // Try the new receiver mode first
+        const receiverStarted = await p2pService.startReceiverMode();
+        if (receiverStarted) {
+          console.log('✅ P2P receiver mode started successfully');
+          setConnectionStatus('Device is discoverable. Waiting for connections...');
+        } else {
+          console.log('⚠️ Receiver mode failed, falling back to discovery');
+          setConnectionStatus('Searching for available SPRED members...');
+          await p2pService.startDiscovery();
+        }
+      } catch (receiverError: any) {
+        console.error('❌ Receiver mode error, falling back to discovery:', receiverError);
+        
+        // Handle framework busy error specifically
+        if (receiverError.message && receiverError.message.includes('framework is busy')) {
+          setConnectionStatus('WiFi Direct is busy, retrying...');
+          // Wait and retry
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          try {
+            await p2pService.startDiscovery();
+            setConnectionStatus('Searching for available SPRED members...');
+          } catch (retryError) {
+            throw retryError;
+          }
+        } else {
+          setConnectionStatus('Searching for available SPRED members...');
+          await p2pService.startDiscovery();
+        }
+      }
+
       console.log('✅ P2P receiving initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Start receiving error:', error);
       setReceiveState('error');
-      setErrorMessage('Failed to start receiving. Please try on a physical device.');
+      
+      // Provide user-friendly error messages
+      let userMessage = 'Failed to start receiving';
+      let showSettings = false;
+      
+      if (error.message) {
+        if (error.message.includes('framework is busy')) {
+          userMessage = 'WiFi Direct is busy. Please close other apps using WiFi Direct and try again.';
+        } else if (error.message.includes('permission')) {
+          userMessage = 'Permissions required. Please enable location and nearby devices permissions.';
+          showSettings = true;
+        } else if (error.message.includes('wifi') || error.message.includes('WiFi')) {
+          userMessage = 'WiFi must be enabled. Please turn on WiFi and try again.';
+        } else if (error.message.includes('location')) {
+          userMessage = 'Location services required. Please enable location and try again.';
+          showSettings = true;
+        } else {
+          userMessage = `Failed to start receiving: ${error.message}`;
+        }
+      }
+      
+      setErrorMessage(userMessage);
+      setShowSettingsButton(showSettings);
     }
   };
 
@@ -168,7 +227,7 @@ const P2PReceiveScreen: React.FC<P2PReceiveScreenProps> = ({
         try {
           console.log('📡 P2P state update received:', {
             isConnected: state.isConnected,
-            transferProgress: state.transferProgress?.progress,
+            transferProgress: (state.transferProgress as any)?.progress,
             error: state.error
           });
 
@@ -263,31 +322,51 @@ const P2PReceiveScreen: React.FC<P2PReceiveScreenProps> = ({
   const startReceivingFiles = async () => {
     try {
       console.log('📥 Starting file receive process...');
+      setReceiveState('receiving');
+      setConnectionStatus('Receiving file...');
+      setErrorMessage(''); // Clear any previous errors
       
-      // Set up the destination directory for received files
-      const destinationPath = `${RNFS.ExternalDirectoryPath}/SpredVideos`;
+      // Use P2P service's integrated file handling with retry logic
+      const receivedFilePath = await p2pService.receiveFile();
       
-      // Ensure the directory exists
-      const dirExists = await RNFS.exists(destinationPath);
-      if (!dirExists) {
-        await RNFS.mkdir(destinationPath);
-      }
-      
-      // Start receiving files
-      const success = await p2pService.receiveFile(destinationPath);
-      
-      if (success) {
-        console.log('✅ File receive process started successfully');
-        setReceiveState('receiving');
-        setConnectionStatus('Ready to receive files...');
+      if (receivedFilePath) {
+        console.log('✅ File received successfully at:', receivedFilePath);
+        setReceiveState('completed');
+        setConnectionStatus('File received successfully!');
+
+        // Call completion callback if provided
+        onTransferComplete?.(receivedFilePath);
       } else {
+        console.error('❌ File receive failed - no file path returned');
         setReceiveState('error');
-        setErrorMessage('Failed to start file receiving');
+        setErrorMessage('Transfer failed. The sender may have cancelled or the connection was lost.');
+        setShowSettingsButton(false); // Don't show settings for transfer failures
       }
-    } catch (error) {
-      console.error('❌ Error starting file receive:', error);
+    } catch (error: any) {
+      console.error('❌ Error during file receive:', error);
       setReceiveState('error');
-      setErrorMessage('Failed to start receiving');
+      
+      // Provide user-friendly error messages
+      let userMessage = 'Failed to receive file';
+      let showSettings = false;
+      
+      if (error.message) {
+        if (error.message.includes('framework is busy')) {
+          userMessage = 'WiFi Direct is busy. Please wait a moment and try again.';
+        } else if (error.message.includes('operation failed')) {
+          userMessage = 'Transfer failed. Please ensure both devices are connected and try again.';
+        } else if (error.message.includes('permission')) {
+          userMessage = 'Permission required. Please enable location and nearby devices permissions.';
+          showSettings = true;
+        } else if (error.message.includes('timeout')) {
+          userMessage = 'Transfer timed out. Please check your connection and try again.';
+        } else {
+          userMessage = `Transfer failed: ${error.message}`;
+        }
+      }
+      
+      setErrorMessage(userMessage);
+      setShowSettingsButton(showSettings);
     }
   };
 

@@ -1,6 +1,5 @@
 import { Platform } from 'react-native';
 import NearbyService, { NearbyDevice, FileTransferProgress } from './NearbyService';
-import QRFallbackService, { QRShareData } from './QRFallbackService';
 import logger from '../utils/logger';
 
 // Error context interface for detailed debugging
@@ -25,7 +24,7 @@ interface ErrorContext {
 
 export interface ShareResult {
   success: boolean;
-  method: 'nearby' | 'qr_cloud' | 'qr_local';
+  method: 'nearby' | 'p2p';
   deviceName?: string;
   deviceId?: string;
   qrData?: string;
@@ -37,7 +36,7 @@ export interface ShareResult {
 export interface SharingState {
   isSharing: boolean;
   isReceiving: boolean;
-  currentMethod: 'nearby' | 'qr_fallback' | null;
+  currentMethod: 'nearby' | null;
   discoveredDevices: NearbyDevice[];
   transferProgress?: FileTransferProgress;
   qrData?: string;
@@ -50,14 +49,12 @@ type SharingStateListener = (state: SharingState) => void;
 export class CrossPlatformSharingService {
   private static instance: CrossPlatformSharingService;
   private nearbyService: NearbyService;
-  private qrFallbackService: QRFallbackService;
   private state: SharingState;
   private listeners: SharingStateListener[] = [];
   private shareStartTime: number = 0;
 
   private constructor() {
     this.nearbyService = NearbyService.getInstance();
-    this.qrFallbackService = QRFallbackService.getInstance();
     
     this.state = {
       isSharing: false,
@@ -168,12 +165,12 @@ export class CrossPlatformSharingService {
     });
   }
 
-  // Main method: Share video with automatic fallback
+  // Main method: Share video via P2P only
   async shareVideo(videoPath: string): Promise<ShareResult> {
     try {
       this.shareStartTime = Date.now();
-      logger.info('🚀 Starting cross-platform video sharing:', videoPath);
-      
+      logger.info('🚀 Starting P2P video sharing:', videoPath);
+
       this.updateState({
         isSharing: true,
         currentMethod: 'nearby',
@@ -181,30 +178,32 @@ export class CrossPlatformSharingService {
         error: undefined
       });
 
-      // Method 1: Try Nearby API first (10 second timeout)
+      // Try P2P sharing with timeout
       const nearbyResult = await this.tryNearbySharing(videoPath, 10000);
       if (nearbyResult.success) {
         return nearbyResult;
       }
 
-      // If nearby sharing failed, try QR fallback
-      const nearbyState = this.nearbyService.getState();
+      // If P2P failed, return failure result
+      const failureResult: ShareResult = {
+        success: false,
+        method: 'nearby',
+        error: nearbyResult.error || 'P2P sharing failed',
+        duration: Date.now() - this.shareStartTime
+      };
 
-      // Only use QR fallback for real scenarios where nearby sharing actually failed
-      logger.info('📱 Nearby sharing failed, trying QR fallback...');
-      
-      // Method 2: Fallback to QR code sharing
       this.updateState({
-        currentMethod: 'qr_fallback',
-        status: 'Generating QR code for sharing...'
+        isSharing: false,
+        currentMethod: null,
+        status: 'Sharing failed',
+        error: failureResult.error
       });
 
-      const qrResult = await this.tryQRFallback(videoPath);
-      return qrResult;
+      return failureResult;
 
     } catch (error: any) {
       logger.error('❌ Video sharing failed completely:', error);
-      
+
       const failureResult: ShareResult = {
         success: false,
         method: 'nearby',
@@ -351,11 +350,11 @@ export class CrossPlatformSharingService {
             if (sent) {
               // Determine the actual method used based on the service state
               const nearbyState = this.nearbyService.getState();
-              const actualMethod = nearbyState.initializationMode === 'real' ? 'p2p' : 'nearby';
-              
-              const result = {
+              const actualMethod: 'p2p' | 'nearby' = nearbyState.initializationMode === 'real' ? 'p2p' : 'nearby';
+
+              const result: ShareResult = {
                 success: true,
-                method: actualMethod as const,
+                method: actualMethod,
                 deviceName: targetDevice.name,
                 deviceId: targetDevice.id,
                 duration: Date.now() - this.shareStartTime
@@ -383,53 +382,6 @@ export class CrossPlatformSharingService {
     throw new Error('No devices found or connection failed');
   }
 
-  // Try QR code fallback
-  private async tryQRFallback(videoPath: string): Promise<ShareResult> {
-    try {
-      logger.info('📱 Attempting QR fallback sharing...');
-
-      // Generate QR code (prefer local server for speed)
-      const qrResult = await this.qrFallbackService.generateQRForVideo(videoPath, 'local_server');
-      
-      if (!qrResult.success) {
-        throw new Error(qrResult.error || 'Failed to generate QR code');
-      }
-
-      this.updateState({
-        qrData: qrResult.qrData,
-        status: 'QR code ready - scan from receiving device'
-      });
-
-      const result: ShareResult = {
-        success: true,
-        method: 'qr_local',
-        qrData: qrResult.qrData,
-        downloadUrl: qrResult.downloadUrl,
-        duration: Date.now() - this.shareStartTime
-      };
-
-      this.updateState({
-        isSharing: false,
-        currentMethod: null
-      });
-
-      return result;
-    } catch (error: any) {
-      logger.error('❌ QR fallback failed:', error);
-      logger.error('❌ QR Error details:', {
-        message: error.message,
-        stack: error.stack,
-        name: error.name,
-        toString: error.toString()
-      });
-      return {
-        success: false,
-        method: 'qr_local',
-        error: error.message || error.toString() || 'QR fallback failed',
-        duration: Date.now() - this.shareStartTime
-      };
-    }
-  }
 
   // Start receiver mode
   async startReceiver(): Promise<boolean> {
@@ -479,42 +431,13 @@ export class CrossPlatformSharingService {
     }
   }
 
-  // Process scanned QR code
+  // Process scanned QR code - REMOVED: QR functionality removed
   async processQRCode(qrString: string): Promise<{ success: boolean; filePath?: string; error?: string }> {
-    try {
-      logger.info('🔍 Processing scanned QR code...');
-      
-      this.updateState({
-        status: 'Processing QR code...'
-      });
-
-      const result = await this.qrFallbackService.processQRCode(qrString);
-      
-      if (result.success) {
-        this.updateState({
-          status: 'Video received successfully!'
-        });
-      } else {
-        this.updateState({
-          status: 'Failed to process QR code',
-          error: result.error
-        });
-      }
-
-      return result;
-    } catch (error: any) {
-      logger.error('❌ Error processing QR code:', error);
-      
-      this.updateState({
-        status: 'QR code processing failed',
-        error: error.message
-      });
-
-      return {
-        success: false,
-        error: error.message || 'Failed to process QR code'
-      };
-    }
+    logger.warn('⚠️ QR code processing not available - QR functionality removed');
+    return {
+      success: false,
+      error: 'QR code sharing is not available'
+    };
   }
 
   // Get current sharing state
@@ -541,12 +464,9 @@ export class CrossPlatformSharingService {
   async cleanup(): Promise<void> {
     try {
       logger.info('🧹 Cleaning up CrossPlatformSharingService...');
-      
-      await Promise.all([
-        this.nearbyService.stop(),
-        this.qrFallbackService.cleanup()
-      ]);
-      
+
+      await this.nearbyService.stop();
+
       this.updateState({
         isSharing: false,
         isReceiving: false,
@@ -557,7 +477,7 @@ export class CrossPlatformSharingService {
         status: 'Ready',
         error: undefined
       });
-      
+
       logger.info('✅ CrossPlatformSharingService cleanup completed');
     } catch (error: any) {
       logger.error('❌ Error during cleanup:', error);

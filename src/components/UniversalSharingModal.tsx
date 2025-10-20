@@ -10,7 +10,6 @@ import {
   Alert,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import QRCode from 'react-native-qrcode-svg';
 import CrossPlatformSharingService, { SharingState, ShareResult } from '../services/CrossPlatformSharingService';
 import { Android12Button } from './Android12Button/index';
 
@@ -24,7 +23,7 @@ interface UniversalSharingModalProps {
   onShareComplete?: (result: ShareResult) => void;
 }
 
-type ModalMode = 'discovering' | 'connecting' | 'transferring' | 'qr_fallback' | 'completed' | 'error';
+type ModalMode = 'discovering' | 'connecting' | 'transferring' | 'completed' | 'error';
 
 const UniversalSharingModal: React.FC<UniversalSharingModalProps> = ({
   visible,
@@ -94,9 +93,7 @@ const UniversalSharingModal: React.FC<UniversalSharingModalProps> = ({
   };
 
   const updateModalMode = (state: SharingState) => {
-    if (state.qrData && state.currentMethod === 'qr_fallback') {
-      setModalMode('qr_fallback');
-    } else if (state.transferProgress && state.transferProgress.progress > 0) {
+    if (state.transferProgress && state.transferProgress.progress > 0) {
       setModalMode('transferring');
     } else if (state.discoveredDevices.length > 0 && state.currentMethod === 'nearby') {
       setModalMode('connecting');
@@ -187,93 +184,37 @@ const UniversalSharingModal: React.FC<UniversalSharingModalProps> = ({
     );
   };
 
-  const renderQRFallbackState = () => (
-    <View style={styles.stateContainer}>
-      <Text style={styles.stateTitle}>Scan QR Code</Text>
-      <Text style={styles.stateSubtitle}>
-        No nearby devices found. Scan this code on the receiving device.
-      </Text>
-      
-      <View style={styles.qrContainer}>
-        {sharingState?.qrData ? (
-          <QRCode
-            value={sharingState.qrData}
-            size={200}
-            backgroundColor="#FFFFFF"
-            color="#1A1A1A"
-          />
-        ) : (
-          <ActivityIndicator size="large" color="#F45303" />
-        )}
-      </View>
-      
-      <View style={styles.qrInstructions}>
-        <Text style={styles.instructionsTitle}>How to receive:</Text>
-        <Text style={styles.instructionsText}>
-          1. Open SPRED on the receiving device{'\n'}
-          2. Tap "Scan QR Code" or use camera{'\n'}
-          3. Point camera at this QR code{'\n'}
-          4. Video will download automatically
-        </Text>
-      </View>
-    </View>
-  );
 
   const renderCompletedState = () => {
     // Determine the actual sharing method and create appropriate message
     const getSuccessMessage = () => {
       if (!shareResult) return 'Video sharing completed!';
-      
+
       // Debug logging to understand what's happening
       console.log('🔍 Success message debug:', {
         method: shareResult.method,
         deviceName: shareResult.deviceName,
-        qrData: shareResult.qrData,
-        modalMode,
-        hasQrData: !!sharingState?.qrData,
-        wasQRUsed: modalMode === 'qr_fallback' || !!sharingState?.qrData
+        modalMode
       });
-      
-      // Check if QR code was actually used
-      const wasQRUsed = modalMode === 'qr_fallback' || !!sharingState?.qrData;
-      
-      if (wasQRUsed) {
-        // Only show QR messages if QR was actually used
-        switch (shareResult.method) {
-          case 'qr_local':
-          case 'qr_cloud':
-            return 'QR code is ready for scanning';
-          default:
-            return 'QR code sharing completed';
-        }
-      } else {
-        // For direct sharing (P2P, WiFi Direct)
-        switch (shareResult.method) {
-          case 'p2p':
-            return shareResult.deviceName 
-              ? `Video sent to ${shareResult.deviceName}`
-              : 'Video sent successfully';
-          case 'nearby':
-            return shareResult.deviceName 
-              ? `Video sent to ${shareResult.deviceName}`
-              : 'Video sent successfully';
-          default:
-            return 'Video sent successfully';
-        }
+
+      // For P2P sharing only
+      // For direct sharing (P2P, WiFi Direct)
+      switch (shareResult.method) {
+        case 'p2p':
+          return shareResult.deviceName
+            ? `Video sent to ${shareResult.deviceName}`
+            : 'Video sent successfully';
+        case 'nearby':
+          return shareResult.deviceName
+            ? `Video sent to ${shareResult.deviceName}`
+            : 'Video sent successfully';
+        default:
+          return 'Video sent successfully';
       }
     };
 
     const getSuccessTitle = () => {
-      if (!shareResult) return 'Success!';
-      
-      // Check if QR code was actually used
-      const wasQRUsed = modalMode === 'qr_fallback' || !!sharingState?.qrData;
-      
-      if (wasQRUsed) {
-        return 'QR Code Ready!';
-      } else {
-        return 'Video Sent!';
-      }
+      return 'Video Sent!';
     };
 
     return (
@@ -285,13 +226,13 @@ const UniversalSharingModal: React.FC<UniversalSharingModalProps> = ({
         <Text style={styles.stateSubtitle}>
           {getSuccessMessage()}
         </Text>
-        
+
         {shareResult?.duration && (
           <Text style={styles.durationText}>
             Completed in {Math.round(shareResult.duration / 1000)}s
           </Text>
         )}
-        
+
         <Android12Button
           title="Done"
           onPress={handleClose}
@@ -311,39 +252,34 @@ const UniversalSharingModal: React.FC<UniversalSharingModalProps> = ({
 
   const renderErrorState = () => {
     const errorMessage = sharingState?.error || shareResult?.error || 'An error occurred while sharing the video';
-    
-    // Determine if this is a recoverable error
-    const isRecoverable = !errorMessage.includes('permission') && 
-                         !errorMessage.includes('not available') && 
-                         !errorMessage.includes('System error');
-    
-    // Get user-friendly error message
+
+    // Get user-friendly error message for P2P only
     const getUserFriendlyMessage = (error: string): string => {
       if (error.includes('permission')) {
-        return 'Permission denied. The app will use QR code sharing instead.';
+        return 'Permission denied. Please grant location and nearby devices permissions.';
       }
       if (error.includes('not available') || error.includes('initialization')) {
-        return 'Nearby sharing is not available on this device. Using QR code sharing instead.';
+        return 'Nearby sharing is not available on this device.';
       }
       if (error.includes('timeout') || error.includes('No nearby devices')) {
-        return 'No nearby devices found. You can still share using QR codes.';
+        return 'No nearby devices found. Make sure both devices have WiFi enabled.';
       }
       if (error.includes('null') || error.includes('System error')) {
-        return 'System error detected. The app will use test mode instead.';
+        return 'System error detected. Please restart the app.';
       }
-      return 'Sharing encountered an issue, but QR code sharing is still available.';
+      return 'Sharing encountered an issue. Please try again.';
     };
 
     return (
       <View style={styles.stateContainer}>
         <View style={[styles.iconContainer, styles.errorIcon]}>
-          <MaterialIcons name="info" size={64} color="#FF9800" />
+          <MaterialIcons name="error" size={64} color="#FF5252" />
         </View>
-        <Text style={styles.stateTitle}>Nearby sharing unavailable</Text>
+        <Text style={styles.stateTitle}>Sharing Failed</Text>
         <Text style={styles.stateSubtitle}>
           {getUserFriendlyMessage(errorMessage)}
         </Text>
-        
+
         {/* Show technical details in debug mode */}
         {__DEV__ && (
           <View style={styles.debugInfo}>
@@ -351,35 +287,17 @@ const UniversalSharingModal: React.FC<UniversalSharingModalProps> = ({
             <Text style={styles.debugText}>{errorMessage}</Text>
           </View>
         )}
-        
+
         <View style={styles.errorActions}>
-          {isRecoverable && (
-            <Android12Button
-              title="Try Again"
-              onPress={handleRetry}
-              iconName="refresh"
-              style={styles.errorButton}
-              textStyle={styles.retryButtonText}
-              buttonColor="#F45303"
-              pressedColor="#D43D00"
-              releasedColor="#F45303"
-              iconColor="#FFFFFF"
-              iconSize={20}
-              size="medium"
-            />
-          )}
           <Android12Button
-            title={isRecoverable ? "Use QR Code" : "Continue with QR Code"}
-            onPress={() => {
-              // Force QR fallback mode
-              setModalMode('qr_fallback');
-            }}
-            iconName="qr-code"
+            title="Try Again"
+            onPress={handleRetry}
+            iconName="refresh"
             style={styles.errorButton}
             textStyle={styles.retryButtonText}
-            buttonColor="#4CAF50"
-            pressedColor="#388E3C"
-            releasedColor="#4CAF50"
+            buttonColor="#F45303"
+            pressedColor="#D43D00"
+            releasedColor="#F45303"
             iconColor="#FFFFFF"
             iconSize={20}
             size="medium"
@@ -407,8 +325,6 @@ const UniversalSharingModal: React.FC<UniversalSharingModalProps> = ({
         return renderConnectingState();
       case 'transferring':
         return renderTransferringState();
-      case 'qr_fallback':
-        return renderQRFallbackState();
       case 'completed':
         return renderCompletedState();
       case 'error':
@@ -457,7 +373,6 @@ const UniversalSharingModal: React.FC<UniversalSharingModalProps> = ({
                 {modalMode === 'discovering' && 'Discovering'}
                 {modalMode === 'connecting' && 'Connecting'}
                 {modalMode === 'transferring' && 'Transferring'}
-                {modalMode === 'qr_fallback' && 'QR Code'}
                 {modalMode === 'completed' && 'Completed'}
                 {modalMode === 'error' && 'Error'}
               </Text>
@@ -646,33 +561,6 @@ const styles = StyleSheet.create({
   speedText: {
     fontSize: 14,
     color: '#8B8B8B',
-  },
-  qrContainer: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-    borderRadius: 16,
-    marginVertical: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 240,
-  },
-  qrInstructions: {
-    backgroundColor: '#2A2A2A',
-    padding: 16,
-    borderRadius: 12,
-    width: '100%',
-    marginTop: 16,
-  },
-  instructionsTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#F45303',
-    marginBottom: 8,
-  },
-  instructionsText: {
-    fontSize: 14,
-    color: '#CCCCCC',
-    lineHeight: 20,
   },
   durationText: {
     fontSize: 14,

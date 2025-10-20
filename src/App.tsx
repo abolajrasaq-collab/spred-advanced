@@ -61,35 +61,39 @@ const App = () => {
     // Set performance mode to high for better responsiveness
     performanceManager.setPerformanceMode('high');
 
-    // Request permissions on app startup
+    // Request permissions on app startup with new auto permission system
     const requestPermissions = async () => {
       try {
-        console.log('🔐 Requesting app permissions...');
-        const permissionHandler = PermissionHandler.getInstance();
+        console.log('🔐 Initializing automatic permission system...');
+        
+        // Import the new permission service
+        const { default: PermissionInitializationService } = await import('./services/PermissionInitializationService');
+        const permissionService = PermissionInitializationService.getInstance();
         
         // Add a small delay to ensure the app is fully initialized
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        const results = await permissionHandler.requestAllPermissions();
+        const result = await permissionService.initializePermissions();
         
-        console.log('📊 Permission results:', {
-          core: results.core.granted,
-          storage: results.storage.granted,
-          wifi: results.wifi.granted,
+        console.log('📊 Permission initialization result:', {
+          success: result.success,
+          hasAllPermissions: result.hasAllPermissions,
+          hasCriticalPermissions: result.hasCriticalPermissions,
+          canUseCoreFeatures: result.canUseCoreFeatures,
+          deniedCount: result.deniedPermissions.length,
         });
 
-        // Show alert for denied permissions
-        const allDeniedPermissions = [
-          ...results.core.deniedPermissions,
-          ...results.storage.deniedPermissions,
-          ...results.wifi.deniedPermissions,
-        ];
-        
-        if (allDeniedPermissions.length > 0) {
-          permissionHandler.showPermissionAlert(allDeniedPermissions);
+        if (result.success) {
+          if (result.hasCriticalPermissions) {
+            console.log('✅ All critical permissions granted - full functionality available');
+          } else {
+            console.log('⚠️ Some critical permissions missing - limited functionality');
+          }
+        } else {
+          console.log('❌ Permission initialization failed - using fallback mode');
         }
       } catch (error) {
-        console.error('❌ Permission request failed:', error);
+        console.error('❌ Permission initialization failed:', error);
         // Don't block app startup if permissions fail
         console.log('⚠️ Continuing app startup despite permission errors');
       }

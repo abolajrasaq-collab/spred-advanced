@@ -311,12 +311,7 @@ const Account = () => {
       title: 'Settings',
       onPress: () => navigation.navigate('Settings'),
     },
-    {
-      icon: 'science',
-      title: '🧪 Test Nearby API',
-      onPress: () => navigation.navigate('TestNearbySharing'),
-      isP2P: true,
-    },
+
     {
       icon: 'refresh',
       title: 'Refresh Metrics',
@@ -857,17 +852,13 @@ const Account = () => {
               style={[
                 styles.menuItem,
                 {
-                  backgroundColor: item.isP2P
-                    ? '#10B981'
-                    : item.isDestructive
+                  backgroundColor: item.isDestructive
                       ? 'rgba(255, 68, 68, 0.1)'
                       : '#2A2A2A',
-                  borderColor: item.isP2P
-                    ? '#059669'
-                    : item.isDestructive
+                  borderColor: item.isDestructive
                       ? 'rgba(255, 68, 68, 0.2)'
                       : 'rgba(255, 255, 255, 0.1)',
-                  borderWidth: item.isP2P ? 2 : 1,
+                  borderWidth: 1,
                   paddingVertical: spacing.md,
                   paddingHorizontal: spacing.md,
                   marginBottom: 8,
@@ -880,9 +871,7 @@ const Account = () => {
                   style={[
                     styles.menuIconContainer,
                     {
-                      backgroundColor: item.isP2P
-                        ? 'rgba(255, 255, 255, 0.2)'
-                        : item.isDestructive
+                      backgroundColor: item.isDestructive
                           ? 'rgba(255, 68, 68, 0.2)'
                           : 'rgba(244, 83, 3, 0.2)',
                       marginRight: spacing.md,
@@ -915,9 +904,7 @@ const Account = () => {
                     }
                     size={20}
                     color={
-                      item.isP2P
-                        ? '#FFFFFF'
-                        : item.isDestructive
+                      item.isDestructive
                           ? '#FF4444'
                           : '#F45303'
                     }
@@ -927,9 +914,7 @@ const Account = () => {
                   fontSize={16}
                   fontWeight="600"
                   color={
-                    item.isP2P
-                      ? '#FFFFFF'
-                      : item.isDestructive
+                    item.isDestructive
                         ? '#FF4444'
                         : '#FFFFFF'
                   }
