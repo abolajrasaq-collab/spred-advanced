@@ -40,6 +40,7 @@ const OptimizedImageComponent = forwardRef<View, OptimizedImageProps>(
 
     // Handle successful image load
     const handleLoad = () => {
+      console.log('🖼️ OptimizedImage Load Success:', { src, width, height });
       setIsLoading(false);
       setHasError(false);
       onLoad?.();
@@ -53,7 +54,12 @@ const OptimizedImageComponent = forwardRef<View, OptimizedImageProps>(
         error?.toString() ||
         JSON.stringify(error) ||
         'Unknown error';
-      console.warn('🖼️ OptimizedImage Load Error:', errorMessage);
+      console.warn('🖼️ OptimizedImage Load Error:', {
+        src,
+        error: errorMessage,
+        width,
+        height
+      });
       setIsLoading(false);
       setHasError(true);
       onError?.(error);

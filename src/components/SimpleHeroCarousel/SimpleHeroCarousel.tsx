@@ -52,13 +52,14 @@ const SimpleHeroCarousel: React.FC<SimpleHeroCarouselProps> = memo(
         scaleAnimation={true}
         feedbackOpacity={0.9}
         scaleAmount={0.99}
-        delayPressInCustom={true}
-        delayPressOutCustom={true}
       >
         <ImageBackground
-          source={{ uri: item.imageUrl }}
+          source={{ uri: item.imageUrl || 'https://via.placeholder.com/400x250/333333/FFFFFF?text=No+Image' }}
           style={styles(Colors).slideImage}
           resizeMode="cover"
+          onError={() => {
+            console.log('🎠 Hero carousel image error for:', item.title, 'URL:', item.imageUrl);
+          }}
         >
           <View style={styles(Colors).overlay}>
             <View style={styles(Colors).contentContainer}>
@@ -84,8 +85,6 @@ const SimpleHeroCarousel: React.FC<SimpleHeroCarouselProps> = memo(
                 scaleAnimation={true}
                 feedbackOpacity={0.8}
                 scaleAmount={0.96}
-                delayPressInCustom={true}
-                delayPressOutCustom={true}
               >
                 <Text style={styles(Colors).downloadButtonText}>WATCH NOW</Text>
               </InstantTouchableOpacity>

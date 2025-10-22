@@ -35,7 +35,6 @@ export type RootStackParamList = {
   Download: undefined;
   Receive: undefined;
   TransferHistory: undefined;
-  WiFiDirect: undefined;
   SpredShare: undefined;
   CreatorDashboard: undefined;
   CreatorProfile: { creatorId: string };
@@ -53,6 +52,7 @@ export type RootStackParamList = {
   OfflineVideos: undefined;
   PlayDownloadedVideo: { videoPath: string; videoTitle: string };
   VideoPlayerTest: undefined;
+  RealFileShareTest: undefined;
 };
 
 // Main Tab Navigator

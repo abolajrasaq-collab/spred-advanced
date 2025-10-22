@@ -9,7 +9,8 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
-import OptimizedTouchableOpacity from '../OptimizedTouchableOpacity/OptimizedTouchableOpacity';
+// Import SleekButton for modern, polished button functionality
+import SleekButton from '../SleekButton/SleekButton';
 import { useTheme } from '../../hooks';
 
 interface CustomButtonProps {
@@ -131,46 +132,25 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       ? backgroundColor || Common?.button?.base?.backgroundColor || '#F45303'
       : '#FFFFFF';
 
+  // Use SleekButton for modern, polished button functionality while maintaining backward compatibility
   return (
-    <OptimizedTouchableOpacity
+    <SleekButton
+      title={loading && loadingText ? loadingText : title}
       onPress={handlePress}
-      disabled={disabled || loading}
       style={buttonStyle}
-      testID={testID}
-      accessibilityLabel={title}
-      accessibilityHint={loading ? 'Loading' : `Press to ${title}`}
-      accessibilityRole="button"
-      activeOpacity={0.4}
-      hitSlopCustom={true}
-      delayPressInCustom={true}
-      delayPressOutCustom={true}
-    >
-      {loading && (
-        <ActivityIndicator
-          size="small"
-          color={textColor}
-          style={styles.loadingIndicator}
-        />
-      )}
-
-      {!loading && image && <Image source={image} style={styles.buttonImage} />}
-
-      {!loading && icon && <View style={styles.buttonIcon}>{icon}</View>}
-
-      <Text
-        style={[
-          styles.buttonText,
-          {
-            fontSize: currentSize.fontSize,
-            color: textColor,
-            marginLeft: image || icon ? 8 : 0,
-          },
-          textStyle,
-        ]}
-      >
-        {loading && loadingText ? loadingText : title}
-      </Text>
-    </OptimizedTouchableOpacity>
+      textStyle={{
+        ...styles.buttonText,
+        color: textColor,
+        fontSize: currentSize.fontSize,
+        ...textStyle,
+      }}
+      backgroundColor={backgroundColor}
+      textColor={textColor}
+      disabled={disabled || loading}
+      loading={loading}
+      variant={variant === 'outline' ? 'outline' : variant === 'ghost' ? 'ghost' : 'primary'}
+      size={size}
+    />
   );
 };
 

@@ -139,8 +139,8 @@ class AdvancedCacheManager {
       this.saveStats();
 
       // Check if we need to evict items based on size or count
-      if (this.stats.totalSize > this.config.maxSize || 
-          this.stats.totalItems > this.config.maxItems) {
+      if (this.stats.totalSize > this.config.maxSize ||
+        this.stats.totalItems > this.config.maxItems) {
         this.evictItems();
       }
 
@@ -194,8 +194,8 @@ class AdvancedCacheManager {
     const targetCount = this.config.maxItems * 0.8; // Evict to 80% of max items
 
     for (const { key, item } of cacheItems) {
-      if (this.stats.totalSize - evictedSize <= targetSize && 
-          this.stats.totalItems - evictedCount <= targetCount) {
+      if (this.stats.totalSize - evictedSize <= targetSize &&
+        this.stats.totalItems - evictedCount <= targetCount) {
         break;
       }
 
@@ -213,8 +213,8 @@ class AdvancedCacheManager {
   }
 
   public async set<T>(
-    key: string, 
-    data: T, 
+    key: string,
+    data: T,
     options: CacheOptions = {}
   ): Promise<void> {
     try {
@@ -240,7 +240,7 @@ class AdvancedCacheManager {
       }
 
       this.storage.set(cacheKey, JSON.stringify(item));
-      
+
       // Update stats
       this.stats.totalItems++;
       this.stats.totalSize += size;
@@ -368,7 +368,7 @@ class AdvancedCacheManager {
 
   public updateConfig(newConfig: Partial<CacheConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    
+
     // Restart cleanup timer if interval changed
     if (newConfig.cleanupInterval) {
       if (this.cleanupInterval) {
@@ -381,12 +381,60 @@ class AdvancedCacheManager {
   public async preload<T>(
     items: Array<{ key: string; data: T; options?: CacheOptions }>
   ): Promise<void> {
-    const promises = items.map(({ key, data, options }) => 
+    const promises = items.map(({ key, data, options }) =>
       this.set(key, data, options)
     );
 
     await Promise.all(promises);
     logger.info(`🚀 Preloaded ${items.length} cache items`);
+  }
+
+  // Memory-aware preload with size checking
+  public async smartPreload<T>(
+    items: Array<{ key: string; data: T; options?: CacheOptions; priority?: 'low' | 'medium' | 'high' | 'critical' }>
+  ): Promise<void> {
+    const sortedItems = items.sort((a, b) => {
+      const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
+      return (priorityOrder[b.priority || 'medium'] - priorityOrder[a.priority || 'medium']);
+    });
+
+    const promises: Promise<void>[] = [];
+    let estimatedSize = 0;
+
+    for (const item of sortedItems) {
+      const itemSize = this.estimateItemSize(item.data);
+
+      // Check if adding this item would exceed cache limits
+      if (estimatedSize + itemSize > this.config.maxSize * 0.8) { // Leave 20% buffer
+        logger.warn(`⚠️ Cache preload stopped - would exceed size limit`);
+        break;
+      }
+
+      if (this.stats.totalItems + promises.length >= this.config.maxItems * 0.8) {
+        logger.warn(`⚠️ Cache preload stopped - would exceed item limit`);
+        break;
+      }
+
+      promises.push(this.set(item.key, item.data, {
+        ...item.options,
+        priority: item.priority || 'medium'
+      }));
+
+      estimatedSize += itemSize;
+    }
+
+    await Promise.all(promises);
+    logger.info(`🧠 Smart preloaded ${promises.length}/${items.length} cache items (${estimatedSize} bytes)`);
+  }
+
+  private estimateItemSize(data: any): number {
+    try {
+      const serialized = JSON.stringify(data);
+      return new Blob([serialized]).size;
+    } catch (error) {
+      // Fallback estimation
+      return 1024; // 1KB default
+    }
   }
 
   public async warmup<T>(
@@ -399,7 +447,7 @@ class AdvancedCacheManager {
     for (let i = 0; i < count; i++) {
       const key = keyGenerator();
       const dataPromise = dataGenerator(key);
-      
+
       promises.push(
         dataPromise.then(data => this.set(key, data))
       );

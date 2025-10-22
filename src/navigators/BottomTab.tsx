@@ -28,31 +28,34 @@ const BottomTab = () => {
   const Tabs = createBottomTabNavigator();
 
   return (
-    <Tabs.Navigator
-      tabBar={props => <CustomTabBar {...props} />}
-      screenOptions={{
-        header: () => <SimpleHeader />,
-      }}
-    >
-      <Tabs.Screen
-        name="HOME"
-        component={Homepage}
-        options={{
-          headerShown: false,
+    <View style={{ flex: 1 }}>
+      <Tabs.Navigator
+        tabBar={props => <CustomTabBar {...props} />}
+        screenOptions={{
+          header: () => <SimpleHeader />,
         }}
-      />
-      <Tabs.Screen
-        name="SHORTS"
-        component={Shorts}
-        options={{
-          headerShown: false,
-          tabBarStyle: { display: 'none' },
-        }}
-      />
-      <Tabs.Screen name="UPLOAD" component={Upload} />
-      <Tabs.Screen name="DOWNLOADS" component={Download} />
-      <Tabs.Screen name="ME" component={Account} />
-    </Tabs.Navigator>
+      >
+        <Tabs.Screen
+          name="HOME"
+          component={Homepage}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Tabs.Screen
+          name="SHORTS"
+          component={Shorts}
+          options={{
+            headerShown: false,
+            tabBarStyle: { display: 'none' },
+          }}
+        />
+        <Tabs.Screen name="UPLOAD" component={Upload} />
+        <Tabs.Screen name="DOWNLOADS" component={Download} />
+        <Tabs.Screen name="ME" component={Account} />
+      </Tabs.Navigator>
+      
+    </View>
   );
 };
 

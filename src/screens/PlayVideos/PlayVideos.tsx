@@ -6,7 +6,6 @@ import { MainParamsList } from '../../../@types/navigation';
 import {
   View,
   Text,
-  TouchableOpacity,
   Image,
   ScrollView,
   FlatList,
@@ -16,7 +15,10 @@ import {
   Dimensions,
   StyleSheet,
   SafeAreaView,
+  TouchableOpacity,
 } from 'react-native';
+// Import TouchableOpacity for optimized touch interactions
+// import TouchableOpacity from '../../components/TouchableOpacity/TouchableOpacity';
 // import Share from 'react-native-share';
 // import Clipboard from '@react-native-clipboard/clipboard';
 import { Share as RNShare } from 'react-native';
@@ -29,11 +31,13 @@ import {
   Icon,
   VideoCard,
 } from '../../components';
+import Android12Button from '../../components/Android12Button/Android12Button';
+import QRShareModal from '../../components/QRShareModal';
+import QRScannerModal from '../../components/QRScannerModal';
 
 import ShareVideoScreen from '../ShareVideo';
 import TEXT_CONSTANTS, { TAB_KEYS, TabKey } from './constants';
 
-import ReceiverModeManager from '../../services/ReceiverModeManager';
 import { useThemeColors, useSpacing } from '../../theme/ThemeProvider';
 import DownloadItems from '../DownloadItems/DownloadItems';
 import SpredFileService from '../../services/SpredFileService';
@@ -47,6 +51,9 @@ import { cleanMovieTitle } from '../../../src/helpers/utils';
 import { customHeaders } from '../../../src/helpers/api/apiConfig';
 import { FollowingService } from '../../services/FollowingService';
 import logger from '../../utils/logger';
+import OfflineVideoCacheService from '../../services/OfflineVideoCacheService';
+import { networkOptimizer } from '../../services/NetworkOptimizer';
+import PermissionStatusIndicator from '../../components/PermissionStatusIndicator';
 
 // Define User interface for type safety
 interface User {
@@ -160,9 +167,13 @@ const PlayVideos = (props: any) => {
   const [watchLater, setWatchLater] = useState<any[]>([]);
   const [allVideos, setAllVideos] = useState<any[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isReceiverModeActive, setIsReceiverModeActive] = useState(false);
-  const [showShareVideoScreen, setShowShareVideoScreen] = useState(false);
   const [resolvedVideoPath, setResolvedVideoPath] = useState<string>('');
+  const [visibleRecommendations, setVisibleRecommendations] = useState(6);
+  const [showQRShareModal, setShowQRShareModal] = useState(false);
+  const [showQRScannerModal, setShowQRScannerModal] = useState(false);
+
+  // Video preloading state
+  const [nextVideoPreloaded, setNextVideoPreloaded] = useState(false);
 
   // Track fullscreen state for the video player so UI (like floating back button) can hide/show
 
@@ -308,63 +319,86 @@ const PlayVideos = (props: any) => {
 
 
 
-  // Function to handle SPRED sharing with Universal Sharing Modal
+  // Function to handle SPRED sharing with QR Code system
   const handleSpredShare = useCallback(async () => {
+    logger.info('🎯 SPRED button pressed - using QR Code sharing.');
+
+    // 1. Check if the video is downloaded. If not, show the download prompt.
+    if (!isVideoDownloaded) {
+      setShowDownloadRequiredModal(true);
+      return;
+    }
+
+    // 2. Validate essential video data.
+    const videoTitle = cleanMovieTitle(title);
+    if (!item || !videoTitle) {
+      showAlert('Error', 'Video data is not available. Please try again.', 'error');
+      return;
+    }
+
+    // 3. Resolve the video path. This is a critical step.
+    const videoPath = await getVideoPath();
+    if (!videoPath) {
+      showAlert(
+        'Video Not Found',
+        'The downloaded video file could not be found. Please try downloading it again.',
+        'error',
+      );
+      return;
+    }
+
+    // 4. Set the path and show the QR Share modal (replacing old P2P modal).
+    setResolvedVideoPath(videoPath);
+    setShowQRShareModal(true);
+    logger.info('✅ Video path resolved, opening QR Share modal.');
+  }, [
+    isVideoDownloaded,
+    item,
+    title,
+    showAlert,
+    getVideoPath,
+  ]);
+
+  // Function to handle Quick Share using QR Code modal
+  const handleQuickShare = useCallback(async () => {
+    logger.info('⚡ Quick Share button pressed - using QR Code sharing.');
+
     try {
-      // Check if video is downloaded before allowing SPRED sharing
+      // 1. Check if the video is downloaded
       if (!isVideoDownloaded) {
-        setShowDownloadRequiredModal(true);
+        showAlert('Download Required', 'Please download the video first to share it.', 'warning');
         return;
       }
 
-      logger.info('🎯 SPRED button pressed - opening Universal Sharing Modal');
-
-      // Validate required data exists
-      if (!item) {
-        showAlert(
-          'Error',
-          'Video data not available. Please try again.',
-          'error',
-        );
+      // 2. Validate essential video data
+      const videoTitle = cleanMovieTitle(title);
+      if (!item || !videoTitle) {
+        showAlert('Error', 'Video data is not available. Please try again.', 'error');
         return;
       }
 
-      const videoTitle = cleanMovieTitle(title) || 'Unknown Video';
-
-      // Validate all required parameters
-      if (!videoTitle || videoTitle.trim() === '') {
-        showAlert(
-          'Sharing Error',
-          'Invalid video information. Please refresh and try again.',
-          'error',
-        );
-        return;
-      }
-
-      logger.info('✅ All validations passed, resolving video path...');
-
-      // Resolve video path before opening modal
+      // 3. Resolve the video path
       const videoPath = await getVideoPath();
-
       if (!videoPath) {
         showAlert(
-          'Video Not Downloaded',
-          'This video must be downloaded before it can be shared to nearby devices. Please download the video first.',
-          'error'
+          'Video Not Found',
+          'The downloaded video file could not be found. Please try downloading it again.',
+          'error',
         );
         return;
       }
 
+      // 4. Set the resolved video path and show QR Share modal
       setResolvedVideoPath(videoPath);
-      logger.info('✅ Video path resolved, opening Universal Sharing Modal');
+      setShowQRShareModal(true);
 
-      // Open Share Video Screen for one-tap sharing
-      setShowShareVideoScreen(true);
-    } catch (error) {
+      logger.info('✅ QR Share modal opened successfully with video path:', videoPath);
+    } catch (error: any) {
+      logger.error('❌ Quick Share failed:', error);
       showAlert(
-        'Sharing Error',
-        `Failed to prepare sharing: ${error.message || 'Unknown error'}`,
-        'error',
+        'Share Failed',
+        'Failed to prepare video for sharing. Please try again.',
+        'error'
       );
     }
   }, [
@@ -374,6 +408,37 @@ const PlayVideos = (props: any) => {
     showAlert,
     getVideoPath,
   ]);
+
+  // Function to handle QR code scanning for receiving videos
+  const handleQRScan = useCallback(() => {
+    logger.info('📱 QR Scan button pressed - opening scanner.');
+    setShowQRScannerModal(true);
+  }, []);
+
+  // Function to handle received video from QR scan
+  const handleVideoReceived = useCallback((filePath: string, videoData: any) => {
+    logger.info('📥 Video received from QR scan:', { filePath, videoData });
+
+    // Navigate to the received video or show success message
+    showAlert(
+      'Video Downloaded!',
+      `"${videoData.title}" has been downloaded successfully.`,
+      'success',
+      {
+        confirmText: 'Watch Now',
+        onConfirm: () => {
+          // Navigate to play the downloaded video
+          navigation.navigate('PlayVideos', {
+            item: {
+              ...videoData,
+              localPath: filePath,
+              downloadedPath: filePath,
+            }
+          });
+        }
+      }
+    );
+  }, [showAlert, navigation]);
 
   // Function to handle share completion
   const handleShareComplete = useCallback((result: any) => {
@@ -401,7 +466,6 @@ const PlayVideos = (props: any) => {
             'No nearby devices are available to receive the video. Make sure other devices have receiver mode enabled and are nearby.',
             'info'
           );
-          setShowShareVideoScreen(false);
           return;
         default:
           message = 'Video sent successfully';
@@ -421,58 +485,9 @@ const PlayVideos = (props: any) => {
       );
     }
 
-    // Close the screen
-    setShowShareVideoScreen(false);
+    // No screen to close - QR sharing is handled by modal
   }, [showAlert]);
 
-  // Function to handle Receiver Mode toggle
-  const handleReceiverMode = useCallback(async () => {
-    try {
-      logger.info('📥 Receiver mode button pressed');
-
-      if (isReceiverModeActive) {
-        // Stop receiver mode
-        const receiverManager = ReceiverModeManager.getInstance();
-        await receiverManager.cleanup();
-        setIsReceiverModeActive(false);
-
-        showAlert(
-          'Receiver Mode Stopped',
-          'Device is no longer discoverable for receiving files',
-          'info'
-        );
-        logger.info('🛑 Receiver mode stopped');
-      } else {
-        // Start receiver mode
-        const receiverManager = ReceiverModeManager.getInstance();
-        const initialized = await receiverManager.initialize();
-
-        if (initialized) {
-          setIsReceiverModeActive(true);
-          showAlert(
-            'Receiver Mode Started',
-            'Device is now discoverable and ready to receive files from nearby devices',
-            'success'
-          );
-          logger.info('✅ Receiver mode started successfully');
-        } else {
-          showAlert(
-            'Receiver Mode Failed',
-            'Could not initialize receiver mode. Check permissions and WiFi.',
-            'error'
-          );
-          logger.error('❌ Receiver mode failed to start');
-        }
-      }
-    } catch (error) {
-      logger.error('❌ Receiver mode error:', error);
-      showAlert(
-        'Receiver Mode Error',
-        `Failed to toggle receiver mode: ${error.message || 'Unknown error'}`,
-        'error'
-      );
-    }
-  }, [isReceiverModeActive, showAlert]);
 
 
 
@@ -1040,14 +1055,82 @@ ${generateShareUrl()}`;
     setShowShareModal(false);
   }, [generateShareMessage, showAlert]);
 
-  // Recommendations: filter out current video
+  // Recommendations: filter out current video with lazy loading
   const RecommendedMovies = useMemo(
     () =>
       allVideos
         .filter(v => (v.key || v.videoKey) !== (videoKey || item.key))
-        .slice(0, 10),
-    [allVideos, videoKey, item.key],
+        .slice(0, visibleRecommendations),
+    [allVideos, videoKey, item.key, visibleRecommendations],
   );
+
+  // Load more recommendations function
+  const loadMoreRecommendations = useCallback(() => {
+    setVisibleRecommendations(prev => Math.min(prev + 6, allVideos.length - 1));
+  }, [allVideos.length]);
+
+  // Video preloading function
+  const preloadNextVideo = useCallback(async (nextVideoId: string) => {
+    if (nextVideoPreloaded) return;
+
+    try {
+      const nextVideo = allVideos.find(v => (v.key || v.videoKey || v._ID) === nextVideoId);
+      if (!nextVideo) return;
+
+      // Check if already cached
+      const existingPath = await OfflineVideoCacheService.getInstance().getOfflineVideoPath(nextVideoId);
+      if (existingPath) {
+        setNextVideoPreloaded(true);
+        return;
+      }
+
+      // Preload in background with low priority
+      await OfflineVideoCacheService.getInstance().downloadVideo(
+        nextVideoId,
+        nextVideo.title || 'Next Video',
+        nextVideo.thumbnailUrl,
+        undefined,
+        (progress) => {
+          if (progress >= 100) {
+            setNextVideoPreloaded(true);
+          }
+        }
+      );
+    } catch (error) {
+      logger.warn('Failed to preload next video:', error);
+    }
+  }, [allVideos, nextVideoPreloaded]);
+
+  // Batch video metadata requests for better performance
+  const batchLoadVideoMetadata = useCallback(async (videoIds: string[]) => {
+    try {
+      const requests = videoIds.map(id => ({
+        method: 'GET',
+        url: `/api/videos/${id}/metadata`,
+      }));
+
+      const results = await networkOptimizer.batchRequest(requests, {
+        cache: true,
+        cacheTTL: 10 * 60 * 1000, // 10 minutes
+      });
+
+      return results;
+    } catch (error) {
+      logger.warn('Failed to batch load video metadata:', error);
+      return [];
+    }
+  }, []);
+
+  // Preload next video when recommendations are loaded
+  useEffect(() => {
+    if (RecommendedMovies.length > 0 && !nextVideoPreloaded) {
+      const nextVideo = RecommendedMovies[0];
+      const nextVideoId = nextVideo.key || nextVideo.videoKey || nextVideo._ID;
+      if (nextVideoId) {
+        preloadNextVideo(nextVideoId);
+      }
+    }
+  }, [RecommendedMovies, nextVideoPreloaded, preloadNextVideo]);
 
   const renderRecommendation = useCallback(
     ({ item }) => (
@@ -1265,8 +1348,8 @@ ${generateShareUrl()}`;
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.floatingBackButton}
-            activeOpacity={0.7}
-            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+            accessibilityLabel="Go back to previous screen"
+            accessibilityHint="Navigate back"
           >
             <Icon name="arrow-left" size={20} color="#FFFFFF" />
           </TouchableOpacity>
@@ -1339,6 +1422,8 @@ ${generateShareUrl()}`;
                   fetchVideoUrl();
                 }}
                 style={styles.retryButton}
+                accessibilityLabel="Retry loading video"
+                accessibilityHint="Try to load the video again"
               >
                 <CustomText
                   fontSize={getResponsiveFontSize(14)}
@@ -1457,6 +1542,8 @@ ${generateShareUrl()}`;
               <TouchableOpacity
                 onPress={handleAddWatchLater}
                 style={styles.additionalActionButton}
+                accessibilityLabel="Add to watch later"
+                accessibilityHint="Save video for later viewing"
               >
                 <Icon
                   name="plus"
@@ -1477,6 +1564,8 @@ ${generateShareUrl()}`;
               <TouchableOpacity
                 onPress={() => navigation.navigate('Download')}
                 style={styles.additionalActionButton}
+                accessibilityLabel="View downloads"
+                accessibilityHint="Navigate to downloads screen"
               >
                 <Icon
                   name="download"
@@ -1497,6 +1586,8 @@ ${generateShareUrl()}`;
               <TouchableOpacity
                 onPress={() => setShowShareModal(true)}
                 style={styles.additionalActionButton}
+                accessibilityLabel="Share video"
+                accessibilityHint="Open sharing options"
               >
                 <Icon
                   name="share"
@@ -1530,6 +1621,8 @@ ${generateShareUrl()}`;
                   <TouchableOpacity
                     onPress={() => setShowDownload(true)}
                     style={styles.downloadButton}
+                    accessibilityLabel="Download video"
+                    accessibilityHint="Start video download process"
                   >
                     <Icon
                       name="download"
@@ -1542,32 +1635,60 @@ ${generateShareUrl()}`;
                     </CustomText>
                   </TouchableOpacity>
 
+                  {/* SPRED Button Removed - QR Code system is now the primary sharing method */}
+
+                  {/* QR Share Button - NEW */}
+                  {isVideoDownloaded && (
+                    <TouchableOpacity
+                      onPress={handleQuickShare}
+                      style={styles.quickShareButton}
+                      accessibilityLabel="Share video with QR code"
+                      accessibilityHint="Generate QR code for video sharing"
+                    >
+                      <Icon
+                        name="qr-code"
+                        size={16}
+                        color="#FFFFFF"
+                        style={styles.quickShareIcon}
+                      />
+                      <CustomText
+                        fontSize={12}
+                        fontWeight="600"
+                        color="#FFFFFF"
+                      >
+                        QR Share
+                      </CustomText>
+                    </TouchableOpacity>
+                  )}
+
+                  {/* QR Scan Button - NEW */}
                   <TouchableOpacity
-                    onPress={handleSpredShare}
-                    style={styles.spredButton}
-                  // NEVER add disabled={!isVideoDownloaded} - keep button clickable for alert dialogs
+                    onPress={handleQRScan}
+                    style={styles.qrScanButton}
+                    accessibilityLabel="Scan QR code to receive video"
+                    accessibilityHint="Scan QR code from another device to download video"
                   >
-                    <Image
-                      source={require('../../../assets/spred-white.png')}
-                      style={styles.spredButtonIcon}
+                    <Icon
+                      name="qr-code-scanner"
+                      size={16}
+                      color="#FFFFFF"
+                      style={styles.qrScanIcon}
                     />
                     <CustomText
-                      fontSize={16}
+                      fontSize={12}
                       fontWeight="600"
-                      color={isVideoDownloaded ? '#FFFFFF' : '#CCCCCC'}
+                      color="#FFFFFF"
                     >
-                      {TEXT_CONSTANTS.SPRED}
+                      QR Scan
                     </CustomText>
-                    {!isVideoDownloaded && (
-                      <Icon
-                        name="download"
-                        size={16}
-                        color="#CCCCCC"
-                        style={styles.engagementIcon}
-                      />
-                    )}
                   </TouchableOpacity>
                 </View>
+
+                {/* Proactive Permission Check Indicator */}
+                <View style={{ marginTop: 16 }}>
+                  <PermissionStatusIndicator compact={true} showActions={false} />
+                </View>
+
 
                 {/* Creator Section */}
                 <View style={styles.creatorSection}>
@@ -1587,6 +1708,8 @@ ${generateShareUrl()}`;
                           })
                         }
                         style={styles.creatorAvatarContainer}
+                        accessibilityLabel={`View ${uploaderInfo.name} profile`}
+                        accessibilityHint="Navigate to creator profile page"
                       >
                         {uploaderInfo.avatar ? (
                           <Image
@@ -1637,6 +1760,8 @@ ${generateShareUrl()}`;
                         onPress={handleFollowToggle}
                         disabled={followingLoading}
                         style={styles.subscribeButton}
+                        accessibilityLabel={followingLoading ? 'Loading...' : isFollowing ? 'Unfollow creator' : 'Follow creator'}
+                        accessibilityHint={followingLoading ? 'Please wait' : isFollowing ? 'Stop following this creator' : 'Follow this creator for updates'}
                       >
                         <CustomText
                           fontSize={getResponsiveFontSize(14)}
@@ -1667,6 +1792,8 @@ ${generateShareUrl()}`;
                         styles.tab,
                         activeTab === TAB_KEYS.ABOUT && styles.activeTab
                       ]}
+                      accessibilityLabel="About section"
+                      accessibilityHint="View movie description and details"
                     >
                       <CustomText
                         fontSize={14}
@@ -1683,6 +1810,8 @@ ${generateShareUrl()}`;
                         styles.tab,
                         activeTab === TAB_KEYS.CASTS && styles.activeTab
                       ]}
+                      accessibilityLabel="Cast and crew section"
+                      accessibilityHint="View movie cast and crew information"
                     >
                       <CustomText
                         fontSize={14}
@@ -1699,6 +1828,8 @@ ${generateShareUrl()}`;
                         styles.tab,
                         activeTab === TAB_KEYS.COMMENTS && styles.activeTab
                       ]}
+                      accessibilityLabel="Comments section"
+                      accessibilityHint="View user comments and reviews"
                     >
                       <CustomText
                         fontSize={14}
@@ -1820,6 +1951,8 @@ ${generateShareUrl()}`;
                       data={RecommendedMovies}
                       contentContainerStyle={styles.recommendationsList}
                       renderItem={renderRecommendation}
+                      onEndReached={loadMoreRecommendations}
+                      onEndReachedThreshold={0.5}
                     />
                   </View>
                 )}
@@ -1874,6 +2007,8 @@ ${generateShareUrl()}`;
               <TouchableOpacity
                 onPress={() => setShowShareModal(false)}
                 style={styles.shareModalCloseButton}
+                accessibilityLabel="Close share modal"
+                accessibilityHint="Close the sharing options"
               >
                 <Icon name="close" size={24} color="#8B8B8B" />
               </TouchableOpacity>
@@ -1922,6 +2057,8 @@ ${generateShareUrl()}`;
               <TouchableOpacity
                 style={styles.socialButton}
                 onPress={() => handleSocialShare('twitter')}
+                accessibilityLabel="Share to Twitter"
+                accessibilityHint="Share this video on Twitter"
               >
                 <CustomText fontSize={16} fontWeight="600" color="#FFFFFF">
                   {TEXT_CONSTANTS.SHARE_TO_X}
@@ -1932,6 +2069,8 @@ ${generateShareUrl()}`;
               <TouchableOpacity
                 style={styles.socialButton}
                 onPress={() => handleSocialShare('facebook')}
+                accessibilityLabel="Share to Facebook"
+                accessibilityHint="Share this video on Facebook"
               >
                 <CustomText fontSize={16} fontWeight="600" color="#FFFFFF">
                   {TEXT_CONSTANTS.FACEBOOK}
@@ -1942,6 +2081,8 @@ ${generateShareUrl()}`;
               <TouchableOpacity
                 style={styles.socialButton}
                 onPress={() => handleSocialShare('whatsapp')}
+                accessibilityLabel="Share to WhatsApp"
+                accessibilityHint="Share this video on WhatsApp"
               >
                 <CustomText fontSize={16} fontWeight="600" color="#FFFFFF">
                   {TEXT_CONSTANTS.WHATSAPP}
@@ -1952,6 +2093,8 @@ ${generateShareUrl()}`;
               <TouchableOpacity
                 style={styles.socialButton}
                 onPress={() => handleSocialShare('instagram')}
+                accessibilityLabel="Share to Instagram"
+                accessibilityHint="Share this video on Instagram"
               >
                 <CustomText fontSize={16} fontWeight="600" color="#FFFFFF">
                   {TEXT_CONSTANTS.INSTAGRAM}
@@ -1964,6 +2107,8 @@ ${generateShareUrl()}`;
               <TouchableOpacity
                 style={styles.copyButton}
                 onPress={handleCopyLink}
+                accessibilityLabel="Copy video link"
+                accessibilityHint="Copy the video URL to clipboard"
               >
                 <Icon
                   name="link"
@@ -1979,6 +2124,8 @@ ${generateShareUrl()}`;
               <TouchableOpacity
                 style={styles.copyButton}
                 onPress={handleCopyMessage}
+                accessibilityLabel="Copy share message"
+                accessibilityHint="Copy the formatted share message to clipboard"
               >
                 <Icon
                   name="content-copy"
@@ -1995,6 +2142,8 @@ ${generateShareUrl()}`;
               <TouchableOpacity
                 style={styles.copyButton}
                 onPress={() => handleSocialShare()}
+                accessibilityLabel="More sharing options"
+                accessibilityHint="Open additional sharing options"
               >
                 <Icon
                   name="share"
@@ -2061,6 +2210,8 @@ ${generateShareUrl()}`;
                   setShowDownloadRequiredModal(false);
                   setShowDownload(true);
                 }}
+                accessibilityLabel="Download video now"
+                accessibilityHint="Start downloading the video"
               >
                 <Icon
                   name="download"
@@ -2077,6 +2228,8 @@ ${generateShareUrl()}`;
               <TouchableOpacity
                 style={styles.cancelButton}
                 onPress={() => setShowDownloadRequiredModal(false)}
+                accessibilityLabel="Cancel download"
+                accessibilityHint="Close the download modal"
               >
                 <CustomText fontSize={14} fontWeight="600" color="#8B8B8B">
                   {TEXT_CONSTANTS.CANCEL}
@@ -2163,6 +2316,8 @@ ${generateShareUrl()}`;
                   }
                   setAlertModal(prev => ({ ...prev, visible: false }));
                 }}
+                accessibilityLabel={alertModal.confirmText}
+                accessibilityHint="Confirm the action"
               >
                 <CustomText fontSize={14} fontWeight="600" color="#FFFFFF">
                   {alertModal.confirmText}
@@ -2179,6 +2334,8 @@ ${generateShareUrl()}`;
                     }
                     setAlertModal(prev => ({ ...prev, visible: false }));
                   }}
+                  accessibilityLabel={alertModal.cancelText}
+                  accessibilityHint="Cancel the action"
                 >
                   <CustomText fontSize={14} fontWeight="600" color="#8B8B8B">
                     {alertModal.cancelText}
@@ -2190,34 +2347,24 @@ ${generateShareUrl()}`;
         </View>
       </Modal>
 
-      {/* Floating RECEIVE Button - Hide when in fullscreen */}
-      {!isFullscreen && (
-        <TouchableOpacity
-          style={[
-            styles.receiveFloatingButton,
-            { backgroundColor: isReceiverModeActive ? '#4CAF50' : '#F45303' }
-          ]}
-          onPress={handleReceiverMode}
-        >
-          <View style={styles.receiveButtonContent}>
-            <View style={styles.spredLogoContainer}>
-              <MaterialIcons name={isReceiverModeActive ? "wifi-tethering" : "arrow-circle-down"} size={16} color="#FFFFFF" />
-            </View>
-            <CustomText fontSize={14} fontWeight="700" color="#FFFFFF" style={styles.receiveButtonText}>
-              {isReceiverModeActive ? 'RECEIVING' : 'RECEIVE'}
-            </CustomText>
-          </View>
-        </TouchableOpacity>
-      )}
 
-      {/* Share Video Screen */}
-      <ShareVideoScreen
-        visible={showShareVideoScreen}
-        onClose={() => setShowShareVideoScreen(false)}
+      {/* Share Video Screen - REMOVED: No longer used, SPRED button now uses QR Code system */}
+
+      {/* QR Share Modal */}
+      <QRShareModal
+        visible={showQRShareModal}
+        onClose={() => setShowQRShareModal(false)}
         videoPath={resolvedVideoPath}
         videoTitle={cleanMovieTitle(title)}
-        videoSize={item?.size || 0}
-        videoThumbnail={item?.thumbnail || item?.image || ''}
+        videoSize={item?.size || item?.fileSize || 0}
+        thumbnailUrl={item?.thumbnail || item?.image || ''}
+      />
+
+      {/* QR Scanner Modal */}
+      <QRScannerModal
+        visible={showQRScannerModal}
+        onClose={() => setShowQRScannerModal(false)}
+        onVideoReceived={handleVideoReceived}
       />
 
     </View>
@@ -2321,10 +2468,10 @@ const createStyles = (colors: any) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.background.secondary, // Card Surface background
-    paddingVertical: 2,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    minWidth: 80,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 6,
+    minWidth: 70,
   },
   additionalActionIcon: {
     marginRight: 6,
@@ -2340,12 +2487,12 @@ const createStyles = (colors: any) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.brand.primary[500],
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: 8,
+    borderRadius: 6,
     marginRight: 8,
   },
   downloadButtonIcon: {
-    marginRight: 8,
+    marginRight: 6,
   },
   spredButton: {
     flex: 1,
@@ -2353,8 +2500,8 @@ const createStyles = (colors: any) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.status.success,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: 8,
+    borderRadius: 6,
     marginLeft: 8,
   },
   spredButtonIcon: {
@@ -2408,9 +2555,9 @@ const createStyles = (colors: any) => StyleSheet.create({
   subscribeButtonContainer: {},
   subscribeButton: {
     backgroundColor: colors.brand.primary[500],
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 16,
   },
   subscribeButtonText: {
     fontSize: 14,
@@ -2644,6 +2791,34 @@ const createStyles = (colors: any) => StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
+  },
+  quickShareButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#4CAF50', // Green for Quick Share
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    marginLeft: 8,
+    minWidth: 80,
+  },
+  quickShareIcon: {
+    marginRight: 4,
+  },
+  qrScanButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#2196F3', // Blue for QR Scan
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    marginLeft: 8,
+    minWidth: 80,
+  },
+  qrScanIcon: {
+    marginRight: 4,
   },
 });
 

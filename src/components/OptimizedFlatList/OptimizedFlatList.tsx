@@ -90,6 +90,26 @@ const OptimizedFlatList = <T extends any>({
     [props, memoryOptimized],
   );
 
+  // Add getItemLayout for video lists if not provided
+  const enhancedProps = useMemo(() => {
+    if (props.getItemLayout) {
+      return optimizedProps;
+    }
+
+    // Estimate item height for video cards (adjust based on your VideoCard component)
+    const estimatedItemHeight = 120; // Adjust this value based on your VideoCard height
+    const getItemLayout = (_data: any, index: number) => ({
+      length: estimatedItemHeight,
+      offset: estimatedItemHeight * index,
+      index,
+    });
+
+    return {
+      ...optimizedProps,
+      getItemLayout,
+    };
+  }, [optimizedProps, props.getItemLayout]);
+
   // Component lifecycle management for memory optimization
   useEffect(() => {
     if (memoryOptimized) {
@@ -115,7 +135,7 @@ const OptimizedFlatList = <T extends any>({
       style={[styles.container, style]}
       contentContainerStyle={contentContainerStyle}
       onScroll={handleScroll}
-      {...optimizedProps}
+      {...enhancedProps}
     />
   );
 };

@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   ScrollView,
   Alert,
   Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Video from 'react-native-video';
@@ -14,6 +14,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useOrientation } from '../../hooks/useOrientation';
 import FullscreenVideoPlayer from '../../components/FullscreenVideoPlayer/FullscreenVideoPlayer';
 import { useFullscreenVideo } from '../../contexts/FullscreenVideoContext';
+// Import TouchableOpacity for optimized touch interactions
+// import TouchableOpacity from '../../components/TouchableOpacity/TouchableOpacity';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -85,6 +87,8 @@ const VideoPlayerTest: React.FC = () => {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backButton}
+          accessibilityLabel="Go back"
+          accessibilityHint="Navigate to previous screen"
         >
           <Icon name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
@@ -104,6 +108,8 @@ const VideoPlayerTest: React.FC = () => {
                 selectedVideo === video.uri && styles.selectedVideoOption,
               ]}
               onPress={() => selectVideo(video)}
+              accessibilityLabel={`Select ${video.name} video`}
+              accessibilityHint={`Play ${video.name} test video`}
             >
               <Text style={styles.videoOptionText}>{video.name}</Text>
               <Text style={styles.videoOptionSubtext}>{video.type}</Text>
@@ -138,6 +144,8 @@ const VideoPlayerTest: React.FC = () => {
                 <TouchableOpacity
                   style={styles.playPauseButton}
                   onPress={togglePlayback}
+                  accessibilityLabel={isPlaying ? 'Pause video' : 'Play video'}
+                  accessibilityHint="Toggle video playback"
                 >
                   <Icon
                     name={isPlaying ? 'pause' : 'play-arrow'}
@@ -149,6 +157,8 @@ const VideoPlayerTest: React.FC = () => {
                 <TouchableOpacity
                   style={styles.fullscreenButton}
                   onPress={handleFullscreen}
+                  accessibilityLabel="Enter fullscreen"
+                  accessibilityHint="Make video fullscreen"
                 >
                   <Icon name="fullscreen" size={24} color="#fff" />
                 </TouchableOpacity>

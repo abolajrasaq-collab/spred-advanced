@@ -22,6 +22,10 @@ import { PaperProvider } from 'react-native-paper';
 // import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider } from './theme/ThemeProvider';
+// Performance Optimizations - React Query
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './services/QueryClient';
+import FastStorage from './services/FastStorage';
 // Performance Manager
 import PerformanceManager from './services/PerformanceManager';
 // Permission Handler
@@ -30,6 +34,8 @@ import { PermissionHandler } from './utils/PermissionHandler';
 import ReceiverModeManager from './services/ReceiverModeManager';
 // Performance Optimizations
 import { LogBox } from 'react-native';
+// High Contrast Provider for UniversalTouchable accessibility - DISABLED
+// import { HighContrastProvider } from './components/UniversalButton/AccessibilitySystem/HighContrastProvider';
 // Simple Real-time Monitoring Dashboard - DISABLED
 // import SimpleMonitoringDashboard from './components/SimpleMonitoringDashboard/SimpleMonitoringDashboard';
 // Debug Login Component - REMOVED
@@ -52,6 +58,10 @@ const App = () => {
       'Warning: componentWillReceiveProps',
       'Warning: componentWillMount',
     ]);
+
+    // Initialize FastStorage for performance
+    const fastStorage = FastStorage.getInstance();
+    fastStorage.preloadCriticalData();
 
     const performanceManager = PerformanceManager.getInstance();
 
@@ -141,20 +151,25 @@ const App = () => {
   }, []);
 
   return (
-    <Provider store={store}>
-      <SafeAreaProvider>
-        <ThemeProvider>
-          <PaperProvider>
-            <PersistGate loading={null} persistor={persistor}>
-                    <ApplicationNavigator />
-                    {/* Simple Real-time Monitoring Dashboard - DISABLED */}
-                    {/* <SimpleMonitoringDashboard position="floating" /> */}
-                    {/* Feature Highlights - DISABLED per user request */}
-            </PersistGate>
-          </PaperProvider>
-        </ThemeProvider>
-      </SafeAreaProvider>
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <SafeAreaProvider>
+          <ThemeProvider>
+            {/* HighContrastProvider - DISABLED */}
+            {/* <HighContrastProvider> */}
+              <PaperProvider>
+                <PersistGate loading={null} persistor={persistor}>
+                        <ApplicationNavigator />
+                        {/* Simple Real-time Monitoring Dashboard - DISABLED */}
+                        {/* <SimpleMonitoringDashboard position="floating" /> */}
+                        {/* Feature Highlights - DISABLED per user request */}
+                </PersistGate>
+              </PaperProvider>
+            {/* </HighContrastProvider> */}
+          </ThemeProvider>
+        </SafeAreaProvider>
+      </Provider>
+    </QueryClientProvider>
   );
 };
 

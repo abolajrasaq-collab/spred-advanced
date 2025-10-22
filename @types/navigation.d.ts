@@ -46,18 +46,6 @@ export type MainParamsList = {
   CreatorProfile: { creatorName: string; creatorId: string };
   DownloadManager: undefined;
   VideoPlayerTest: undefined;
-  WiFiDirect: {
-    mode?: 'send' | 'receive';
-    selectedFile?: {
-      title: string;
-      thumbnail: string;
-      duration: string;
-      size: number;
-      videoKey: string;
-      src: string;
-    };
-    autoStart?: boolean;
-  };
 };
 
 export type ApplicationStackParamList = {

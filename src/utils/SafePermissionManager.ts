@@ -94,7 +94,7 @@ export class SafePermissionManager {
       // Test the permission API with a simple call to detect native crashes
       try {
         // This is a synchronous test that might reveal the native crash issue
-        const testResult = PermissionsAndroid.RESULTS;
+        const testResult = PermissionsAndroid?.RESULTS;
         if (!testResult || !testResult.GRANTED) {
           logger.warn('⚠️ PermissionsAndroid.RESULTS not properly available');
           return false;

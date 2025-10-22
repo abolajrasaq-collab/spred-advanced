@@ -474,6 +474,24 @@ const Settings = () => {
               <MaterialIcons name="chevron-right" size={20} color="#8B8B8B" />
             </View>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.previewButton}
+            onPress={() => navigation.navigate('ButtonPerformanceTest')}
+          >
+            <View style={styles.menuItem}>
+              <View style={styles.menuLeft}>
+                <MaterialIcons name="speed" size={20} color="#F45303" />
+                <View style={styles.menuInfo}>
+                  <Text style={styles.menuTitle}>Button Performance Test</Text>
+                  <Text style={styles.menuSubtitle}>
+                    Compare old vs optimized button performance
+                  </Text>
+                </View>
+              </View>
+              <MaterialIcons name="chevron-right" size={20} color="#8B8B8B" />
+            </View>
+          </TouchableOpacity>
         </View>
 
         {/* Logout Button */}

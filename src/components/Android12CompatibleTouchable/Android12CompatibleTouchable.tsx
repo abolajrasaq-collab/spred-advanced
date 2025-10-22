@@ -42,10 +42,10 @@ const Android12CompatibleTouchable: React.FC<Android12CompatibleTouchableProps> 
 
   const handlePressIn = () => {
     if (disabled) return;
-    
+
     setIsPressed(true);
     onPressIn?.();
-    
+
     // Android 12 compatible animation
     if (Platform.OS === 'android') {
       Animated.parallel([
@@ -72,10 +72,10 @@ const Android12CompatibleTouchable: React.FC<Android12CompatibleTouchableProps> 
 
   const handlePressOut = () => {
     if (disabled) return;
-    
+
     setIsPressed(false);
     onPressOut?.();
-    
+
     // Reset animations
     Animated.parallel([
       Animated.timing(opacityAnim, {

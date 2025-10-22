@@ -45,6 +45,7 @@ import { api } from '../../helpers/api/api';
 import { getDataJson, storeDataJson } from '../../helpers/api/Asyncstorage';
 
 import SpredFileService from '../../services/SpredFileService';
+import QuickShareService from '../../services/QuickShareService';
 
 const LeftIcon = () => (
   <MaterialIcons name="arrow-back" size={20} color="#F45305" />
@@ -90,7 +91,14 @@ const DownloadedVideoItem = ({ item, index, onPress, onShare, onDelete }) => {
           <Text style={styles.videoSize}>
             {item.size ? formatBytes(item.size) : 'Size unavailable'}
           </Text>
-          <Text style={styles.videoStatus}>Downloaded</Text>
+          <Text style={styles.videoStatus}>
+            {item.folderSource === 'Received' ? 'Received' : 'Downloaded'}
+          </Text>
+          {item.receivedDate && (
+            <Text style={styles.receivedDate}>
+              {new Date(item.receivedDate).toLocaleDateString()}
+            </Text>
+          )}
         </View>
       </TouchableOpacity>
 
@@ -817,18 +825,14 @@ const Download = () => {
     }
   };
 
-  // New function to fetch received files using SpredFileService
+  // New function to fetch received files using QuickShareService
   const fetchReceivedList = async () => {
     try {
-      // Use SpredFileService to get received files
-      const spredFileService = SpredFileService.getInstance();
-      await spredFileService.initializeDirectories();
+      // Use QuickShareService to get received files
+      const quickShareService = QuickShareService.getInstance();
 
-      // Get all SPRED files
-      const allSpredFiles = await spredFileService.getSpredFiles();
-
-      // Filter for received files only
-      const receivedFiles = allSpredFiles.filter(file => file.isReceived);
+      // Get all received files
+      const receivedFiles = await quickShareService.getReceivedFiles();
 
       // Process received files with thumbnails
       const processedReceivedFiles = [];
@@ -836,27 +840,30 @@ const Download = () => {
         // Generate thumbnail with error handling
         let thumbnail = null;
         try {
-          thumbnail = await generateThumbnail(file.path);
+          thumbnail = await generateThumbnail(file.filePath);
         } catch (thumbnailError) {
           // Continue without thumbnail
         }
 
         processedReceivedFiles.push({
-          name: file.name,
+          name: file.title,
           thumbnail: thumbnail?.path || '',
-          size: file.size,
+          size: file.fileSize,
           duration: 'videoDuration',
-          path: file.path,
+          path: file.filePath,
           folderSource: 'Received',
-          contentId: file.name.includes('_') ? file.name.split('_')[0] : null,
+          contentId: file.id,
+          receivedDate: file.receivedDate,
         });
       }
 
-      // Sort by name for consistent ordering
-      processedReceivedFiles.sort((a, b) => a.name.localeCompare(b.name));
+      // Sort by received date (newest first)
+      processedReceivedFiles.sort((a, b) =>
+        new Date(b.receivedDate || 0).getTime() - new Date(a.receivedDate || 0).getTime()
+      );
       setReceivedList(processedReceivedFiles);
       // DISABLED FOR PERFORMANCE
-      // console.log('...', processedReceivedFiles.length);
+      // console.log('📥 Fetched', processedReceivedFiles.length, 'received files');
     } catch (error) {
       // DISABLED FOR PERFORMANCE
       // console.log('❌ Error fetching received list:', error);
@@ -1292,8 +1299,14 @@ const Download = () => {
               />
               <Text style={styles.emptyTitle}>No Received Files</Text>
               <Text style={styles.emptySubtitle}>
-                Videos received via SPRED will appear here
+                Videos received via SPRED Quick Share will appear here
               </Text>
+              <TouchableOpacity
+                style={styles.shareButtonEmpty}
+                onPress={() => navigation.navigate('PlayVideos')}
+              >
+                <Text style={styles.shareButtonText}>Go to Videos</Text>
+              </TouchableOpacity>
             </View>
           }
           contentContainerStyle={{ flexGrow: 1 }}
@@ -1522,6 +1535,7 @@ const Download = () => {
           </View>
         </View>
       </Modal>
+
     </View>
   );
 };
@@ -1960,6 +1974,11 @@ const styles = StyleSheet.create({
   videoStatus: {
     fontSize: 12,
     color: '#8B8B8B',
+  },
+  receivedDate: {
+    fontSize: 12,
+    color: '#8B8B8B',
+    marginTop: 2,
   },
   videoActions: {
     flexDirection: 'row',

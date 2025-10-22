@@ -23,6 +23,9 @@ const reducers = combineReducers({
   [api.reducerPath]: api.reducer,
 });
 
+// Define RootState type
+export type RootState = ReturnType<typeof reducers>;
+
 const storage = new MMKV();
 export const reduxStorage: Storage = {
   setItem: (key, value) => {

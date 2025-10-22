@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { MainParamsList } from '../../types/navigation';
+import { RootStackParamList } from '../../types/navigation';
 import {
   getDataJson,
   storeDataJson,
@@ -332,7 +332,7 @@ const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
 };
 
 const DownloadItems = ({ url, title }: { url: string; title?: string }) => {
-  const navigation = useNavigation<NativeStackNavigationProp<MainParamsList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [loading, setLoading] = useState(false);
   const [mainloading, setMainLoading] = useState(false);
   const [wallet, setWallet] = useState<Wallet | null>(null);
@@ -485,10 +485,10 @@ const DownloadItems = ({ url, title }: { url: string; title?: string }) => {
         return;
       }
 
-      // Navigate to PlayDownloadedVideos screen
+      // Navigate to PlayDownloadedVideo screen
       // DISABLED FOR PERFORMANCE
-      // console.log('📱 Navigating to PlayDownloadedVideos with:', movieData);
-      navigation.navigate('PlayDownloadedVideos', { movie: movieData });
+      // console.log('📱 Navigating to PlayDownloadedVideo with:', movieData);
+      navigation.navigate('PlayDownloadedVideo', { videoPath: movieData.path, videoTitle: movieData.name });
     } catch (error) {
       // DISABLED FOR PERFORMANCE
       // console.log('❌ Error playing downloaded video:', error.message);
@@ -1654,7 +1654,7 @@ const DownloadItems = ({ url, title }: { url: string; title?: string }) => {
                   (await getDataJson('notifications')) || [];
                 const updatedNotifications = [
                   notificationData,
-                  ...existingNotifications,
+                  ...(Array.isArray(existingNotifications) ? existingNotifications : []),
                 ];
                 await storeDataJson('notifications', updatedNotifications);
               } catch (error) {
@@ -2292,6 +2292,7 @@ icon={<Icon name="check" size="md" color="white" />}
           />
         )}
       </View>
+      
     </View>
   );
 };

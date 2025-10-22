@@ -118,10 +118,10 @@ export class CrossPlatformSharingService {
       timestamp: Date.now(),
       platform: Platform.OS,
       error: {
-        message: error.message || 'Unknown error',
-        stack: error.stack,
-        code: (error as any).code,
-        nativeError: (error as any).nativeError
+        message: error?.message || 'Unknown error',
+        stack: error?.stack,
+        code: (error as any)?.code,
+        nativeError: (error as any)?.nativeError
       },
       context: {
         ...context,

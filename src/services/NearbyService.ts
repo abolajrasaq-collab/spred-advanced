@@ -5,22 +5,17 @@ import SafePermissionManager, { PermissionResult, PermissionSummary } from '../u
 
 
 // Real API imports - Use existing P2P service as the real implementation
-import { P2PService } from './P2PService';
+// P2PService import removed to fix undefined module error
 
 let MultipeerConnectivity: any = null;
-let p2pService: P2PService | null = null;
+let p2pService: any = null;
 
 // Try to import the packages, fallback gracefully if not available
 try {
   if (Platform.OS === 'android') {
-    // Use the existing P2P service as the real Android implementation
-    try {
-      p2pService = P2PService.getInstance();
-      logger.info('📱 P2P Service loaded as real Android Nearby implementation');
-    } catch (androidError) {
-      logger.warn('⚠️ P2P Service not available for Android:', androidError);
-      p2pService = null;
-    }
+    // P2P Service is not available - will use mock mode
+    logger.info('📱 P2P Service not available - using mock mode for Android');
+    p2pService = null;
   } else if (Platform.OS === 'ios') {
     // Try iOS Multipeer Connectivity
     try {

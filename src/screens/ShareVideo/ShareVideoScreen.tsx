@@ -13,7 +13,7 @@ import {
     Dimensions,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { P2PService, Device, P2PServiceState } from '../../services/P2PService';
+import { CrossPlatformSharingService as P2PService, SharingState as P2PServiceState, NearbyDevice as Device } from '../../services/CrossPlatformSharingService';
 import { Android12Button } from '../../components/Android12Button';
 import { formatBytes } from '../../helpers/utils';
 
@@ -90,30 +90,23 @@ const ShareVideoScreen: React.FC<ShareVideoScreenProps> = ({
         try {
             setShareMode('discovery');
             setErrorMessage('');
-
-            const initialized = await p2pService.initializeService();
-            if (!initialized) {
+            const result = await p2pService.shareVideo(videoPath);
+            if (result.success) {
+                setShareMode('completed');
+            } else {
                 setShareMode('error');
-                setErrorMessage('Failed to initialize sharing service. Please try again.');
-                return;
-            }
-
-            const discoveryStarted = await p2pService.startDiscovery();
-            if (!discoveryStarted) {
-                setShareMode('error');
-                setErrorMessage('Failed to start device discovery. Please check permissions.');
+                setErrorMessage(result.error || 'Sharing failed');
             }
         } catch (error) {
             setShareMode('error');
-            setErrorMessage(`Initialization failed: ${error.message || 'Unknown error'}`);
+            setErrorMessage(`Sharing failed: ${error.message || 'Unknown error'}`);
         }
     };
 
     const handleP2PStateChange = (state: P2PServiceState) => {
         // Handle transfer progress updates
         if (state.transferProgress) {
-            // Mock progress for now since the P2PFile interface might not have progress
-            const progress = Math.min(transferProgress + 10, 100); // Mock progress increment
+            const progress = state.transferProgress.progress;
             setTransferProgress(progress);
 
             // Animate progress bar
@@ -122,23 +115,18 @@ const ShareVideoScreen: React.FC<ShareVideoScreenProps> = ({
                 duration: 200,
                 useNativeDriver: false,
             }).start();
-
-            // Calculate transfer speed and ETA (mock for now)
-            if (progress > 0 && shareMode === 'transferring') {
-                const speed = Math.random() * 10 + 5; // Mock speed 5-15 MB/s
-                setTransferSpeed(`${speed.toFixed(1)} MB/s`);
-
-                const remaining = ((100 - progress) / progress) * 30; // Mock calculation
-                const minutes = Math.floor(remaining / 60);
-                const seconds = Math.floor(remaining % 60);
-                setTimeRemaining(`${minutes}:${seconds.toString().padStart(2, '0')}`);
-            }
         }
 
-        // Handle connection state changes
-        if (state.isConnected && shareMode === 'connecting') {
-            setShareMode('transferring');
-            startFileTransfer();
+        if(state.status) {
+            if(state.status.toLowerCase().includes('sending')) {
+                setShareMode('transferring');
+            } else if (state.status.toLowerCase().includes('looking for nearby devices')) {
+                setShareMode('discovery');
+            } else if (state.status.toLowerCase().includes('connecting')) {
+                setShareMode('connecting');
+            } else if (state.status.toLowerCase().includes('completed')) {
+                setShareMode('completed');
+            }
         }
 
         // Handle errors
@@ -148,40 +136,11 @@ const ShareVideoScreen: React.FC<ShareVideoScreenProps> = ({
         }
     };
 
-    const handleDeviceSelect = async (device: Device) => {
-        try {
-            setSelectedDevice(device);
-            setShareMode('connecting');
 
-            const connected = await p2pService.connectToDevice(device.deviceAddress);
-            if (!connected) {
-                setShareMode('error');
-                setErrorMessage('Failed to connect to device. Please try again.');
-            }
-        } catch (error) {
-            setShareMode('error');
-            setErrorMessage(`Connection failed: ${error.message || 'Unknown error'}`);
-        }
-    };
-
-    const startFileTransfer = async () => {
-        try {
-            const success = await p2pService.sendFile(videoPath);
-            if (success) {
-                setShareMode('completed');
-            } else {
-                setShareMode('error');
-                setErrorMessage('File transfer failed. Please try again.');
-            }
-        } catch (error) {
-            setShareMode('error');
-            setErrorMessage(`Transfer failed: ${error.message || 'Unknown error'}`);
-        }
-    };
 
     const cleanup = () => {
         try {
-            p2pService.stopDiscovery();
+            p2pService.cleanup();
             setShareMode('discovery');
             setSelectedDevice(null);
             setTransferProgress(0);
@@ -236,14 +195,13 @@ const ShareVideoScreen: React.FC<ShareVideoScreenProps> = ({
     const renderDeviceItem = ({ item }: { item: Device }) => (
         <TouchableOpacity
             style={styles.deviceItem}
-            onPress={() => handleDeviceSelect(item)}
             activeOpacity={0.7}
         >
             <View style={styles.deviceIcon}>
                 <MaterialIcons name="smartphone" size={24} color="#F45303" />
             </View>
             <View style={styles.deviceInfo}>
-                <Text style={styles.deviceName}>{item.deviceName || 'Unknown Device'}</Text>
+                <Text style={styles.deviceName}>{item.name || 'Unknown Device'}</Text>
                 <Text style={styles.deviceStatus}>Available</Text>
             </View>
             <MaterialIcons name="chevron-right" size={20} color="#8B8B8B" />
@@ -256,26 +214,52 @@ const ShareVideoScreen: React.FC<ShareVideoScreenProps> = ({
 
             <View style={styles.discoverySection}>
                 <View style={styles.discoveryHeader}>
-                    <MaterialIcons name="wifi-tethering" size={24} color="#F45303" />
-                    <Text style={styles.discoveryTitle}>Looking for devices...</Text>
+                    <MaterialIcons name="share" size={24} color="#F45303" />
+                    <Text style={styles.discoveryTitle}>Ready to share...</Text>
                 </View>
 
-                {p2pState?.discoveredDevices && p2pState.discoveredDevices.length > 0 ? (
-                    <FlatList
-                        data={p2pState.discoveredDevices}
-                        renderItem={renderDeviceItem}
-                        keyExtractor={(item) => item.deviceAddress}
-                        style={styles.deviceList}
-                        showsVerticalScrollIndicator={false}
-                    />
-                ) : (
-                    <View style={styles.emptyState}>
-                        <ActivityIndicator size="large" color="#F45303" />
-                        <Text style={styles.emptyText}>
-                            Make sure the receiving device is in "Receive" mode
-                        </Text>
-                    </View>
-                )}
+                <View style={styles.quickShareSection}>
+                    <Text style={styles.quickShareTitle}>Quick Share (Recommended)</Text>
+                    <Text style={styles.quickShareDescription}>
+                        Fast and reliable sharing using Android's built-in Quick Share feature
+                    </Text>
+
+                    <TouchableOpacity
+                        style={styles.quickShareButton}
+                        activeOpacity={0.8}
+                    >
+                        <MaterialIcons name="send" size={20} color="#FFFFFF" />
+                        <Text style={styles.quickShareButtonText}>Share via Quick Share</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.divider}>
+                    <Text style={styles.dividerText}>or</Text>
+                </View>
+
+                <View style={styles.traditionalSection}>
+                    <Text style={styles.traditionalTitle}>Traditional P2P Sharing</Text>
+                    <Text style={styles.traditionalDescription}>
+                        Connect directly to nearby SPRED devices
+                    </Text>
+
+                    {p2pState?.discoveredDevices && p2pState.discoveredDevices.length > 0 ? (
+                        <FlatList
+                            data={p2pState.discoveredDevices}
+                            renderItem={renderDeviceItem}
+                            keyExtractor={(item) => item.id}
+                            style={styles.deviceList}
+                            showsVerticalScrollIndicator={false}
+                        />
+                    ) : (
+                        <View style={styles.emptyState}>
+                            <ActivityIndicator size="large" color="#F45303" />
+                            <Text style={styles.emptyText}>
+                                Looking for nearby SPRED devices...
+                            </Text>
+                        </View>
+                    )}
+                </View>
             </View>
         </View>
     );
@@ -679,6 +663,64 @@ const styles = StyleSheet.create({
     },
     cancelButton: {
         // Remove flex: 1 to prevent excessive stretching
+    },
+    quickShareSection: {
+        backgroundColor: '#2A2A2A',
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 16,
+    },
+    quickShareTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#4CAF50',
+        marginBottom: 4,
+    },
+    quickShareDescription: {
+        fontSize: 14,
+        color: '#8B8B8B',
+        lineHeight: 20,
+        marginBottom: 16,
+    },
+    quickShareButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#4CAF50',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+        gap: 8,
+    },
+    quickShareButtonText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#FFFFFF',
+    },
+    divider: {
+        alignItems: 'center',
+        marginVertical: 16,
+    },
+    dividerText: {
+        fontSize: 14,
+        color: '#8B8B8B',
+        backgroundColor: '#1A1A1A',
+        paddingHorizontal: 12,
+    },
+    traditionalSection: {
+        flex: 1,
+    },
+    traditionalTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#F45303',
+        marginBottom: 4,
+    },
+    traditionalDescription: {
+        fontSize: 14,
+        color: '#8B8B8B',
+        lineHeight: 20,
+        marginBottom: 16,
     },
 });
 

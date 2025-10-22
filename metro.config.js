@@ -9,8 +9,7 @@ const process = require('process');
  */
 const isProduction = process.env.NODE_ENV === 'production';
 const config = {
-  // Watch .yalc directories for changes
-  watchFolders: ['.yalc'],
+
   // Suppress deprecation warnings
   resolver: {
     useWatchman: false,

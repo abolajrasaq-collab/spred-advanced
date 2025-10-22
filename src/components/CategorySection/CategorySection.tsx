@@ -31,6 +31,8 @@ const CategorySection: React.FC<CategorySectionProps> = memo(
   ({ title, data, onMorePress, onContentPress }) => {
     const { Layout, Colors, Fonts, Gutters } = useTheme();
 
+    console.log(`📂 CategorySection "${title}" rendering ${data.length} items`);
+
     const renderContentCard = ({ item }: { item: ContentItem }) => (
       <ContentCard
         id={item.id}
@@ -72,11 +74,14 @@ const CategorySection: React.FC<CategorySectionProps> = memo(
           snapToAlignment="start"
         >
           {data.length > 0 ? (
-            data.map(item => (
-              <View key={item.id} style={styles(Colors).itemContainer}>
-                {renderContentCard({ item })}
-              </View>
-            ))
+            data.map(item => {
+              console.log(`  📂 Rendering item "${item.title}" with image: ${item.imageUrl.substring(0, 50)}...`);
+              return (
+                <View key={item.id} style={styles(Colors).itemContainer}>
+                  {renderContentCard({ item })}
+                </View>
+              );
+            })
           ) : (
             <View style={styles(Colors).emptyContainer}>
               <Text style={styles(Colors).emptyText}>No content available</Text>

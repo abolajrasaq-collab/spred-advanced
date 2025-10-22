@@ -2,7 +2,6 @@
 import {
   StyleSheet,
   Text,
-  TouchableOpacity,
   ScrollView,
   Image,
   View,
@@ -12,7 +11,10 @@ import {
   StatusBar,
   Alert,
   Pressable,
+  TouchableOpacity,
 } from 'react-native';
+// Import TouchableOpacity for optimized touch interactions
+// import TouchableOpacity from '../../components/TouchableOpacity/TouchableOpacity';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -89,7 +91,17 @@ type RootStackParamList = {
 };
 import SimpleHeroCarousel from '../../components/SimpleHeroCarousel/SimpleHeroCarousel';
 import CategorySection from '../../components/CategorySection/CategorySection';
-import P2PReceiveScreen from '../../components/WiFiDirect/P2PReceiveScreen';
+
+import SleekButton from '../../components/SleekButton/SleekButton';
+
+interface HeroItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  imageUrl: string;
+  isLive?: boolean;
+}
 import {
   MemoryManager,
   ArrayUtils,
@@ -189,7 +201,7 @@ const Homepage = ({ route }: { route: any }) => {
   const getStoredUserData = async () => {
     const gotten = (await getDataJson('User')) as User | null;
     const gotten2 = (await getDataJson('UserInfo')) as UserInfo | null;
-    setUser(gotten || {});
+    // Note: setUser is not defined in this component, using user from Redux
     setUserInfo(gotten2);
   };
 
@@ -269,9 +281,28 @@ const Homepage = ({ route }: { route: any }) => {
       }
 
       let response = await axios.get(api.getAllMovies, config);
-      setMovieArray(response?.data?.data || []);
-      // Cache the data
-      await storeDataJson('homepage_content', response?.data?.data || []);
+      const movies = response?.data?.data || [];
+      
+      // Debug: Log first few movies to check thumbnailUrl
+      console.log('🎬 Movies data sample:', movies.slice(0, 3).map(m => ({
+        title: m.title,
+        thumbnailUrl: m.thumbnailUrl,
+        hasThumbnail: !!m.thumbnailUrl,
+        thumbnailUrlType: typeof m.thumbnailUrl,
+        thumbnailUrlLength: m.thumbnailUrl?.length || 0
+      })));
+      
+      // Validate and fix thumbnail URLs before setting
+      const validatedMovies = movies.map(movie => ({
+        ...movie,
+        thumbnailUrl: movie.thumbnailUrl && movie.thumbnailUrl.trim() !== '' && movie.thumbnailUrl.startsWith('http')
+          ? movie.thumbnailUrl
+          : 'https://via.placeholder.com/400x250/333333/FFFFFF?text=No+Image'
+      }));
+
+      setMovieArray(validatedMovies);
+      // Cache the validated data
+      await storeDataJson('homepage_content', validatedMovies);
       // DISABLED FOR PERFORMANCE
       // logger.info('✅ Fresh content loaded and cached');
     } catch (error) {
@@ -337,16 +368,27 @@ const Homepage = ({ route }: { route: any }) => {
       .slice(0, 5 - featuredMovies.length);
 
     // Combine featured movies first, then remaining movies
-    return [...featuredMovies, ...remainingMovies].map(item => ({
+    const heroItems = [...featuredMovies, ...remainingMovies].map(item => ({
       id: item._ID,
       title: cleanMovieTitle(item.title),
       subtitle: cats.find(c => c._ID === item.categoryId)?.name || 'Featured',
-      imageUrl: item.thumbnailUrl,
+      imageUrl: item.thumbnailUrl || 'https://via.placeholder.com/400x250/333333/FFFFFF?text=No+Image',
       isLive: item.isLive,
       isFeatured: featuredTitles.some(title =>
         cleanMovieTitle(item.title).toUpperCase().includes(title.toUpperCase()),
       ),
     }));
+    
+    // Debug: Log hero data to check imageUrl
+      console.log('🎯 Hero data sample:', heroItems.slice(0, 2).map(h => ({
+        title: h.title,
+        imageUrl: h.imageUrl,
+        hasImage: !!h.imageUrl,
+        imageUrlType: typeof h.imageUrl,
+        imageUrlLength: h.imageUrl?.length || 0
+      })));
+    
+    return heroItems;
   }, [moviearray, cats, featuredTitles]);
 
   // Memoized expensive content filtering operation with memory optimization
@@ -387,34 +429,48 @@ const Homepage = ({ route }: { route: any }) => {
     // Memory check before expensive operation
     MemoryManager.checkMemoryUsage();
 
+    console.log('📂 Building categorized content...');
+    console.log('📂 Available categories:', cats.length, cats.map(c => ({ name: c.name, _ID: c._ID })));
+    console.log('📂 Filtered content length:', filteredContent.length);
+
     // Process categories in chunks to prevent memory spikes
     const categoryChunks = ArrayUtils.chunk(cats, 5);
     let allSections: any[] = [];
 
     for (const chunk of categoryChunks) {
-      const chunkSections = chunk.map(category => ({
-        title: category.name,
-        data: ArrayUtils.filterWithLimit(
+      const chunkSections = chunk.map(category => {
+        const categoryItems = ArrayUtils.filterWithLimit(
           filteredContent,
           (item: any) => item.categoryId === category._ID,
           10, // Limit to 10 items per category
-        ).map(item => ({
-          id: item._ID,
-          title: cleanMovieTitle(item.title),
-          imageUrl: item.thumbnailUrl,
-          rating: item.rating,
-          year: item.year,
-          duration: item.duration,
-          isLive: item.isLive,
-          isPremium: item.isPremium,
-        })),
-      }));
+        );
+
+        console.log(`📂 Category "${category.name}" (${category._ID}): ${categoryItems.length} items`);
+
+        return {
+          title: category.name,
+          data: categoryItems.map(item => {
+            const imageUrl = item.thumbnailUrl || 'https://via.placeholder.com/120x200/333333/FFFFFF?text=No+Image';
+            console.log(`  📂 Item "${item.title}": thumbnailUrl = ${imageUrl.substring(0, 50)}...`);
+            return {
+              id: item._ID,
+              title: cleanMovieTitle(item.title),
+              imageUrl: imageUrl,
+              rating: item.rating,
+              year: item.year,
+              duration: item.duration,
+              isLive: item.isLive,
+              isPremium: item.isPremium,
+            };
+          }),
+        };
+      });
 
       allSections = [...allSections, ...chunkSections];
     }
 
     // Filter and sort with memory efficiency
-    return allSections
+    const finalSections = allSections
       .filter(section => section.data.length > 0)
       .sort((a, b) => {
         // Prioritize SHORT FILMS section to appear early (after trending content)
@@ -434,6 +490,9 @@ const Homepage = ({ route }: { route: any }) => {
         // Keep other categories in their original order
         return 0;
       });
+
+    console.log('📂 Final categorized sections:', finalSections.map(s => `${s.title}: ${s.data.length} items`));
+    return finalSections;
   }, [cats, filteredContent]);
 
   // Create LIVE section with rich provider information
@@ -632,10 +691,18 @@ const Homepage = ({ route }: { route: any }) => {
     (id: string) => {
       const item = moviearray.find(m => m._ID === id);
       if (item) {
+        console.log('🎬 Navigating to video:', item.title, 'Thumbnail:', item.thumbnailUrl);
         navigation.navigate('PlayVideos', { item });
       }
     },
     [moviearray, navigation],
+  );
+
+  const handleHeroItemPress = useCallback(
+    (item: HeroItem) => {
+      handleContentPress(item.id);
+    },
+    [handleContentPress],
   );
 
   const handleLivePress = useCallback(
@@ -752,19 +819,14 @@ const Homepage = ({ route }: { route: any }) => {
         >
           Please sign in to access content
         </Text>
-        <TouchableOpacity
-          style={{
-            backgroundColor: '#F45303',
-            paddingHorizontal: 30,
-            paddingVertical: 12,
-            borderRadius: 8,
-          }}
+        <SleekButton
+          title="Sign In"
           onPress={() => navigation.navigate('SignIn')}
-        >
-          <Text style={{ color: '#ffffff', fontSize: 16, fontWeight: 'bold' }}>
-            Sign In
-          </Text>
-        </TouchableOpacity>
+          backgroundColor="#F45303"
+          textColor="#FFFFFF"
+          size="medium"
+          variant="primary"
+        />
       </SafeAreaView>
     );
   }
@@ -809,7 +871,7 @@ const Homepage = ({ route }: { route: any }) => {
         {heroData.length > 0 && (
           <SimpleHeroCarousel
             data={heroData}
-            onItemPress={handleContentPress}
+            onItemPress={handleHeroItemPress}
             onDownloadPress={handleDownloadPress}
           />
         )}
@@ -878,6 +940,8 @@ const Homepage = ({ route }: { route: any }) => {
             <TouchableOpacity
               onPress={handleLiveCategoryPress}
               style={{ paddingVertical: 4, paddingHorizontal: 8 }}
+              accessibilityLabel="See all live channels"
+              accessibilityHint="Navigate to live category screen"
             >
               <Text
                 style={{ color: '#F45303', fontSize: 14, fontWeight: '600' }}
@@ -902,8 +966,8 @@ const Homepage = ({ route }: { route: any }) => {
                 key={item.id}
                 style={{ marginRight: 12, width: 280 }}
                 onPress={() => handleLivePress(item.id)}
-                activeOpacity={0.7}
-                hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
+                accessibilityLabel={`Watch ${item.title} live stream`}
+                accessibilityHint={`Open ${item.category} live channel`}
               >
                 <View style={{ position: 'relative' }}>
                   <Image
@@ -999,15 +1063,18 @@ const Homepage = ({ route }: { route: any }) => {
         </View>
 
         {/* Category Sections - Exclude SHORT FILMS as it's already shown above */}
-        {categorizedContent
-          .filter(
+        {(() => {
+          const otherSections = categorizedContent.filter(
             section =>
               !(
                 section.title.toUpperCase().includes('SHORT') &&
                 section.title.toUpperCase().includes('FILM')
               ),
-          )
-          .map((section, index) => (
+          );
+
+          console.log('📂 Rendering category sections:', otherSections.map(s => `${s.title}: ${s.data.length} items`));
+
+          return otherSections.map((section, index) => (
             <CategorySection
               key={index}
               title={section.title}
@@ -1015,7 +1082,8 @@ const Homepage = ({ route }: { route: any }) => {
               onContentPress={handleContentPress}
               onMorePress={() => handleMorePress(section.title)}
             />
-          ))}
+          ));
+        })()}
 
         {/* Bottom padding for tab bar - increased to ensure content doesn't go behind tab bar */}
         <View style={{ height: 90 }} />
@@ -1025,8 +1093,8 @@ const Homepage = ({ route }: { route: any }) => {
       <TouchableOpacity
         style={styles.receiveFloatingButton}
         onPress={() => setShowReceiveModal(true)}
-        activeOpacity={0.8}
-        hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+        accessibilityLabel="Receive files"
+        accessibilityHint="Open P2P receive modal"
       >
         <View style={styles.receiveButtonContent}>
           <View style={styles.spredLogoContainer}>
@@ -1036,17 +1104,7 @@ const Homepage = ({ route }: { route: any }) => {
         </View>
       </TouchableOpacity>
 
-      {/* P2P Receive Modal */}
-      <P2PReceiveScreen
-        visible={showReceiveModal}
-        onClose={() => setShowReceiveModal(false)}
-        deviceName="P2P Device"
-        onTransferStart={() => console.log('Transfer started')}
-        onTransferComplete={filePath => {
-          console.log('Transfer completed:', filePath);
-          setShowReceiveModal(false);
-        }}
-      />
+
     </SafeAreaView>
   );
 };

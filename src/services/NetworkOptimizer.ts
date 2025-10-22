@@ -208,10 +208,11 @@ class NetworkOptimizer {
       cacheTTL = this.config.cacheTTL,
       retry = true,
       priority = 'normal',
+      batch = false,
     } = options;
 
     const cacheKey = this.generateCacheKey(config);
-    
+
     // Check cache first
     if (cache) {
       const cachedData = await cacheManager.get<T>(cacheKey);
@@ -227,6 +228,11 @@ class NetworkOptimizer {
     if (this.requestQueue.has(requestKey)) {
       logger.debug(`🔄 Deduplicating request: ${config.url}`);
       return this.requestQueue.get(requestKey)!;
+    }
+
+    // Handle batching for GET requests
+    if (batch && config.method?.toUpperCase() === 'GET' && this.config.batchEnabled) {
+      return this.addToBatch<T>(config, options);
     }
 
     // Make request
@@ -310,8 +316,8 @@ class NetworkOptimizer {
   ): Promise<T[]> {
     if (!this.config.batchEnabled || requests.length <= this.config.batchSize) {
       // Execute requests individually if batching is disabled or small batch
-      const promises = requests.map(req => 
-        this.request<T>({ ...req, config: req.config }, options)
+      const promises = requests.map(req =>
+        this.request<T>({ method: req.method, url: req.url, data: req.data, ...req.config }, options)
       );
       return Promise.all(promises);
     }
@@ -321,13 +327,13 @@ class NetworkOptimizer {
     const batches = this.chunkArray(requests, this.config.batchSize);
 
     for (const batch of batches) {
-      const batchPromises = batch.map(req => 
-        this.request<T>({ ...req, config: req.config }, options)
+      const batchPromises = batch.map(req =>
+        this.request<T>({ method: req.method, url: req.url, data: req.data, ...req.config }, options)
       );
-      
+
       const batchResults = await Promise.all(batchPromises);
       results.push(...batchResults);
-      
+
       // Small delay between batches
       if (batches.length > 1) {
         await new Promise(resolve => setTimeout(resolve, this.config.batchDelay));
@@ -343,6 +349,85 @@ class NetworkOptimizer {
       chunks.push(array.slice(i, i + chunkSize));
     }
     return chunks;
+  }
+
+  private async addToBatch<T>(
+    config: AxiosRequestConfig,
+    options: RequestOptions
+  ): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      const batchRequest: BatchRequest = {
+        id: `batch_${Date.now()}_${Math.random()}`,
+        url: config.url || '',
+        method: config.method || 'GET',
+        data: config.data,
+        config: config,
+        resolve: resolve as (value: any) => void,
+        reject,
+        timestamp: Date.now(),
+      };
+
+      this.batchQueue.push(batchRequest);
+
+      // Process batch if we have enough requests or after delay
+      if (this.batchQueue.length >= this.config.batchSize) {
+        this.processBatch();
+      } else if (!this.batchTimer) {
+        this.batchTimer = setTimeout(() => {
+          this.processBatch();
+        }, this.config.batchDelay);
+      }
+    });
+  }
+
+  private async processBatch(): Promise<void> {
+    if (this.batchQueue.length === 0) return;
+
+    const batchToProcess = [...this.batchQueue];
+    this.batchQueue = [];
+
+    if (this.batchTimer) {
+      clearTimeout(this.batchTimer);
+      this.batchTimer = undefined;
+    }
+
+    // Group requests by endpoint for more efficient batching
+    const endpointGroups = new Map<string, BatchRequest[]>();
+    batchToProcess.forEach(req => {
+      const key = `${req.method}_${req.url}`;
+      if (!endpointGroups.has(key)) {
+        endpointGroups.set(key, []);
+      }
+      endpointGroups.get(key)!.push(req);
+    });
+
+    // Process each group
+    for (const [endpoint, requests] of endpointGroups) {
+      try {
+        // For now, execute requests individually but with shared connection
+        // In a real implementation, you might use HTTP/2 multiplexing or batch endpoints
+        const promises = requests.map(req =>
+          this.makeRequest(req.config, {}).then(response => ({
+            request: req,
+            response: response.data
+          }))
+        );
+
+        const results = await Promise.allSettled(promises);
+
+        results.forEach((result, index) => {
+          const request = requests[index];
+          if (result.status === 'fulfilled') {
+            request.resolve(result.value.response);
+          } else {
+            request.reject(result.reason);
+          }
+        });
+      } catch (error) {
+        // If batch processing fails, reject all requests in this batch
+        requests.forEach(req => req.reject(error));
+      }
+    }
   }
 
   public async preload<T>(

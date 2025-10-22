@@ -39,16 +39,15 @@ const ContentCard: React.FC<ContentCardProps> = ({
       scaleAnimation={true}
       feedbackOpacity={0.8}
       scaleAmount={0.98}
-      delayPressInCustom={true}
-      delayPressOutCustom={true}
     >
       <OptimizedImage
-        src={imageUrl}
-        width={width}
-        height={height - 40}
-        style={styles.image}
+        source={{ uri: imageUrl || 'https://via.placeholder.com/120x200/333333/FFFFFF?text=No+Image' }}
+        style={[styles.image, { width, height: height - 40 }]}
         resizeMode="cover"
         testID={`content-card-image-${id}`}
+        onError={() => {
+          console.log('🖼️ ContentCard image error for:', title, 'URL:', imageUrl);
+        }}
       />
 
       {/* Badges */}

@@ -42,12 +42,7 @@ export const PermissionStatusIndicator: React.FC<PermissionStatusIndicatorProps>
   }
 
   if (hasCriticalPermissions) {
-    return compact ? (
-      <View style={[styles.container, styles.compact, styles.success]}>
-        <Icon name="check-circle" size={16} color="#4CAF50" />
-        <Text style={styles.successText}>Ready</Text>
-      </View>
-    ) : null; // Don't show when everything is working
+    return null; // Don't show when everything is working
   }
 
   const nearbyAvailable = canUseFeature('nearby');

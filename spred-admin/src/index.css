@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  body {
+    @apply bg-secondary-50 text-secondary-900;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700;
+  }
+
+  .btn-secondary {
+    @apply btn bg-secondary-200 text-secondary-900 hover:bg-secondary-300 active:bg-secondary-400;
+  }
+
+  .btn-success {
+    @apply btn bg-green-500 text-white hover:bg-green-600 active:bg-green-700;
+  }
+
+  .btn-warning {
+    @apply btn bg-yellow-500 text-white hover:bg-yellow-600 active:bg-yellow-700;
+  }
+
+  .btn-error {
+    @apply btn bg-red-500 text-white hover:bg-red-600 active:bg-red-700;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-soft border border-secondary-200 p-6;
+  }
+
+  .input {
+    @apply w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200;
+  }
+
+  .table {
+    @apply w-full text-sm text-left;
+  }
+
+  .table th {
+    @apply px-6 py-3 bg-secondary-50 font-medium text-secondary-900 uppercase tracking-wider;
+  }
+
+  .table td {
+    @apply px-6 py-4 whitespace-nowrap;
+  }
+
+  .table tbody tr {
+    @apply border-b border-secondary-200 hover:bg-secondary-50;
+  }
+}

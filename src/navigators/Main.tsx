@@ -58,9 +58,10 @@ const VideoPlayerTest = lazy(
 const OfflineVideos = lazy(
   () => import('../screens/OfflineVideos/OfflineVideos'),
 );
-const WiFiDirectScreen = lazy(
-  () => import('../screens/WiFiDirect/WiFiDirectScreen'),
+const ButtonPerformanceTest = lazy(
+  () => import('../screens/ButtonPerformanceTest/BasicWorkingTest'),
 );
+import RealFileShareTest from '../screens/RealFileShareTest/WorkingTest';
 
 
 const Stack = createNativeStackNavigator();
@@ -217,9 +218,26 @@ const MainNavigator = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="WiFiDirect"
-          component={WiFiDirectScreen}
-          options={{ headerShown: false }}
+          name="ButtonPerformanceTest"
+          component={ButtonPerformanceTest}
+          options={{
+            headerShown: true,
+            title: 'Button Performance Test',
+            headerStyle: { backgroundColor: '#1A1A1A' },
+            headerTintColor: '#FFFFFF',
+            headerTitleStyle: { fontWeight: '600' },
+          }}
+        />
+        <Stack.Screen
+          name="RealFileShareTest"
+          component={RealFileShareTest}
+          options={{
+            headerShown: true,
+            title: 'Real File Share Test',
+            headerStyle: { backgroundColor: '#1A1A1A' },
+            headerTintColor: '#FFFFFF',
+            headerTitleStyle: { fontWeight: '600' },
+          }}
         />
 
       </Stack.Navigator>

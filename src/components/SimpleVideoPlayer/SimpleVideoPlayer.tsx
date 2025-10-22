@@ -945,66 +945,52 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
     />
   );
 
-  // Choose which video component to render based on mode
-  const currentVideoComponent = isFullscreen ? (
-    <View
+  // Single video component with dynamic styling - eliminates memory duplication
+  const currentVideoComponent = (
+    <Video
+      key={isFullscreen ? `fullscreen-video-player-${videoKey}` : "main-video-player"}
+      ref={videoRef}
+      source={source}
       style={[
-        styles.fullscreenVideoContainer,
-        { 
-          width: dimensions.width, 
-          height: dimensions.height,
-          zIndex: 1001,
-          elevation: 1001,
-        },
+        isFullscreen ? styles.fullscreenVideo : StyleSheet.absoluteFill,
+        isFullscreen && { width: dimensions.width, height: dimensions.height },
       ]}
-    >
-      <Video
-        key={`fullscreen-video-player-${videoKey}`}
-        ref={videoRef}
-        source={source}
-        style={[
-          styles.fullscreenVideo,
-          { width: dimensions.width, height: dimensions.height },
-        ]}
-        paused={isVideoPaused}
-        controls={false}
-        resizeMode={fullscreenResizeMode}
-        onLoad={onLoadData}
-        onError={error => {
-          // DISABLED FOR PERFORMANCE
-          // console.log('❌ Fullscreen Video error:', error);
-          // DISABLED FOR PERFORMANCE
-          // console.log('📁 Source URI:', source?.uri);
-          onError?.(error);
-        }}
-        onLoadStart={() => {
-          // DISABLED FOR PERFORMANCE
-          // console.log('🎬 Fullscreen Video load start:', source?.uri);
-          onLoadStart?.();
-        }}
-        onBuffer={onBuffer}
-        onProgress={onProgress}
-        repeat={false}
-        playInBackground={false}
-        playWhenInactive={false}
-        ignoreSilentSwitch="ignore"
-        preventsDisplaySleepDuringVideoPlayback={true}
-        reportBandwidth={false}
-        useTextureView={false}
-        disableFocus={true}
-        muted={false}
-        posterResizeMode="cover"
-        allowsExternalPlayback={false}
-        bufferConfig={{
-          minBufferMs: 2000,
-          maxBufferMs: 8000,
-          bufferForPlaybackMs: 500,
-          bufferForPlaybackAfterRebufferMs: 1000,
-        }}
-      />
-    </View>
-  ) : (
-    videoComponent
+      paused={isVideoPaused}
+      controls={false}
+      resizeMode={isFullscreen ? fullscreenResizeMode : resizeMode}
+      onLoad={onLoadData}
+      onError={error => {
+        // DISABLED FOR PERFORMANCE
+        // console.log('❌ Video error:', error);
+        // DISABLED FOR PERFORMANCE
+        // console.log('📁 Source URI:', source?.uri);
+        onError?.(error);
+      }}
+      onLoadStart={() => {
+        // DISABLED FOR PERFORMANCE
+        // console.log('🎬 Video load start:', source?.uri);
+        onLoadStart?.();
+      }}
+      onBuffer={onBuffer}
+      onProgress={onProgress}
+      repeat={false}
+      playInBackground={false}
+      playWhenInactive={false}
+      ignoreSilentSwitch="ignore"
+      preventsDisplaySleepDuringVideoPlayback={isFullscreen}
+      reportBandwidth={false}
+      useTextureView={false}
+      disableFocus={true}
+      muted={false}
+      posterResizeMode="cover"
+      allowsExternalPlayback={false}
+      bufferConfig={{
+        minBufferMs: 2000,
+        maxBufferMs: 8000,
+        bufferForPlaybackMs: 500,
+        bufferForPlaybackAfterRebufferMs: 1000,
+      }}
+    />
   );
 
   // Fullscreen overlay (only render when in fullscreen mode)
@@ -1012,15 +998,15 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
     <View
       style={[
         styles.fullscreenContainer,
-        { 
-          width: dimensions.width, 
+        {
+          width: dimensions.width,
           height: dimensions.height,
           zIndex: 1000,
           elevation: 1000,
         },
       ]}
     >
-      {videoComponent}
+      {currentVideoComponent}
       <TouchableOpacity
         style={StyleSheet.absoluteFill}
         onPress={handleFullscreenVideoPress}
@@ -1059,63 +1045,7 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
           { width: dimensions.width, height: dimensions.height },
         ]}
       >
-        <Video
-          key={`fullscreen-video-player-${videoKey}`}
-          ref={videoRef}
-          source={source}
-          style={[
-            styles.fullscreenVideo,
-            { width: dimensions.width, height: dimensions.height },
-          ]}
-          paused={isVideoPaused}
-          controls={false}
-          resizeMode={fullscreenResizeMode}
-          onLoad={data => {
-            // DISABLED FOR PERFORMANCE
-            // console.log('✅ Fullscreen Video loaded successfully');
-            // DISABLED FOR PERFORMANCE
-            // console.log(
-            //   '📱 Screen size:',
-            //   dimensions.width,
-            //   'x',
-            //   dimensions.height,
-            // );
-            // DISABLED FOR PERFORMANCE
-            // console.log('🎥 Video style applied with dynamic dimensions');
-            onLoadData(data);
-          }}
-          onError={error => {
-            // DISABLED FOR PERFORMANCE
-            // console.log('❌ Fullscreen Video error:', error);
-            // DISABLED FOR PERFORMANCE
-            // console.log('📁 Source URI:', source?.uri);
-            onError?.(error);
-          }}
-          onLoadStart={() => {
-            // DISABLED FOR PERFORMANCE
-            // console.log('🎬 Fullscreen Video load start');
-            onLoadStart?.();
-          }}
-          onBuffer={onBuffer}
-          onProgress={onProgress}
-          repeat={false}
-          playInBackground={false}
-          playWhenInactive={false}
-          ignoreSilentSwitch="ignore"
-          preventsDisplaySleepDuringVideoPlayback={true}
-          reportBandwidth={false}
-          useTextureView={false}
-          disableFocus={true}
-          muted={false}
-          posterResizeMode="cover"
-          allowsExternalPlayback={false}
-          bufferConfig={{
-            minBufferMs: 2000,
-            maxBufferMs: 8000,
-            bufferForPlaybackMs: 500,
-            bufferForPlaybackAfterRebufferMs: 1000,
-          }}
-        />
+        {currentVideoComponent}
         <TouchableOpacity
           style={[StyleSheet.absoluteFill, { zIndex: 5 }]}
           onPress={handleFullscreenVideoPress}

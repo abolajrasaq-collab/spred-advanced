@@ -42,10 +42,7 @@ export { default as DownloadProgress } from './DownloadProgress';
 
 export { default as FeatureHighlights } from './FeatureHighlights';
 
-// WiFi Direct Components
-export { default as WiFiDirectDiscovery } from './WiFiDirect/WiFiDirectDiscovery';
-export { default as P2PVideoSelector } from './WiFiDirect/P2PVideoSelector';
-export { default as P2PReceiveScreen } from './WiFiDirect/P2PReceiveScreen';
+
 
 // Type exports
 export type { IconProps } from './Icon';
