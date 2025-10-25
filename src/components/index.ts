@@ -30,8 +30,6 @@ export {
   VideoHeader,
 } from './PlayVideoComponents';
 
-// Sharing Components
-export { QRCodeSharing } from './QRCodeSharing';
 
 // Enhanced Download Manager
 export { EnhancedDownloadManager } from './EnhancedDownloadManager';

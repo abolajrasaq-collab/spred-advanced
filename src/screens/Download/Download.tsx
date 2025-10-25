@@ -92,7 +92,10 @@ const DownloadedVideoItem = ({ item, index, onPress, onShare, onDelete }) => {
             {item.size ? formatBytes(item.size) : 'Size unavailable'}
           </Text>
           <Text style={styles.videoStatus}>
-            {item.folderSource === 'Received' ? 'Received' : 'Downloaded'}
+            {item.folderSource === 'Received'
+              ? (item.receivedMethod === 'P2P' ? '🔄 Received via P2P' : '📥 Received')
+              : '📥 Downloaded'
+            }
           </Text>
           {item.receivedDate && (
             <Text style={styles.receivedDate}>
@@ -825,36 +828,95 @@ const Download = () => {
     }
   };
 
-  // New function to fetch received files using QuickShareService
+  // New function to fetch received files using QuickShareService and P2P
   const fetchReceivedList = async () => {
     try {
-      // Use QuickShareService to get received files
-      const quickShareService = QuickShareService.getInstance();
-
-      // Get all received files
-      const receivedFiles = await quickShareService.getReceivedFiles();
-
-      // Process received files with thumbnails
       const processedReceivedFiles = [];
-      for (const file of receivedFiles) {
-        // Generate thumbnail with error handling
-        let thumbnail = null;
-        try {
-          thumbnail = await generateThumbnail(file.filePath);
-        } catch (thumbnailError) {
-          // Continue without thumbnail
-        }
 
-        processedReceivedFiles.push({
-          name: file.title,
-          thumbnail: thumbnail?.path || '',
-          size: file.fileSize,
-          duration: 'videoDuration',
-          path: file.filePath,
-          folderSource: 'Received',
-          contentId: file.id,
-          receivedDate: file.receivedDate,
-        });
+      // 1. Get QuickShareService received files
+      try {
+        const quickShareService = QuickShareService.getInstance();
+        const receivedFiles = await quickShareService.getReceivedFiles();
+
+        for (const file of receivedFiles) {
+          // Generate thumbnail with error handling
+          let thumbnail = null;
+          try {
+            thumbnail = await generateThumbnail(file.filePath);
+          } catch (thumbnailError) {
+            // Continue without thumbnail
+          }
+
+          processedReceivedFiles.push({
+            name: file.title,
+            thumbnail: thumbnail?.path || '',
+            size: file.fileSize,
+            duration: 'videoDuration',
+            path: file.filePath,
+            folderSource: 'Received',
+            contentId: file.id,
+            receivedDate: file.receivedDate,
+            receivedMethod: 'QuickShare',
+          });
+        }
+      } catch (qsError) {
+        // DISABLED FOR PERFORMANCE
+        // console.log('⚠️ Error fetching QuickShare files:', qsError);
+      }
+
+      // 2. Scan for P2P received files in SpredP2PReceived folder
+      try {
+        const p2pFolderPath = `${RNFS.ExternalDirectoryPath}/SpredP2PReceived/`;
+
+        // Check if P2P folder exists
+        const p2pFolderExists = await RNFS.exists(p2pFolderPath);
+        if (p2pFolderExists) {
+          const p2pFiles = await RNFS.readDir(p2pFolderPath);
+
+          // Process P2P files
+          for (const file of p2pFiles) {
+            // Only process video files
+            if (
+              file.name.endsWith('.mp4') ||
+              file.name.endsWith('.m4v') ||
+              file.name.endsWith('.mov')
+            ) {
+              // Generate thumbnail with error handling
+              let thumbnail = null;
+              try {
+                thumbnail = await generateThumbnail(file.path);
+              } catch (thumbnailError) {
+                // Continue without thumbnail
+              }
+
+              // Get file stats for accurate size and date
+              let fileSize = file.size || 0;
+              let receivedDate = new Date();
+              try {
+                const fileStats = await RNFS.stat(file.path);
+                fileSize = fileStats.size;
+                receivedDate = fileStats.mtime;
+              } catch (statError) {
+                // Use default values
+              }
+
+              processedReceivedFiles.push({
+                name: file.name.replace(/\.[^/.]+$/, ''), // Remove file extension
+                thumbnail: thumbnail?.path || '',
+                size: fileSize,
+                duration: 'videoDuration',
+                path: file.path,
+                folderSource: 'Received',
+                contentId: `p2p_${file.name}`,
+                receivedDate: receivedDate,
+                receivedMethod: 'P2P',
+              });
+            }
+          }
+        }
+      } catch (p2pError) {
+        // DISABLED FOR PERFORMANCE
+        // console.log('⚠️ Error scanning P2P folder:', p2pError);
       }
 
       // Sort by received date (newest first)
@@ -1292,14 +1354,14 @@ const Download = () => {
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <MaterialIcons
-                name="file-download"
+                name="wifi-tethering"
                 size={64}
                 color="#666"
                 style={styles.emptyIcon}
               />
               <Text style={styles.emptyTitle}>No Received Files</Text>
               <Text style={styles.emptySubtitle}>
-                Videos received via SPRED Quick Share will appear here
+                Videos received via SPRED Quick Share or P2P transfer will appear here
               </Text>
               <TouchableOpacity
                 style={styles.shareButtonEmpty}

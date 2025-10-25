@@ -61,7 +61,6 @@ const OfflineVideos = lazy(
 const ButtonPerformanceTest = lazy(
   () => import('../screens/ButtonPerformanceTest/BasicWorkingTest'),
 );
-import RealFileShareTest from '../screens/RealFileShareTest/WorkingTest';
 
 
 const Stack = createNativeStackNavigator();
@@ -228,18 +227,7 @@ const MainNavigator = () => {
             headerTitleStyle: { fontWeight: '600' },
           }}
         />
-        <Stack.Screen
-          name="RealFileShareTest"
-          component={RealFileShareTest}
-          options={{
-            headerShown: true,
-            title: 'Real File Share Test',
-            headerStyle: { backgroundColor: '#1A1A1A' },
-            headerTintColor: '#FFFFFF',
-            headerTitleStyle: { fontWeight: '600' },
-          }}
-        />
-
+  
       </Stack.Navigator>
     </Suspense>
   );

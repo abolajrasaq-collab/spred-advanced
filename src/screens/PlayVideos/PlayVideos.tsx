@@ -32,8 +32,8 @@ import {
   VideoCard,
 } from '../../components';
 import Android12Button from '../../components/Android12Button/Android12Button';
-import QRShareModal from '../../components/QRShareModal';
-import QRScannerModal from '../../components/QRScannerModal';
+import SpredShare from '../SpredShare/SpredShare';
+import Spred from '../Spred/Spred';
 
 import ShareVideoScreen from '../ShareVideo';
 import TEXT_CONSTANTS, { TAB_KEYS, TabKey } from './constants';
@@ -169,8 +169,8 @@ const PlayVideos = (props: any) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [resolvedVideoPath, setResolvedVideoPath] = useState<string>('');
   const [visibleRecommendations, setVisibleRecommendations] = useState(6);
+  const [showSpredModal, setShowSpredModal] = useState(false);
   const [showQRShareModal, setShowQRShareModal] = useState(false);
-  const [showQRScannerModal, setShowQRScannerModal] = useState(false);
 
   // Video preloading state
   const [nextVideoPreloaded, setNextVideoPreloaded] = useState(false);
@@ -319,46 +319,7 @@ const PlayVideos = (props: any) => {
 
 
 
-  // Function to handle SPRED sharing with QR Code system
-  const handleSpredShare = useCallback(async () => {
-    logger.info('🎯 SPRED button pressed - using QR Code sharing.');
-
-    // 1. Check if the video is downloaded. If not, show the download prompt.
-    if (!isVideoDownloaded) {
-      setShowDownloadRequiredModal(true);
-      return;
-    }
-
-    // 2. Validate essential video data.
-    const videoTitle = cleanMovieTitle(title);
-    if (!item || !videoTitle) {
-      showAlert('Error', 'Video data is not available. Please try again.', 'error');
-      return;
-    }
-
-    // 3. Resolve the video path. This is a critical step.
-    const videoPath = await getVideoPath();
-    if (!videoPath) {
-      showAlert(
-        'Video Not Found',
-        'The downloaded video file could not be found. Please try downloading it again.',
-        'error',
-      );
-      return;
-    }
-
-    // 4. Set the path and show the QR Share modal (replacing old P2P modal).
-    setResolvedVideoPath(videoPath);
-    setShowQRShareModal(true);
-    logger.info('✅ Video path resolved, opening QR Share modal.');
-  }, [
-    isVideoDownloaded,
-    item,
-    title,
-    showAlert,
-    getVideoPath,
-  ]);
-
+  
   // Function to handle Quick Share using QR Code modal
   const handleQuickShare = useCallback(async () => {
     logger.info('⚡ Quick Share button pressed - using QR Code sharing.');
@@ -390,7 +351,7 @@ const PlayVideos = (props: any) => {
 
       // 4. Set the resolved video path and show QR Share modal
       setResolvedVideoPath(videoPath);
-      setShowQRShareModal(true);
+      setShowSpredModal(true);
 
       logger.info('✅ QR Share modal opened successfully with video path:', videoPath);
     } catch (error: any) {
@@ -409,11 +370,33 @@ const PlayVideos = (props: any) => {
     getVideoPath,
   ]);
 
-  // Function to handle QR code scanning for receiving videos
-  const handleQRScan = useCallback(() => {
-    logger.info('📱 QR Scan button pressed - opening scanner.');
-    setShowQRScannerModal(true);
-  }, []);
+  
+  // Function to handle SPRED P2P sharing
+  const handleSpredShare = useCallback(() => {
+    logger.info('🎯 SPRED button pressed - opening P2P sharing modal.');
+
+    // Check if video is downloaded for better sharing experience
+    if (!isVideoDownloaded) {
+      showAlert(
+        'Download Recommended',
+        'For best sharing experience, download the video first. You can still share without downloading.',
+        'info',
+        {
+          confirmText: 'Continue Anyway',
+          cancelText: 'Download First',
+          onConfirm: () => {
+            setShowSpredModal(true);
+          },
+          onCancel: () => {
+            setShowDownload(true);
+          },
+          showCancel: true,
+        }
+      );
+    } else {
+      setShowSpredModal(true);
+    }
+  }, [isVideoDownloaded, showAlert]);
 
   // Function to handle received video from QR scan
   const handleVideoReceived = useCallback((filePath: string, videoData: any) => {
@@ -1635,54 +1618,26 @@ ${generateShareUrl()}`;
                     </CustomText>
                   </TouchableOpacity>
 
-                  {/* SPRED Button Removed - QR Code system is now the primary sharing method */}
-
-                  {/* QR Share Button - NEW */}
-                  {isVideoDownloaded && (
-                    <TouchableOpacity
-                      onPress={handleQuickShare}
-                      style={styles.quickShareButton}
-                      accessibilityLabel="Share video with QR code"
-                      accessibilityHint="Generate QR code for video sharing"
-                    >
-                      <Icon
-                        name="qr-code"
-                        size={16}
-                        color="#FFFFFF"
-                        style={styles.quickShareIcon}
-                      />
-                      <CustomText
-                        fontSize={12}
-                        fontWeight="600"
-                        color="#FFFFFF"
-                      >
-                        QR Share
-                      </CustomText>
-                    </TouchableOpacity>
-                  )}
-
-                  {/* QR Scan Button - NEW */}
+                  {/* SPRED Button - P2P File Sharing */}
                   <TouchableOpacity
-                    onPress={handleQRScan}
-                    style={styles.qrScanButton}
-                    accessibilityLabel="Scan QR code to receive video"
-                    accessibilityHint="Scan QR code from another device to download video"
+                    onPress={handleSpredShare}
+                    style={styles.spredButton}
+                    accessibilityLabel="Share via SPRED P2P"
+                    accessibilityHint="Open SPRED file sharing options"
                   >
                     <Icon
-                      name="qr-code-scanner"
-                      size={16}
+                      name="share-variant"
+                      size={20}
                       color="#FFFFFF"
-                      style={styles.qrScanIcon}
+                      style={styles.spredButtonIcon}
                     />
-                    <CustomText
-                      fontSize={12}
-                      fontWeight="600"
-                      color="#FFFFFF"
-                    >
-                      QR Scan
+                    <CustomText fontSize={16} fontWeight="600" color="#FFFFFF">
+                      SPRED
                     </CustomText>
                   </TouchableOpacity>
-                </View>
+
+
+                                  </View>
 
                 {/* Proactive Permission Check Indicator */}
                 <View style={{ marginTop: 16 }}>
@@ -2350,22 +2305,36 @@ ${generateShareUrl()}`;
 
       {/* Share Video Screen - REMOVED: No longer used, SPRED button now uses QR Code system */}
 
-      {/* QR Share Modal */}
-      <QRShareModal
-        visible={showQRShareModal}
-        onClose={() => setShowQRShareModal(false)}
-        videoPath={resolvedVideoPath}
-        videoTitle={cleanMovieTitle(title)}
-        videoSize={item?.size || item?.fileSize || 0}
-        thumbnailUrl={item?.thumbnail || item?.image || ''}
-      />
+      
+      {/* SPRED P2P Sharing Modal */}
+      <Modal
+        visible={showSpredModal}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowSpredModal(false)}
+      >
+        <View style={styles.spredModalContainer}>
+          <View style={styles.spredModalContent}>
+            {/* Modal Header */}
+            <View style={styles.spredModalHeader}>
+              <CustomText fontSize={18} fontWeight="600" color="#FFFFFF">
+                SPRED File Sharing
+              </CustomText>
+              <TouchableOpacity
+                onPress={() => setShowSpredModal(false)}
+                style={styles.spredModalCloseButton}
+                accessibilityLabel="Close SPRED modal"
+                accessibilityHint="Close the P2P sharing options"
+              >
+                <MaterialIcons name="close" size={24} color="#8B8B8B" />
+              </TouchableOpacity>
+            </View>
 
-      {/* QR Scanner Modal */}
-      <QRScannerModal
-        visible={showQRScannerModal}
-        onClose={() => setShowQRScannerModal(false)}
-        onVideoReceived={handleVideoReceived}
-      />
+            {/* SPRED Component with choice buttons */}
+            <Spred url={videoKey || trailerKey || ''} />
+          </View>
+        </View>
+      </Modal>
 
     </View>
   );
@@ -2499,10 +2468,18 @@ const createStyles = (colors: any) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.status.success,
+    backgroundColor: '#F45303', // Spred orange primary color
     paddingVertical: 8,
     borderRadius: 6,
     marginLeft: 8,
+    shadowColor: '#F45303',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
   },
   spredButtonIcon: {
     width: 20,
@@ -2806,19 +2783,29 @@ const createStyles = (colors: any) => StyleSheet.create({
   quickShareIcon: {
     marginRight: 4,
   },
-  qrScanButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#2196F3', // Blue for QR Scan
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 16,
-    marginLeft: 8,
-    minWidth: 80,
+    // SPRED Modal Styles
+  spredModalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  qrScanIcon: {
-    marginRight: 4,
+  spredModalContent: {
+    backgroundColor: colors.background.secondary,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    height: '85%',
+    padding: 0,
+  },
+  spredModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.interactive.border,
+  },
+  spredModalCloseButton: {
+    padding: 8,
   },
 });
 

@@ -32,6 +32,8 @@ import PerformanceManager from './services/PerformanceManager';
 import { PermissionHandler } from './utils/PermissionHandler';
 // Receiver Mode Manager
 import ReceiverModeManager from './services/ReceiverModeManager';
+// URL Handler for spred:// protocol
+import URLHandlerService from './services/URLHandlerService';
 // Performance Optimizations
 import { LogBox } from 'react-native';
 // High Contrast Provider for UniversalTouchable accessibility - DISABLED
@@ -139,6 +141,21 @@ const App = () => {
     // setTimeout(initializeReceiverMode, 2500);
     console.log('📥 Receiver mode initialization disabled - use floating button instead');
 
+    // Initialize URL handler for spred:// protocol
+    const initializeURLHandler = async () => {
+      try {
+        console.log('🔗 Initializing URL handler for spred:// protocol...');
+        const urlHandler = URLHandlerService.getInstance();
+        urlHandler.initialize();
+        console.log('✅ URL handler initialized successfully');
+      } catch (error) {
+        console.error('❌ URL handler initialization error:', error);
+      }
+    };
+
+    // Initialize URL handler after a short delay
+    setTimeout(initializeURLHandler, 500);
+
     return () => {
       // Cleanup on app unmount
       performanceManager.forceCleanup();
@@ -147,6 +164,9 @@ const App = () => {
       ReceiverModeManager.getInstance().cleanup().catch(error => {
         console.error('❌ Error cleaning up receiver mode:', error);
       });
+
+      // Cleanup URL handler
+      URLHandlerService.getInstance().cleanup();
     };
   }, []);
 

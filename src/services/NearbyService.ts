@@ -998,32 +998,13 @@ export class NearbyService {
   }
 
   private async sendMockFile(deviceId: string, filePath: string): Promise<boolean> {
-    logger.info('🎭 Mock: Sending file', filePath, 'to', deviceId);
+    logger.info('📤 Mock: File send initiated', filePath, 'to', deviceId);
     
-    // Simulate file transfer progress
+    // Mock mode - no progress simulation, just return success
+    // Real P2P transfers will show actual progress
     const fileName = filePath.split('/').pop() || 'unknown.mp4';
-    const totalBytes = 52428800; // 50MB mock size
     
-    for (let progress = 0; progress <= 100; progress += 10) {
-      await new Promise(resolve => setTimeout(resolve, 200));
-      
-      this.updateState({
-        currentTransfer: {
-          deviceId,
-          fileName,
-          progress,
-          bytesTransferred: (totalBytes * progress) / 100,
-          totalBytes,
-          speed: 1024 * 1024 * 2, // 2MB/s mock speed
-        },
-      });
-    }
-
-    // Clear transfer when complete
-    this.updateState({
-      currentTransfer: undefined,
-    });
-
+    logger.info('✅ Mock: File send completed', fileName);
     return true;
   }
 

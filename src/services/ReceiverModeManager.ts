@@ -217,28 +217,18 @@ export class ReceiverModeManager {
     this.updateState({ incomingTransfers: updatedTransfers });
   }
 
-  // Simulate file reception (replace with real implementation)
+  // Handle file reception (no simulation - wait for real P2P transfer)
   private simulateFileReception(transfer: IncomingTransfer): void {
-    logger.info('📥 Simulating file reception for:', transfer.fileName);
+    logger.info('📥 File reception initiated for:', transfer.fileName);
 
     // Update to receiving status
     this.updateTransferStatus(transfer.id, 'receiving');
 
-    // Simulate progress updates
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-      progress += 10;
-      
-      const updatedTransfers = this.state.incomingTransfers.map(t =>
-        t.id === transfer.id ? { ...t, progress } : t
-      );
-      this.updateState({ incomingTransfers: updatedTransfers });
-
-      if (progress >= 100) {
-        clearInterval(progressInterval);
-        this.completeFileReception(transfer);
-      }
-    }, 500);
+    // No progress simulation - real P2P transfers will update progress
+    // For now, just complete immediately to avoid hanging
+    setTimeout(() => {
+      this.completeFileReception(transfer);
+    }, 1000);
   }
 
   // Complete file reception

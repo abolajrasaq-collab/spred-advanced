@@ -35,8 +35,16 @@
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     
-    <!-- Bluetooth permissions removed - not needed for WiFi Direct -->
-    <!-- WiFi Direct uses WiFi, not Bluetooth for device communication -->
+    <!-- Bluetooth permissions for P2P file transfer library -->
+    <!-- Required by p2p-file-transfer library for device discovery and connection -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+    <!-- Android 12+ Bluetooth permissions -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" android:minSdkVersion="31" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" android:minSdkVersion="31" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:minSdkVersion="31" />
+    <!-- Bluetooth hardware feature (optional) -->
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
@@ -75,6 +83,13 @@
         android:supportsPictureInPicture="false">
         <intent-filter>
           <action android:name="android.intent.action.MAIN" />
+        </intent-filter>
+        <!-- SPRED Protocol Handler for QR Share URLs -->
+        <intent-filter android:autoVerify="true">
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+          <data android:scheme="spred" />
         </intent-filter>
       </activity>
     </application>

@@ -106,7 +106,10 @@
       "Bash(rm:*)",
       "Bash(\"C:\\Users\\bolaji\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\":*)",
       "Bash(\"C:\\Users\\bolaji\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" shell:*)",
-      "Bash(\"C:\\Users\\bolaji\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" -s R3CR20MEYZD uninstall com.spred)"
+      "Bash(\"C:\\Users\\bolaji\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe\" -s R3CR20MEYZD uninstall com.spred)",
+      "Bash(npx kill-port:*)",
+      "Bash(gradle wrapper:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
