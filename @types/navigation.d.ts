@@ -37,12 +37,6 @@ export type MainParamsList = {
   Account: { userInfo?: UserInfo };
   SpredWallet: { userInfo?: UserInfo };
   Deposit: { amount?: number; currency?: string };
-  SpredShare: undefined;
-  SpredShareNavigator: {
-    screen?: string;
-    params?: any;
-  };
-  Spred: { url?: string; videoData?: any };
   CreatorProfile: { creatorName: string; creatorId: string };
   DownloadManager: undefined;
   VideoPlayerTest: undefined;

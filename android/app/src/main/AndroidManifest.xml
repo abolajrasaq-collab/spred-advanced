@@ -24,10 +24,13 @@
     <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES"
         android:minSdkVersion="33" />
     <!-- Legacy WiFi Direct permissions for older Android versions -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- Android 12+ splash screen compatibility -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE"
         android:minSdkVersion="30" android:maxSdkVersion="32" />
+    <!-- Android 13+ notification permission -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"
+        android:minSdkVersion="33" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <!-- Camera permissions for QR code scanning -->
@@ -45,6 +48,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:minSdkVersion="31" />
     <!-- Bluetooth hardware feature (optional) -->
     <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+    <!-- Wi-Fi Direct hardware feature (optional) -->
+    <uses-feature android:name="android.hardware.wifi.direct" android:required="false" />
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
@@ -90,6 +95,32 @@
           <category android:name="android.intent.category.DEFAULT" />
           <category android:name="android.intent.category.BROWSABLE" />
           <data android:scheme="spred" />
+        </intent-filter>
+      </activity>
+
+      <!-- P2P Debug Activity for testing WiFi Direct functionality -->
+      <activity
+        android:name=".P2PDebugActivity"
+        android:label="P2P Debug"
+        android:theme="@style/Theme.AppCompat.Light"
+        android:exported="true" />
+
+      <!-- Quick Share Receiver Activity - Receives videos from Android Quick Share -->
+      <activity
+        android:name=".QuickShareReceiverActivity"
+        android:label="Receiving video..."
+        android:theme="@style/AppTheme"
+        android:exported="true"
+        android:launchMode="singleTop">
+        <intent-filter>
+          <action android:name="android.intent.action.SEND" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <data android:mimeType="video/*" />
+        </intent-filter>
+        <intent-filter>
+          <action android:name="android.intent.action.SEND_MULTIPLE" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <data android:mimeType="video/*" />
         </intent-filter>
       </activity>
     </application>

@@ -10,9 +10,6 @@ import {
   RefreshControl,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import SpredFileService, {
-  TransferProgress,
-} from '../../services/SpredFileService';
 import TransferHistoryService, {
   TransferHistoryItem,
 } from '../../services/TransferHistoryService';
@@ -24,7 +21,6 @@ const TransferHistory: React.FC = () => {
     useState<TransferHistoryItem | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const spredFileService = SpredFileService.getInstance();
   const transferHistoryService = TransferHistoryService.getInstance();
 
   useEffect(() => {

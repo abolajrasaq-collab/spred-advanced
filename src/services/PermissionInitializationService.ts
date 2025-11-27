@@ -115,7 +115,9 @@ export class PermissionInitializationService {
         // Check if this is a critical permission
         const criticalPermissions = [
           'android.permission.NEARBY_WIFI_DEVICES',
-          'android.permission.ACCESS_FINE_LOCATION',
+          'android.permission.ACCESS_COARSE_LOCATION',
+          // FINE_LOCATION not needed - using COARSE_LOCATION instead
+          // 'android.permission.ACCESS_FINE_LOCATION',
           'android.permission.READ_EXTERNAL_STORAGE',
           'android.permission.READ_MEDIA_IMAGES',
           'android.permission.READ_MEDIA_VIDEO',
@@ -191,8 +193,9 @@ export class PermissionInitializationService {
   private getPermissionNames(permissions: string[]): string[] {
     const nameMap: { [key: string]: string } = {
       'android.permission.NEARBY_WIFI_DEVICES': '• Nearby Devices - for device discovery',
-      'android.permission.ACCESS_FINE_LOCATION': '• Location - for device discovery',
-      'android.permission.ACCESS_COARSE_LOCATION': '• Location - for device discovery',
+      // FINE_LOCATION not needed - using COARSE_LOCATION instead
+      // 'android.permission.ACCESS_FINE_LOCATION': '• Location - for device discovery',
+      'android.permission.ACCESS_COARSE_LOCATION': '• Location (Approximate) - for device discovery',
       'android.permission.READ_EXTERNAL_STORAGE': '• Files and Media - to access your files',
       'android.permission.READ_MEDIA_IMAGES': '• Photos - to access your images',
       'android.permission.READ_MEDIA_VIDEO': '• Videos - to access your videos',

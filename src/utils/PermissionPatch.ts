@@ -154,7 +154,7 @@ export const testPatch = async () => {
     logger.info('🧪 Testing permission patch...');
     
     // Try a simple permission check to see if patch intercepts it
-    const testPermission = PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION;
+    const testPermission = PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION;
     const result = await PermissionsAndroid.check(testPermission);
     
     logger.info('🧪 Patch test completed successfully:', result);

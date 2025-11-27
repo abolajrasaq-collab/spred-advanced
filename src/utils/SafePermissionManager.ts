@@ -37,19 +37,21 @@ export interface PermissionSummary {
 export class SafePermissionManager {
   private static instance: SafePermissionManager;
 
-  // Standard Android permissions needed for Nearby API
+  // Standard Android permissions needed for WiFi P2P
+  // Note: Only COARSE_LOCATION is required for WiFi P2P discovery (FINE not needed)
   public static readonly NEARBY_PERMISSIONS = [
-    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
     PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-    PermissionsAndroid.PERMISSIONS.BLUETOOTH,
-    PermissionsAndroid.PERMISSIONS.BLUETOOTH_ADMIN,
-    PermissionsAndroid.PERMISSIONS.ACCESS_WIFI_STATE,
-    PermissionsAndroid.PERMISSIONS.CHANGE_WIFI_STATE,
+    // FINE_LOCATION not needed for WiFi P2P
+    // PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    // WiFi state permissions (system-level, don't need runtime grant)
+    // PermissionsAndroid.PERMISSIONS.ACCESS_WIFI_STATE,
+    // PermissionsAndroid.PERMISSIONS.CHANGE_WIFI_STATE,
   ].filter(permission => permission !== undefined && permission !== null);
 
   // Permission descriptions for user-friendly messages
   private static readonly PERMISSION_DESCRIPTIONS = {
-    [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION]: 'Precise location access for device discovery',
+    // ACCESS_FINE_LOCATION not needed for WiFi P2P
+    // [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION]: 'Precise location access for device discovery',
     [PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION]: 'Approximate location access for device discovery',
     [PermissionsAndroid.PERMISSIONS.BLUETOOTH]: 'Bluetooth access for device communication',
     [PermissionsAndroid.PERMISSIONS.BLUETOOTH_ADMIN]: 'Bluetooth administration for device management',

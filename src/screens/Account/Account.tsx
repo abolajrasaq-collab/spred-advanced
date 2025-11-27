@@ -318,11 +318,6 @@ const Account = () => {
       onPress: loadUserMetrics,
     },
     {
-      icon: 'share',
-      title: 'Real File Share Test',
-      onPress: () => navigation.navigate('RealFileShareTest'),
-    },
-    {
       icon: 'questioncircleo',
       title: 'Help & Support',
       onPress: () => navigation.navigate('Help'),

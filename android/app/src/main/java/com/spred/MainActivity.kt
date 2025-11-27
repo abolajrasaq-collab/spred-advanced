@@ -5,6 +5,9 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 import android.os.Bundle
+import android.view.View
+import android.view.WindowManager
+import android.os.Build
 
 class MainActivity : ReactActivity() {
 
@@ -19,14 +22,69 @@ class MainActivity : ReactActivity() {
      * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
      */
     override fun createReactActivityDelegate(): ReactActivityDelegate =
-        DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+        object : DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled) {
+            override fun onCreate(savedInstanceState: Bundle?) {
+                // Fix for React Native Screens crash
+                // See: https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067
+                savedInstanceState?.clear()
+                super.onCreate(savedInstanceState)
+                // Enable immersive mode support
+                setupImmersiveMode()
+            }
+        }
 
     /**
-     * Fix for React Native Screens crash
-     * Prevents screen fragments from being restored incorrectly
+     * Setup immersive mode support for fullscreen video playback
      */
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private fun setupImmersiveMode() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
+                // When system UI visibility changes, we might need to re-apply immersive mode
+                // This is handled by the React Native side, but we ensure the window supports it
+            }
+        }
+    }
+
+    /**
+     * Enable immersive mode - called from React Native
+     */
+    fun enableImmersiveMode() {
+        runOnUiThread {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                val flags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+                
+                window.decorView.systemUiVisibility = flags
+                
+                // Also set window flags for maximum compatibility
+                window.setFlags(
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN
+                )
+            }
+        }
+    }
+
+    /**
+     * Disable immersive mode - called from React Native
+     */
+    fun disableImmersiveMode() {
+        runOnUiThread {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                val flags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+                
+                window.decorView.systemUiVisibility = flags
+                
+                // Clear fullscreen flag
+                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            }
+        }
     }
 
     private var touchEventDepth = 0

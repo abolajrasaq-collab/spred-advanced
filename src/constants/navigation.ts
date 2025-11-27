@@ -41,9 +41,9 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     label: 'UPLOAD',
   },
   {
-    name: 'DOWNLOADS',
+    name: 'LIBRARY',
     icon: ICONS.DOWNLOAD,
-    label: 'DOWNLOADS',
+    label: 'LIBRARY',
   },
   {
     name: 'ME',

@@ -51,7 +51,7 @@ const BottomTab = () => {
           }}
         />
         <Tabs.Screen name="UPLOAD" component={Upload} />
-        <Tabs.Screen name="DOWNLOADS" component={Download} />
+        <Tabs.Screen name="LIBRARY" component={Download} />
         <Tabs.Screen name="ME" component={Account} />
       </Tabs.Navigator>
       

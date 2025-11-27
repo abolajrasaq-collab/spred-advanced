@@ -31,6 +31,15 @@ const VideoPlayerTest: React.FC = () => {
   const [showControls, setShowControls] = useState(true);
   const videoRef = useRef<Video>(null);
 
+  // Sanitize video source to prevent requestHeaders errors
+  const sanitizedSource = React.useMemo(() => {
+    if (!selectedVideo) {
+      return { uri: '' };
+    }
+    // Ensure clean source object without problematic headers
+    return { uri: selectedVideo };
+  }, [selectedVideo]);
+
   // Test video sources
   const testVideos = [
     {
@@ -124,7 +133,7 @@ const VideoPlayerTest: React.FC = () => {
             <View style={styles.videoContainer}>
               <Video
                 ref={videoRef}
-                source={{ uri: selectedVideo }}
+                source={sanitizedSource}
                 style={styles.video}
                 paused={!isPlaying}
                 controls={false}

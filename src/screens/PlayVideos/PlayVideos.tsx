@@ -32,15 +32,12 @@ import {
   VideoCard,
 } from '../../components';
 import Android12Button from '../../components/Android12Button/Android12Button';
-import SpredShare from '../SpredShare/SpredShare';
-import Spred from '../Spred/Spred';
+import SpredButton from '../../components/SpredButton';
 
-import ShareVideoScreen from '../ShareVideo';
 import TEXT_CONSTANTS, { TAB_KEYS, TabKey } from './constants';
 
 import { useThemeColors, useSpacing } from '../../theme/ThemeProvider';
 import DownloadItems from '../DownloadItems/DownloadItems';
-import SpredFileService from '../../services/SpredFileService';
 import {
   getDataJson,
   storeDataJson,
@@ -53,7 +50,6 @@ import { FollowingService } from '../../services/FollowingService';
 import logger from '../../utils/logger';
 import OfflineVideoCacheService from '../../services/OfflineVideoCacheService';
 import { networkOptimizer } from '../../services/NetworkOptimizer';
-import PermissionStatusIndicator from '../../components/PermissionStatusIndicator';
 
 // Define User interface for type safety
 interface User {
@@ -148,7 +144,7 @@ const PlayVideos = (props: any) => {
     [isSmallScreen, isMediumScreen],
   );
 
-  const [isVideoPaused, setIsVideoPaused] = useState(true);
+  const [isVideoPaused, setIsVideoPaused] = useState(false);
   const [showDownload, setShowDownload] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoLoading, setVideoLoading] = useState(true);
@@ -169,7 +165,6 @@ const PlayVideos = (props: any) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [resolvedVideoPath, setResolvedVideoPath] = useState<string>('');
   const [visibleRecommendations, setVisibleRecommendations] = useState(6);
-  const [showSpredModal, setShowSpredModal] = useState(false);
   const [showQRShareModal, setShowQRShareModal] = useState(false);
 
   // Video preloading state
@@ -309,7 +304,8 @@ const PlayVideos = (props: any) => {
       }
 
       // If no local file found, return empty string to trigger proper error handling
-      logger.warn('⚠️ No local video file found - video must be downloaded first');
+      // This is normal behavior for videos that haven't been downloaded yet
+      logger.debug('📁 No local video file found - video must be downloaded first');
       return '';
     } catch (error) {
       logger.error('❌ Error getting video path:', error);
@@ -351,7 +347,7 @@ const PlayVideos = (props: any) => {
 
       // 4. Set the resolved video path and show QR Share modal
       setResolvedVideoPath(videoPath);
-      setShowSpredModal(true);
+      setShowQRShareModal(true);
 
       logger.info('✅ QR Share modal opened successfully with video path:', videoPath);
     } catch (error: any) {
@@ -370,33 +366,6 @@ const PlayVideos = (props: any) => {
     getVideoPath,
   ]);
 
-  
-  // Function to handle SPRED P2P sharing
-  const handleSpredShare = useCallback(() => {
-    logger.info('🎯 SPRED button pressed - opening P2P sharing modal.');
-
-    // Check if video is downloaded for better sharing experience
-    if (!isVideoDownloaded) {
-      showAlert(
-        'Download Recommended',
-        'For best sharing experience, download the video first. You can still share without downloading.',
-        'info',
-        {
-          confirmText: 'Continue Anyway',
-          cancelText: 'Download First',
-          onConfirm: () => {
-            setShowSpredModal(true);
-          },
-          onCancel: () => {
-            setShowDownload(true);
-          },
-          showCancel: true,
-        }
-      );
-    } else {
-      setShowSpredModal(true);
-    }
-  }, [isVideoDownloaded, showAlert]);
 
   // Function to handle received video from QR scan
   const handleVideoReceived = useCallback((filePath: string, videoData: any) => {
@@ -767,6 +736,11 @@ const PlayVideos = (props: any) => {
       // Store user token for video headers
       setUserToken(user?.token || null);
       setVideoUrl(trailerUrl);
+
+      // Debug: Log the video URL being set
+      console.log('🎬 [DEBUG] Setting video URL:', trailerUrl);
+      console.log('🎬 [DEBUG] User token exists:', !!user?.token);
+      console.log('🎬 [DEBUG] Custom headers:', customHeaders(user?.token));
     } catch (err) {
       // DISABLED FOR PERFORMANCE
       // logger.error('❌ fetchVideoUrl Error:', err);
@@ -803,6 +777,7 @@ const PlayVideos = (props: any) => {
       if (!videoKeyToCheck) {
         logger.warn('❌ No video key available for download check');
         setIsVideoDownloaded(false);
+        setResolvedVideoPath('');
         return;
       }
 
@@ -847,7 +822,7 @@ const PlayVideos = (props: any) => {
             `  - Checking files against: key=${videoKeyToCheck}, title=${cleanedTitle}`,
           );
 
-          const isDownloaded = files.some(file => {
+          const downloadedFile = files.find(file => {
             const fileName = file.name.toLowerCase();
 
             logger.info(`  - Checking file: ${file.name}`);
@@ -881,11 +856,10 @@ const PlayVideos = (props: any) => {
             return false;
           });
 
-          logger.info(`  - Is downloaded in ${folderName}: ${isDownloaded}`);
-
-          if (isDownloaded) {
-            logger.info('✅ Video found as downloaded!');
+          if (downloadedFile) {
+            logger.info('✅ Video found as downloaded!', downloadedFile.path);
             setIsVideoDownloaded(true);
+            setResolvedVideoPath(downloadedFile.path);
             return;
           }
         } catch (error) {
@@ -897,11 +871,13 @@ const PlayVideos = (props: any) => {
 
       logger.info('❌ Video not found in any download folder');
       setIsVideoDownloaded(false);
+      setResolvedVideoPath('');
     } catch (error) {
       logger.error(
         'Error checking if video is downloaded: ' + (error.message || error),
       );
       setIsVideoDownloaded(false);
+      setResolvedVideoPath('');
     }
   }, [videoKey, trailerKey, title]);
 
@@ -1080,7 +1056,8 @@ ${generateShareUrl()}`;
         }
       );
     } catch (error) {
-      logger.warn('Failed to preload next video:', error);
+      // Video preloading is non-critical, use debug level to reduce console noise
+      logger.debug('Failed to preload next video:', error);
     }
   }, [allVideos, nextVideoPreloaded]);
 
@@ -1246,8 +1223,10 @@ ${generateShareUrl()}`;
         setSuggestedFilms(selectedSuggestions);
         logger.info('✅ Suggested films set successfully');
       } catch (error) {
-        // Handle 403 and other API errors gracefully
-        if (error.response?.status === 403) {
+        // Handle 401, 403 and other API errors gracefully
+        if (error.response?.status === 401) {
+          logger.warn('⚠️ API authentication failed - using fallback suggestions');
+        } else if (error.response?.status === 403) {
           logger.warn('⚠️ API access forbidden - using fallback suggestions');
         } else {
           logger.error(
@@ -1619,31 +1598,20 @@ ${generateShareUrl()}`;
                   </TouchableOpacity>
 
                   {/* SPRED Button - P2P File Sharing */}
-                  <TouchableOpacity
-                    onPress={handleSpredShare}
+                  <SpredButton
+                    videoItem={item}
+                    videoPath={resolvedVideoPath || undefined}
+                    size="medium"
                     style={styles.spredButton}
-                    accessibilityLabel="Share via SPRED P2P"
-                    accessibilityHint="Open SPRED file sharing options"
-                  >
-                    <Icon
-                      name="share-variant"
-                      size={20}
-                      color="#FFFFFF"
-                      style={styles.spredButtonIcon}
-                    />
-                    <CustomText fontSize={16} fontWeight="600" color="#FFFFFF">
-                      SPRED
-                    </CustomText>
-                  </TouchableOpacity>
+                    onPress={() => {
+                      logger.info('🎯 New SPRED button pressed - P2P sharing initiated');
+                    }}
+                  />
 
 
                                   </View>
 
-                {/* Proactive Permission Check Indicator */}
-                <View style={{ marginTop: 16 }}>
-                  <PermissionStatusIndicator compact={true} showActions={false} />
-                </View>
-
+  
 
                 {/* Creator Section */}
                 <View style={styles.creatorSection}>
@@ -2305,36 +2273,25 @@ ${generateShareUrl()}`;
 
       {/* Share Video Screen - REMOVED: No longer used, SPRED button now uses QR Code system */}
 
-      
-      {/* SPRED P2P Sharing Modal */}
-      <Modal
-        visible={showSpredModal}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setShowSpredModal(false)}
-      >
-        <View style={styles.spredModalContainer}>
-          <View style={styles.spredModalContent}>
-            {/* Modal Header */}
-            <View style={styles.spredModalHeader}>
-              <CustomText fontSize={18} fontWeight="600" color="#FFFFFF">
-                SPRED File Sharing
-              </CustomText>
-              <TouchableOpacity
-                onPress={() => setShowSpredModal(false)}
-                style={styles.spredModalCloseButton}
-                accessibilityLabel="Close SPRED modal"
-                accessibilityHint="Close the P2P sharing options"
-              >
-                <MaterialIcons name="close" size={24} color="#8B8B8B" />
-              </TouchableOpacity>
-            </View>
 
-            {/* SPRED Component with choice buttons */}
-            <Spred url={videoKey || trailerKey || ''} />
-          </View>
-        </View>
-      </Modal>
+      {/* Floating Received Videos Button - P2P Receive Mode */}
+      {!isFullscreen && (
+        <TouchableOpacity
+          style={styles.receivedVideosFloatingButton}
+          onPress={() => {
+            logger.info('📥 RECEIVE button pressed - opening P2P receiver');
+            // Navigate to SPRED screen to receive incoming videos
+            navigation.navigate('Spred');
+          }}
+          accessibilityLabel="Receive videos via P2P"
+          accessibilityHint="Receive videos from nearby devices"
+        >
+          <MaterialIcons name="file-download" size={22} color="#FFFFFF" />
+          <CustomText fontSize={12} fontWeight="600" color="#FFFFFF" style={styles.floatingButtonText}>
+            RECEIVE
+          </CustomText>
+        </TouchableOpacity>
+      )}
 
     </View>
   );
@@ -2783,29 +2740,28 @@ const createStyles = (colors: any) => StyleSheet.create({
   quickShareIcon: {
     marginRight: 4,
   },
-    // SPRED Modal Styles
-  spredModalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  spredModalContent: {
-    backgroundColor: colors.background.secondary,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    height: '85%',
-    padding: 0,
-  },
-  spredModalHeader: {
+  receivedVideosFloatingButton: {
+    position: 'absolute',
+    right: 16,
+    bottom: 24,
+    backgroundColor: '#F45303',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 25,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.interactive.border,
+    shadowColor: '#F45303',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    zIndex: 1000,
   },
-  spredModalCloseButton: {
-    padding: 8,
+  floatingButtonText: {
+    marginLeft: 6,
   },
 });
 

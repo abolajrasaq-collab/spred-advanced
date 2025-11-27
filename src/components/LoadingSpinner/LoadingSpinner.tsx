@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   ActivityIndicator,
@@ -7,7 +7,6 @@ import {
   Modal,
   Dimensions,
 } from 'react-native';
-import { LoadingState } from '../../types/api';
 
 const { width, height } = Dimensions.get('window');
 

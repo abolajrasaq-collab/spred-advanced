@@ -103,10 +103,10 @@ android {
         }
         release {
             // Release keystore for production builds
-            storeFile file('release.keystore')
-            storePassword 'SpredRelease2024!'
-            keyAlias 'spredReleaseKey'
-            keyPassword 'SpredRelease2024!'
+            storeFile file('spred-release-key.keystore')
+            storePassword 'android123'
+            keyAlias 'spred-key-alias'
+            keyPassword 'android123'
         }
     }
     buildTypes {
@@ -140,7 +140,11 @@ dependencies {
 
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
 
-  
+    // WiFi P2P and QR Code dependencies
+    implementation('com.google.zxing:core:3.5.1')
+    implementation('com.journeyapps:zxing-android-embedded:4.3.0')
+    implementation('androidx.camera:camera-camera2:1.3.1')
+
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {
@@ -149,4 +153,10 @@ dependencies {
 }
 
 apply from: file("materialicons-fonts.gradle")
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+apply from: file("../../node_modules/@react-native-community/cli-hermes/node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+project.ext.react = [
+    // Add your custom WiFi P2P module to the package list
+    packages: ['com.spred.WifiP2PPackage']
+]
+

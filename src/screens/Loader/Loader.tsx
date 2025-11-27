@@ -36,14 +36,12 @@ const Loader = ({ navigation }) => {
     <View
       style={{
         flex: 1,
-        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#1A1A1A',
       }}
     >
-      <ImageBackground
-        source={require('../../../assets/Splash-2.jpg')}
-        resizeMode="cover"
-        style={{ flex: 1, justifyContent: 'center' }}
-      />
+      <ActivityIndicator size="large" color="#F45303" />
     </View>
   );
 };

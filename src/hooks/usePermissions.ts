@@ -22,7 +22,7 @@ export interface UsePermissionsResult {
   refresh: () => Promise<void>;
   
   // Utilities
-  canUseFeature: (feature: 'nearby' | 'files' | 'location' | 'bluetooth') => boolean;
+  canUseFeature: (feature: 'nearby' | 'p2p' | 'files' | 'location' | 'bluetooth') => Promise<boolean>;
   getFeatureStatus: (feature: string) => 'available' | 'permission_needed' | 'not_supported';
 }
 
@@ -36,19 +36,28 @@ export const usePermissions = (autoInitialize: boolean = true): UsePermissionsRe
   const refresh = useCallback(async () => {
     try {
       setLoading(true);
-      
+
       const status = await autoPermissionManager.getPermissionStatus();
       const critical = await autoPermissionManager.hasCriticalPermissions();
-      
+
       setSummary(status.summary);
       setHasPermissions(status.summary.allGranted);
       setHasCriticalPermissions(critical);
-      
+
       logger.info('🔐 Permission status updated:', {
         allGranted: status.summary.allGranted,
         criticalGranted: critical,
         canProceed: status.canProceed,
+        totalStatuses: status.summary.statuses.length,
+        grantedStatuses: status.summary.statuses.filter(s => s.status === 'granted').length,
+        deniedStatuses: status.summary.statuses.filter(s => s.status === 'denied').length,
       });
+
+      // Log each permission status for debugging
+      status.summary.statuses.forEach((permStatus) => {
+        logger.info(`🔐 Permission status: ${permStatus.permission} = ${permStatus.status}`);
+      });
+
     } catch (error) {
       logger.error('❌ Error refreshing permissions:', error);
     } finally {
@@ -79,22 +88,22 @@ export const usePermissions = (autoInitialize: boolean = true): UsePermissionsRe
     }
   }, [autoPermissionManager]);
 
-  const canUseFeature = useCallback((feature: 'nearby' | 'files' | 'location' | 'bluetooth'): boolean => {
-    if (!summary) return false;
-    
+  const canUseFeature = useCallback(async (feature: 'nearby' | 'p2p' | 'files' | 'location' | 'bluetooth'): Promise<boolean> => {
+    // For nearby/P2P, return true and let the native Android code handle actual permission validation
+    // This bypasses the unstable React Native PermissionsAndroid API
+    if (feature === 'nearby' || feature === 'p2p') {
+      console.log('🔐 P2P permission check: Bypassing React Native API, using native validation');
+      return true;
+    }
+
+    // For other features, check their specific permissions
     const requiredPermissions: { [key: string]: string[] } = {
-      nearby: [
-        'android.permission.NEARBY_WIFI_DEVICES',
-        'android.permission.ACCESS_FINE_LOCATION',
-        'android.permission.ACCESS_COARSE_LOCATION',
-      ],
       files: [
         'android.permission.READ_EXTERNAL_STORAGE',
         'android.permission.READ_MEDIA_IMAGES',
         'android.permission.READ_MEDIA_VIDEO',
       ],
       location: [
-        'android.permission.ACCESS_FINE_LOCATION',
         'android.permission.ACCESS_COARSE_LOCATION',
       ],
       bluetooth: [
@@ -105,19 +114,19 @@ export const usePermissions = (autoInitialize: boolean = true): UsePermissionsRe
         'android.permission.BLUETOOTH_ADMIN',
       ],
     };
-    
+
     const permissions = requiredPermissions[feature] || [];
-    return permissions.some(permission => 
-      summary.statuses.some(status => 
+    return permissions.some(permission =>
+      summary?.statuses?.some(status =>
         status.permission === permission && status.status === 'granted'
-      )
+      ) || false
     );
-  }, [summary]);
+  }, [summary, loading, refresh]);
 
   const getFeatureStatus = useCallback((feature: string): 'available' | 'permission_needed' | 'not_supported' => {
     if (!summary) return 'not_supported';
-    
-    const featureMap: { [key: string]: 'nearby' | 'files' | 'location' | 'bluetooth' } = {
+
+    const featureMap: { [key: string]: 'nearby' | 'p2p' | 'files' | 'location' | 'bluetooth' } = {
       'wifi-direct': 'nearby',
       'p2p': 'nearby',
       'nearby-sharing': 'nearby',

@@ -61,6 +61,15 @@ const OfflineVideos = lazy(
 const ButtonPerformanceTest = lazy(
   () => import('../screens/ButtonPerformanceTest/BasicWorkingTest'),
 );
+const SpredShareNew = lazy(
+  () => import('../screens/SpredShareNew/SpredShare'),
+);
+const Spred = lazy(
+  () => import('../screens/Spred/Spred'),
+);
+const Receive = lazy(
+  () => import('../screens/Receive/Receive'),
+);
 
 
 const Stack = createNativeStackNavigator();
@@ -131,7 +140,7 @@ const MainNavigator = () => {
 
   return (
     <Suspense fallback={<LazyLoadingFallback />}>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Splash" component={Splash} />
         <Stack.Screen name="Loader" component={Loader} />
         <Stack.Screen name="dashboard" component={BottomTab} />
@@ -227,10 +236,43 @@ const MainNavigator = () => {
             headerTitleStyle: { fontWeight: '600' },
           }}
         />
-  
-      </Stack.Navigator>
-    </Suspense>
-  );
+        <Stack.Screen
+          name="SpredShareNew"
+          component={SpredShareNew}
+          options={{
+            headerShown: true,
+            title: 'Share Video (P2P)',
+            headerStyle: { backgroundColor: '#1A1A1A' },
+            headerTintColor: '#FFFFFF',
+            headerTitleStyle: { fontWeight: '600' },
+          }}
+        />
+        <Stack.Screen
+          name="Spred"
+          component={Spred}
+          options={{
+            headerShown: true,
+            title: 'SPRED - P2P Sharing',
+            headerStyle: { backgroundColor: '#1A1A1A' },
+            headerTintColor: '#FFFFFF',
+            headerTitleStyle: { fontWeight: '600' },
+          }}
+        />
+        <Stack.Screen
+          name="Receive"
+          component={Receive}
+          options={{
+            headerShown: true,
+            title: 'Receive via P2P',
+            headerStyle: { backgroundColor: '#1A1A1A' },
+            headerTintColor: '#FFFFFF',
+            headerTitleStyle: { fontWeight: '600' },
+          }}
+        />
+
+        </Stack.Navigator>
+      </Suspense>
+      );
 };
 
 export default MainNavigator;

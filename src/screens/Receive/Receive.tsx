@@ -1,4 +1,4 @@
-import { View, Image, Text, PermissionsAndroid, Platform } from 'react-native';
+import { View, Image, Text } from 'react-native';
 import CustomText from '../../components/CustomText/CustomText';
 import React, { useEffect, useState } from 'react';
 import {
@@ -7,13 +7,13 @@ import {
   receiveFile,
   subscribeOnConnectionInfoUpdates,
   subscribeOnPeersUpdates,
+  getAvailablePeers,
+  subscribeOnFileReceive,
   WifiP2pInfo,
 } from 'p2p-file-transfer';
 import CustomButton from '../../components/CustomButton/CustomButton';
 import RNFS from 'react-native-fs';
 import Snackbar from 'react-native-snackbar';
-import { subscribeOnFileReceive } from '../../../.yalc/p2p-file-transfer/src';
-import { getAvailablePeers } from '../../../.yalc/p2p-file-transfer';
 
 export default function Receive() {
   const [connection, setConnection] = useState<WifiP2pInfo>();
@@ -43,57 +43,36 @@ export default function Receive() {
 
   const startReceivingFile = async () => {
     try {
-      // Check permissions first
-      if (Platform.OS === 'android') {
-        const hasPermission = await PermissionsAndroid.check(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
-        );
-        if (!hasPermission) {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
-          );
-          if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-            Snackbar.show({
-              text: 'Storage permission required to receive files.',
-            });
-            return;
-          }
-        }
-      }
-
-      const folder = `${RNFS.ExternalDirectoryPath}/.spredHiddenFolder`;
+      // Use dedicated folder for P2P received videos
+      const folder = `${RNFS.ExternalDirectoryPath}/SpredP2PReceived`;
 
       // Ensure folder exists
       const folderExists = await RNFS.exists(folder);
       if (!folderExists) {
         await RNFS.mkdir(folder);
+        console.log('✅ SPRED: Created SpredP2PReceived folder for P2P content');
       }
+
+      console.log('📥 SPRED: Starting to receive file to:', folder);
 
       const progressSub = subscribeOnFileReceive(data => {
         setProgress(data.progress);
+        console.log(`📊 SPRED: Receive progress: ${data.progress}%`);
       });
 
-      // Add timeout to prevent hanging
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Receive timeout')), 300000); // 5 minutes
-      });
-
-      const receivePromise = receiveFile(folder);
-
-      const data = await Promise.race([receivePromise, timeoutPromise]);
+      const data = await receiveFile(folder);
       progressSub.remove();
+
+      console.log('✅ SPRED: File received successfully:', data);
+
       Snackbar.show({
-        text: 'File received successfully!',
+        text: 'Video received! Check your Downloads to watch it.',
+        duration: Snackbar.LENGTH_LONG,
       });
-      console.log('File received', data);
+
     } catch (error) {
-      console.error('Receive file error:', error);
-      const errorMessage = error.message?.includes('timeout')
-        ? 'Receive timed out. Please try again.'
-        : error.message || 'Failed to receive file. Please try again.';
-      Snackbar.show({
-        text: errorMessage,
-      });
+      console.log('❌ SPRED: Receive error:', error);
+      showError(error);
     }
   };
 
@@ -149,12 +128,34 @@ export default function Receive() {
           }}
         >
           <CustomButton
-            title="Start Receiving File"
+            title="Start Receiving Video"
             onPress={startReceivingFile}
           />
-          <Text>{`Receive File Progress: ${progress}%`}</Text>
+          {progress > 0 && (
+            <Text style={{ color: '#4CAF50', textAlign: 'center', marginTop: 8 }}>
+              {`📥 Receiving Progress: ${progress.toFixed(1)}%`}
+            </Text>
+          )}
+          <CustomText fontSize={11} style={{ color: '#888', textAlign: 'center', marginTop: 10 }}>
+            Videos received via SPRED will be saved to your Downloads
+          </CustomText>
         </View>
       )}
+      <View
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: 15,
+          padding: 10,
+          backgroundColor: 'rgba(244, 83, 3, 0.1)',
+          borderRadius: 8,
+          marginHorizontal: 10,
+        }}
+      >
+        <CustomText fontSize={11} style={{ color: '#F45303', textAlign: 'center' }}>
+          💰 NGN100 will be deducted from your wallet for receiving videos
+        </CustomText>
+      </View>
     </View>
   );
 }

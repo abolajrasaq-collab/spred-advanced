@@ -45,7 +45,6 @@ import { api } from '../../helpers/api/api';
 import { getDataJson, storeDataJson } from '../../helpers/api/Asyncstorage';
 
 import SpredFileService from '../../services/SpredFileService';
-import QuickShareService from '../../services/QuickShareService';
 
 const LeftIcon = () => (
   <MaterialIcons name="arrow-back" size={20} color="#F45305" />
@@ -834,6 +833,8 @@ const Download = () => {
       const processedReceivedFiles = [];
 
       // 1. Get QuickShareService received files
+      // DISABLED: QuickShareService not available
+      /*
       try {
         const quickShareService = QuickShareService.getInstance();
         const receivedFiles = await quickShareService.getReceivedFiles();
@@ -863,6 +864,7 @@ const Download = () => {
         // DISABLED FOR PERFORMANCE
         // console.log('⚠️ Error fetching QuickShare files:', qsError);
       }
+      */
 
       // 2. Scan for P2P received files in SpredP2PReceived folder
       try {

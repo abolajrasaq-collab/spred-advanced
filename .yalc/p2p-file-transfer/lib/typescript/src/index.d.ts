@@ -128,24 +128,12 @@ export declare const sendFile: (pathToFile: string) => Promise<File>;
  */
 export declare const sendFileTo: (pathToFile: string, address: string) => Promise<File>;
 /**
- * Subscribe to file send progress events
- *
- * @param callback the callback to be called when the file is being sent
- */
-export declare const subscribeOnFileSend: (callback: (data: File) => void) => EmitterSubscription;
-/**
  *
  * @param destination The destination directory
  * @param name The name of the file (optional)
  * @param forceToScanGallery If true, the file will be scanned by the media scanner
  */
-export declare const receiveFile: (destination: string, name?: string | null, forceToScanGallery?: boolean) => Promise<File>;
-/**
- * Subscribe to file receive progress events
- *
- * @param callback the callback to be called when the file is being received
- */
-export declare const subscribeOnFileReceive: (callback: (data: File) => void) => EmitterSubscription;
+export declare const receiveFile: (destination: string, name?: string | null, forceToScanGallery?: boolean) => Promise<string>;
 export interface Device {
     deviceAddress: string;
     deviceName: string;
@@ -176,7 +164,6 @@ export interface WifiP2pInfo {
 export interface File {
     time: number;
     file: string;
-    progress: number;
 }
 export interface ClientsUpdated {
     clients: Array<string>;

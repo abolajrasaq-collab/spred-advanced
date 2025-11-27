@@ -1,0 +1,166 @@
+ SPRED Implementation: Complete User Flow
+
+  SPRED is a peer-to-peer (P2P) video sharing feature that allows users to share downloaded videos directly with        
+  other Spred users over WiFi. Here's the complete implementation:
+
+  1. Entry Point: SPRED Button (PlayVideos.tsx:419)
+
+  When a user taps the "Spred" button on a video player:
+
+  <CustomButton
+    image={require('../../../assets/icons/spred-share.png')}
+    title="Spred"
+    width="98%"
+    borderRadius={7}
+    height={45}
+    onPress={() => setShowSpred(!showSpred)}
+  />
+
+  This toggles the showSpred state, rendering the Spred component below the action buttons.
+
+  2. SPRED Component (Spred.tsx)
+
+  The main SPRED orchestrator handles two modes:
+  - Send Mode: Share downloaded videos
+  - Receive Mode: Receive videos from peers
+
+  Key Features:
+
+  - Download Verification (Spred.tsx:37-75): Checks if the video exists in local storage
+    - Scans two directories: SpredVideos/ (Android 10+) and .spredHiddenFolder (legacy)
+    - Only allows sharing of downloaded videos
+    - Shows visual status: ✅ ready to SPRED or ⚠️ download required
+  - UI States:
+    - Main view with two buttons: "Spred" (send) and "Receive"
+    - Send view: SpredSetup wrapper with SpredShare component
+    - Receive view: SpredSetup wrapper with Receive component
+
+  3. P2P Setup (SpredSetup.tsx)
+
+  This component manages the WiFi P2P connection requirements:
+
+  Required Permissions & Settings:
+
+  1. WiFi Permissions - Grants network access
+  2. Location Services - Required for WiFi Direct on Android
+  3. WiFi Enabled - Must be turned on
+  4. WiFi Hotspot Disabled - Conflicts with P2P mode
+
+  Technical Flow (SpredSetup.tsx:50-66):
+
+  await initialize();              // Initialize P2P module
+  await startDiscoveringPeers();   // Start looking for peers
+  peersSubscription = subscribeOnPeersUpdates(value => {
+    setPeers(value.devices);
+  });
+
+  4. Send Mode: SpredShare.tsx
+
+  When sending a video:
+
+  Connection Management:
+
+  - Subscribes to connection info updates
+  - Tracks peer clients
+  - Determines group owner (sender becomes group owner)
+
+  File Transfer (SpredShare.tsx:39-74):
+
+  const address = connection?.isGroupOwner
+    ? clients[0]  // First client if sender is group owner
+    : connection?.groupOwnerAddress?.hostAddress;
+
+  const progressSub = subscribeOnFileSend(data => {
+    setProgress(data.progress);
+  });
+
+  await sendFileTo(downloadedVideoPath, address);
+
+  Requirements:
+  - Video must be downloaded locally
+  - Valid peer connection established
+  - Progress tracking during transfer
+
+  5. Receive Mode: Receive.tsx
+
+  When receiving a video:
+
+  Peer Discovery (Receive.tsx:79-82):
+
+  getAvailablePeers().then(value => {
+    setPeers(value.devices);
+  });
+
+  Connection Flow (Receive.tsx:36-42):
+
+  - User sees list of available devices
+  - Taps to connect to a specific peer
+  - Establishes P2P connection
+
+  File Reception (Receive.tsx:44-77):
+
+  const folder = `${RNFS.ExternalDirectoryPath}/SpredVideos`;
+  await RNFS.mkdir(folder);  // Create directory if needed
+
+  const progressSub = subscribeOnFileReceive(data => {
+    setProgress(data.progress);
+  });
+
+  const data = await receiveFile(folder);
+
+  Post-Receive:
+  - Files saved to SpredVideos/ folder
+  - User notified: "Video received! Check your Downloads to watch it"
+  - Can access via Download screen
+
+  6. Wallet Integration (SpredWallet.tsx)
+
+  A NGN 100 deduction is mentioned for receiving videos (Receive.tsx:156):
+  💰 NGN100 will be deducted from your wallet for receiving videos
+
+  The wallet system:
+  - Fetches user wallet details via API
+  - Supports deposit functionality
+  - Tracks balance and transactions
+  - Auto-initializes wallet if needed
+
+  Technical Architecture
+
+  P2P Technology Stack
+
+  - Local Package: .yalc/p2p-file-transfer (custom native module)
+  - Protocol: WiFi Direct/P2P
+  - Permissions Required:
+    - ACCESS_WIFI_STATE
+    - CHANGE_WIFI_STATE
+    - ACCESS_FINE_LOCATION
+    - ACCESS_COARSE_LOCATION
+    - CHANGE_WIFI_MULTICAST_STATE
+
+  File Storage Structure
+
+  Android/iOS External Directory/
+  ├── SpredVideos/              # Modern location (Android 10+)
+  │   └── [video-title].mp4
+  └── .spredHiddenFolder/       # Legacy location (older Android/iOS)
+      └── [video-title].mp4
+
+  State Management
+
+  - Redux + AsyncStorage: User authentication, tokens
+  - Local State: Connection status, transfer progress, peer lists
+  - API Integration: Spred backend for wallet operations
+
+  User Flow Summary
+
+  1. User A (Sender):
+    - Watches video → Downloads it → Taps "Spred" → "Spred" → Setup permissions → Start sending
+  2. User B (Receiver):
+    - Taps "Spred" → "Receive" → Setup permissions → Sees available devices → Connects → Receives video
+  3. Post-Transfer:
+    - Both users can watch received videos in Download section
+    - Receiver charged NGN 100 from wallet
+    - Files stored locally for offline playback
+
+  The SPRED feature essentially creates a decentralized video sharing network where users can exchange downloaded       
+  premium content peer-to-peer without server uploads, with a micro-transaction model for received content.

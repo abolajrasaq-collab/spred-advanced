@@ -132,7 +132,7 @@ const Homepage = ({ route }: { route: any }) => {
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showReceiveModal, setShowReceiveModal] = useState(false);
-  const id = user?.id;
+    const id = user?.id;
 
   // Initialize performance optimization
   React.useEffect(() => {
@@ -876,6 +876,7 @@ const Homepage = ({ route }: { route: any }) => {
           />
         )}
 
+        
         {/* SHORT FILMS Section - Prioritized after hero content */}
         {(() => {
           const shortFilmsSection = categorizedContent.find(
@@ -1089,59 +1090,11 @@ const Homepage = ({ route }: { route: any }) => {
         <View style={{ height: 90 }} />
       </ScrollView>
 
-      {/* Floating RECEIVE Button */}
-      <TouchableOpacity
-        style={styles.receiveFloatingButton}
-        onPress={() => setShowReceiveModal(true)}
-        accessibilityLabel="Receive files"
-        accessibilityHint="Open P2P receive modal"
-      >
-        <View style={styles.receiveButtonContent}>
-          <View style={styles.spredLogoContainer}>
-            <MaterialIcons name="arrow-circle-down" size={16} color="#FFFFFF" />
-          </View>
-          <Text style={styles.receiveButtonText}>RECEIVE</Text>
-        </View>
-      </TouchableOpacity>
 
-
+      {/* Multi-Protocol P2P Test Modal */}
+      
     </SafeAreaView>
   );
 };
 
 export default Homepage;
-
-const styles = StyleSheet.create({
-  receiveFloatingButton: {
-    position: 'absolute',
-    bottom: 100, // Position above the tab bar
-    right: 20,
-    backgroundColor: '#F45303',
-    borderRadius: 25,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-    zIndex: 1000,
-  },
-  receiveButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  spredLogoContainer: {
-    marginRight: 8,
-  },
-  receiveButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-});

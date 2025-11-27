@@ -29,7 +29,7 @@ import Snackbar from 'react-native-snackbar';
 import {
   Device,
   subscribeOnPeersUpdates,
-} from '../../../.yalc/p2p-file-transfer';
+} from 'p2p-file-transfer';
 
 export default function SpredSetup({ title, children }: Props) {
   let peersSubscription: EmitterSubscription;
@@ -136,23 +136,19 @@ export default function SpredSetup({ title, children }: Props) {
       locationEnabled &&
       wifiEnabled &&
       wifiHotspotDisabled ? (
-        <>
+        <View
+          style={{
+            margin: 10,
+            gap: 10,
+          }}
+        >
           {peers.length > 0 ? (
-            <View style={{ flex: 1 }}>
-              {children}
-            </View>
+            children
           ) : (
-            <View
-              style={{
-                margin: 10,
-                gap: 10,
-              }}
-            >
-              <CustomButton title={`Start ${title}`} onPress={init} />
-              <CustomButton title={`Stop ${title}`} onPress={stop} />
-            </View>
+            <CustomButton title={`Start ${title}`} onPress={init} />
           )}
-        </>
+          <CustomButton title={`Stop ${title}`} onPress={stop} />
+        </View>
       ) : (
         <View>
           <View
@@ -193,7 +189,7 @@ export default function SpredSetup({ title, children }: Props) {
               <View style={style.permissionButton}>
                 <Image
                   style={style.permissionImage}
-                  source={require('../../../assets/spred.png')}
+                  source={require('../../../assets/wifi.png')}
                 />
                 <Text>Grant Permissions</Text>
               </View>
@@ -205,7 +201,7 @@ export default function SpredSetup({ title, children }: Props) {
               <View style={style.permissionButton}>
                 <Image
                   style={style.permissionImage}
-                  source={require('../../../assets/visible.png')}
+                  source={require('../../../assets/wifi.png')}
                 />
                 <Text>Enable WLAN</Text>
               </View>
@@ -229,7 +225,7 @@ export default function SpredSetup({ title, children }: Props) {
               <View style={style.permissionButton}>
                 <Image
                   style={style.permissionImage}
-                  source={require('../../../assets/visible.png')}
+                  source={require('../../../assets/wifi.png')}
                 />
                 <Text>Enable Location</Text>
               </View>

@@ -16,6 +16,7 @@ import Video from 'react-native-video';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Orientation from 'react-native-orientation-locker';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+import SystemUI from '../../native/SystemUIModule';
 
 // Navigation types
 type RootStackParamList = {
@@ -67,6 +68,14 @@ const LiveStreamPlayer: React.FC<LiveStreamPlayerProps> = ({
   streamUrl,
   channelInfo,
 }) => {
+  // Sanitize stream URL to prevent requestHeaders errors
+  const sanitizedSource = React.useMemo(() => {
+    if (!streamUrl) {
+      return { uri: '' };
+    }
+    // Ensure clean source object without problematic headers
+    return { uri: streamUrl };
+  }, [streamUrl]);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -143,26 +152,31 @@ const LiveStreamPlayer: React.FC<LiveStreamPlayerProps> = ({
   };
 
   const enterFullscreen = () => {
+    console.log('🎥 LiveStream: Entering fullscreen mode - hiding system UI');
     setIsFullscreen(true);
     Orientation.lockToLandscape();
     StatusBar.setHidden(true);
+    SystemUI.hideSystemUI();
   };
 
   const exitFullscreen = () => {
+    console.log('🎥 LiveStream: Exiting fullscreen mode - showing system UI');
     setIsFullscreen(false);
     Orientation.unlockAllOrientations();
     StatusBar.setHidden(false);
+    SystemUI.showSystemUI();
   };
 
   // Cleanup orientation on unmount
   useEffect(() => {
     return () => {
       try {
+        console.log('🧹 LiveStream: Component unmounting - restoring system UI');
         Orientation.unlockAllOrientations();
         StatusBar.setHidden(false);
+        SystemUI.showSystemUI();
       } catch (error) {
-        // DISABLED FOR PERFORMANCE
-        // console.log('Error resetting orientation on unmount:', error);
+        console.log('⚠️ Error resetting orientation on unmount:', error);
       }
     };
   }, []);
@@ -378,7 +392,7 @@ const LiveStreamPlayer: React.FC<LiveStreamPlayerProps> = ({
         >
           <Video
             ref={videoRef}
-            source={{ uri: streamUrl }}
+            source={sanitizedSource}
             style={[
               styles.video,
               isFullscreen && [

@@ -53,16 +53,18 @@ export class AutoPermissionManager {
     ],
     // Android 12 (API 31-32) - WiFi Direct + location (no Bluetooth needed)
     intermediate: [
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+      // FINE_LOCATION not needed for WiFi P2P
+      // PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       PermissionsAndroid.PERMISSIONS.ACCESS_WIFI_STATE,
       PermissionsAndroid.PERMISSIONS.CHANGE_WIFI_STATE,
       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
     ],
     // Android 11 and below (API 30-) - Legacy permissions
     legacy: [
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+      // FINE_LOCATION not needed for WiFi P2P
+      // PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       PermissionsAndroid.PERMISSIONS.BLUETOOTH,
       PermissionsAndroid.PERMISSIONS.BLUETOOTH_ADMIN,
       PermissionsAndroid.PERMISSIONS.ACCESS_WIFI_STATE,
@@ -82,6 +84,8 @@ export class AutoPermissionManager {
       settingsPath: ['Settings', 'Apps', 'SPRED', 'Permissions', 'Nearby devices'],
       actions: [],
     },
+    // ACCESS_FINE_LOCATION not needed for WiFi P2P - using COARSE_LOCATION instead
+    /*
     [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION]: {
       permission: PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       title: 'Location (Precise)',
@@ -90,6 +94,7 @@ export class AutoPermissionManager {
       settingsPath: ['Settings', 'Apps', 'SPRED', 'Permissions', 'Location'],
       actions: [],
     },
+    */
     [PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION]: {
       permission: PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
       title: 'Location (Approximate)',

@@ -248,7 +248,13 @@ const Shorts: React.FC = () => {
     // logger.info('Share pressed for video:', videoId);
   };
 
-  const renderItem = ({ item, index }: { item: ShortVideo; index: number }) => (
+  const renderItem = ({ item, index }: { item: ShortVideo; index: number }) => {
+    // Sanitize video source to prevent requestHeaders errors
+    const sanitizedSource = !item.videoUrl
+      ? { uri: '' }
+      : { uri: item.videoUrl };
+
+    return (
     <View style={styles.slide}>
       {/* Video Component */}
       <Video
@@ -257,7 +263,7 @@ const Shorts: React.FC = () => {
             videoRefs.current[index] = ref;
           }
         }}
-        source={{ uri: item.videoUrl }}
+        source={sanitizedSource}
         style={styles.video}
         resizeMode="cover"
         repeat
@@ -401,6 +407,7 @@ const Shorts: React.FC = () => {
       {/* No pause overlay - videos auto-play on scroll */}
     </View>
   );
+};
 
   const formatCount = (count: number): string => {
     if (count >= 1000000) {

@@ -14,6 +14,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Orientation from 'react-native-orientation-locker';
 import { useOrientation } from '../../hooks/useOrientation';
 import { UserMetricsService } from '../../services/UserMetricsService';
+import SystemUI from '../../native/SystemUIModule';
 
 interface SimpleVideoPlayerProps {
   source: any;
@@ -40,6 +41,31 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
   onFullscreenChange,
   resizeMode = 'contain',
 }) => {
+  // Sanitize source prop to prevent requestHeaders errors
+  const sanitizedSource = React.useMemo(() => {
+    if (!source || typeof source !== 'object') {
+      return { uri: '' };
+    }
+
+    // Ensure source has the correct structure and remove any problematic headers
+    const cleanSource: any = { uri: source.uri || '' };
+
+    // Only include valid headers if they exist and are properly formatted
+    if (source.headers && typeof source.headers === 'object' && !Array.isArray(source.headers)) {
+      cleanSource.headers = source.headers;
+    }
+
+    // Remove any requestHeaders that might be arrays (causing the error)
+    if (cleanSource.requestHeaders && Array.isArray(cleanSource.requestHeaders)) {
+      delete cleanSource.requestHeaders;
+    }
+
+    // Debug: Log the sanitized source
+    console.log('🎬 [SimpleVideoPlayer] Source received:', source);
+    console.log('🎬 [SimpleVideoPlayer] Sanitized source:', cleanSource);
+
+    return cleanSource;
+  }, [source]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isVideoPaused, setIsVideoPaused] = useState(paused);
   const [showControls, setShowControls] = useState(true);
@@ -55,6 +81,7 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
   const hasLoadedRef = useRef(false);
   const controlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastKnownTime = useRef(0);
+  const justEnteredFullscreenRef = useRef(false);
 
   // Use enhanced orientation hook
   const { isLandscape, unlockAllOrientations } = useOrientation();
@@ -341,10 +368,28 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
 
   // Auto-hide fullscreen controls with improved timing
   useEffect(() => {
-    if (showFullscreenControls && isFullscreen && !isVideoPaused) {
+    console.log('🎛️ Fullscreen controls state:', {
+      showFullscreenControls,
+      isFullscreen,
+      isVideoPaused,
+      justEnteredFullscreen: justEnteredFullscreenRef.current
+    });
+
+    // Don't auto-hide immediately when entering fullscreen (give user 1 second to see controls)
+    if (showFullscreenControls && isFullscreen && !isVideoPaused && !justEnteredFullscreenRef.current) {
+      console.log('⏰ Setting auto-hide timeout for fullscreen controls (5s)');
       controlsTimeoutRef.current = setTimeout(() => {
+        console.log('⏰ Auto-hiding fullscreen controls');
         setShowFullscreenControls(false);
       }, 5000); // Increased to 5 seconds for better UX
+    }
+
+    // Reset the "just entered" flag after a short delay
+    if (justEnteredFullscreenRef.current) {
+      const timer = setTimeout(() => {
+        justEnteredFullscreenRef.current = false;
+      }, 1000);
+      return () => clearTimeout(timer);
     }
 
     return () => {
@@ -378,54 +423,29 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
   // Handle fullscreen state changes
   useEffect(() => {
     if (isFullscreen) {
-      // DISABLED FOR PERFORMANCE
-      // console.log('🎥 Entering fullscreen mode');
+      console.log('🎥 Entering fullscreen mode - hiding system UI');
       StatusBar.setHidden(true, 'fade');
-      
+
       // Hide system UI for true fullscreen on Android
       if (Platform.OS === 'android') {
         try {
-          // Use Android's immersive mode to hide navigation bar
-          if (NativeModules.StatusBarManager) {
-            NativeModules.StatusBarManager.setHidden(true);
-          }
-
-          // Force immersive mode using a more direct approach
-          setTimeout(() => {
-            try {
-              const { UIManager } = require('react-native');
-              UIManager.dispatchViewManagerCommand(
-                UIManager.getViewManagerConfig('RCTView'),
-                UIManager.RCTView.Commands.setSystemUiVisibility,
-                [0x00000004 | 0x00000002 | 0x00000001], // SYSTEM_UI_FLAG_HIDE_NAVIGATION | SYSTEM_UI_FLAG_FULLSCREEN | SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-              );
-            } catch (error) {
-              // DISABLED FOR PERFORMANCE
-              // console.log('Error setting immersive mode:', error);
-            }
-          }, 100);
+          console.log('📱 Android: Calling SystemUI.hideSystemUI()');
+          SystemUI.hideSystemUI();
         } catch (error) {
-          // DISABLED FOR PERFORMANCE
-          // console.log('Error entering immersive fullscreen:', error);
+          console.log('⚠️ Error entering immersive fullscreen:', error);
         }
       }
     } else {
-      // DISABLED FOR PERFORMANCE
-      // console.log('🎥 Exiting fullscreen mode');
+      console.log('🎥 Exiting fullscreen mode - showing system UI');
       StatusBar.setHidden(false, 'fade');
-      
+
       // Restore system UI on Android
       if (Platform.OS === 'android') {
         try {
-          const { UIManager } = require('react-native');
-          UIManager.dispatchViewManagerCommand(
-            UIManager.getViewManagerConfig('RCTView'),
-            UIManager.RCTView.Commands.setSystemUiVisibility,
-            [0x00000000], // SYSTEM_UI_FLAG_VISIBLE
-          );
+          console.log('📱 Android: Calling SystemUI.showSystemUI()');
+          SystemUI.showSystemUI();
         } catch (error) {
-          // DISABLED FOR PERFORMANCE
-          // console.log('Error restoring system UI:', error);
+          console.log('⚠️ Error restoring system UI:', error);
         }
       }
     }
@@ -463,24 +483,18 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
       try {
         unlockAllOrientations();
         StatusBar.setHidden(false);
-        
+
         // Restore system UI on Android
         if (Platform.OS === 'android') {
           try {
-            const { UIManager } = require('react-native');
-            UIManager.dispatchViewManagerCommand(
-              UIManager.getViewManagerConfig('RCTView'),
-              UIManager.RCTView.Commands.setSystemUiVisibility,
-              [0x00000000], // SYSTEM_UI_FLAG_VISIBLE
-            );
+            console.log('🧹 Component unmounting - restoring system UI');
+            SystemUI.showSystemUI();
           } catch (error) {
-            // DISABLED FOR PERFORMANCE
-            // console.log('Error restoring system UI on unmount:', error);
+            console.log('⚠️ Error restoring system UI on unmount:', error);
           }
         }
       } catch (error) {
-        // DISABLED FOR PERFORMANCE
-        // console.log('Error unlocking orientations on unmount:', error);
+        console.log('⚠️ Error unlocking orientations on unmount:', error);
       }
     };
   }, []);
@@ -494,6 +508,7 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
       setIsFullscreen(false);
       setShowFullscreenControls(true);
       onFullscreenChange?.(false);
+      justEnteredFullscreenRef.current = false; // Reset the flag
 
       // Unlock orientations when exiting fullscreen
       setTimeout(() => {
@@ -511,6 +526,7 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
       setIsFullscreen(true);
       setShowFullscreenControls(true);
       onFullscreenChange?.(true);
+      justEnteredFullscreenRef.current = true; // Mark that we just entered fullscreen
 
       // Auto-rotate to landscape for better fullscreen experience
       setTimeout(() => {
@@ -551,6 +567,8 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
   };
 
   const handleFullscreenVideoPress = () => {
+    console.log('👆 Fullscreen screen tapped - toggling controls');
+    console.log('👆 Current showFullscreenControls:', showFullscreenControls);
     setShowFullscreenControls(!showFullscreenControls);
   };
 
@@ -754,6 +772,7 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
   );
 
   // Fullscreen mode controls
+  console.log('🎛️ Rendering fullscreen controls, showFullscreenControls:', showFullscreenControls);
   const fullscreenControls = showFullscreenControls && (
     <View style={[styles.fullscreenControlsOverlay, { zIndex: 1002, elevation: 1002 }]}>
       <View style={styles.fullscreenControlsContainer}>
@@ -900,75 +919,35 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
     </View>
   );
 
-  // Render Video component for regular mode
-  const videoComponent = (
-    <Video
-      key="main-video-player" // Fixed key to maintain component instance
-      ref={videoRef}
-      source={source}
-      style={StyleSheet.absoluteFill}
-      paused={isVideoPaused}
-      controls={false}
-      resizeMode={resizeMode}
-      onLoad={onLoadData}
-      onError={error => {
-        // DISABLED FOR PERFORMANCE
-        // console.log('❌ Video error:', error);
-        // DISABLED FOR PERFORMANCE
-        // console.log('📁 Source URI:', source?.uri);
-        onError?.(error);
-      }}
-      onLoadStart={() => {
-        // DISABLED FOR PERFORMANCE
-        // console.log('🎬 Video load start:', source?.uri);
-        onLoadStart?.();
-      }}
-      onBuffer={onBuffer}
-      onProgress={onProgress}
-      repeat={false}
-      playInBackground={false}
-      playWhenInactive={false}
-      ignoreSilentSwitch="ignore"
-      preventsDisplaySleepDuringVideoPlayback={false}
-      reportBandwidth={false}
-      useTextureView={false}
-      disableFocus={true}
-      muted={false}
-      posterResizeMode="cover"
-      allowsExternalPlayback={false}
-      bufferConfig={{
-        minBufferMs: 2000,
-        maxBufferMs: 8000,
-        bufferForPlaybackMs: 500,
-        bufferForPlaybackAfterRebufferMs: 1000,
-      }}
-    />
-  );
-
-  // Single video component with dynamic styling - eliminates memory duplication
+  // Single video component with dynamic styling
   const currentVideoComponent = (
     <Video
-      key={isFullscreen ? `fullscreen-video-player-${videoKey}` : "main-video-player"}
+      key="main-video-player"
       ref={videoRef}
-      source={source}
-      style={[
-        isFullscreen ? styles.fullscreenVideo : StyleSheet.absoluteFill,
-        isFullscreen && { width: dimensions.width, height: dimensions.height },
-      ]}
+      source={sanitizedSource}
+      style={isFullscreen
+        ? [styles.fullscreenVideo, {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100%',
+            height: '100%'
+          }]
+        : StyleSheet.absoluteFill
+      }
       paused={isVideoPaused}
       controls={false}
       resizeMode={isFullscreen ? fullscreenResizeMode : resizeMode}
       onLoad={onLoadData}
       onError={error => {
-        // DISABLED FOR PERFORMANCE
-        // console.log('❌ Video error:', error);
-        // DISABLED FOR PERFORMANCE
-        // console.log('📁 Source URI:', source?.uri);
+        console.log('❌ Video error:', error);
+        console.log('📁 Source URI:', sanitizedSource?.uri);
         onError?.(error);
       }}
       onLoadStart={() => {
-        // DISABLED FOR PERFORMANCE
-        // console.log('🎬 Video load start:', source?.uri);
+        console.log('🎬 Video load start:', sanitizedSource?.uri);
         onLoadStart?.();
       }}
       onBuffer={onBuffer}
@@ -999,8 +978,6 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
       style={[
         styles.fullscreenContainer,
         {
-          width: dimensions.width,
-          height: dimensions.height,
           zIndex: 1000,
           elevation: 1000,
         },
@@ -1036,38 +1013,35 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
     />
   );
 
-  // In fullscreen mode, render a completely separate overlay
-  if (isFullscreen) {
-    return (
-      <View
-        style={[
-          styles.fullscreenContainer,
-          { width: dimensions.width, height: dimensions.height },
-        ]}
-      >
-        {currentVideoComponent}
-        <TouchableOpacity
-          style={[StyleSheet.absoluteFill, { zIndex: 5 }]}
-          onPress={handleFullscreenVideoPress}
-          activeOpacity={1}
-        />
-        {fullscreenControls}
-      </View>
-    );
-  }
-
-  // Regular mode
+  // Unified component - works seamlessly with both regular and fullscreen modes
   return (
-    <View style={[style, { position: 'relative', overflow: 'hidden' }]}>
-      {videoComponent}
+    <View style={[
+      style,
+      isFullscreen && {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 9999,
+      },
+      { position: 'relative', overflow: 'hidden' }
+    ]}>
+      {currentVideoComponent}
+
+      {/* Touch handler - works for both modes */}
       <TouchableOpacity
-        onPress={handleVideoPress}
-        onLongPress={handleDoubleTap}
+        onPress={isFullscreen ? handleFullscreenVideoPress : handleVideoPress}
+        onLongPress={!isFullscreen ? handleDoubleTap : undefined}
         style={StyleSheet.absoluteFill}
-        activeOpacity={1}
+        activeOpacity={isFullscreen ? 1 : 1}
         delayLongPress={300}
       />
-      {regularControls}
+
+      {/* Controls - conditionally rendered based on mode */}
+      {isFullscreen ? fullscreenControls : regularControls}
     </View>
   );
 };
