@@ -26,7 +26,10 @@ export default function SpredShare({ downloadedVideoPath, title }: Props) {
   });
 
   useEffect(() => {
-    return close;
+    return () => {
+      connectionSubscription.remove();
+      clientsSubscription.remove();
+    };
   }, []);
 
   const showError = (error: any) => {
@@ -43,29 +46,43 @@ export default function SpredShare({ downloadedVideoPath, title }: Props) {
         return;
       }
 
-      const address = connection?.isGroupOwner
-        ? clients[0]
-        : connection?.groupOwnerAddress?.hostAddress;
+      let address: string | undefined;
+      if (connection?.isGroupOwner && clients.length > 0) {
+        address = clients[0];
+      } else if (connection?.groupOwnerAddress?.hostAddress) {
+        address = connection.groupOwnerAddress.hostAddress;
+      }
 
       console.log('📤 SPRED: Sending downloaded file:', downloadedVideoPath);
       console.log('📤 SPRED: Video title:', title);
       console.log('📤 SPRED: Connection info:', { clients, connection, address });
 
       if (address) {
-        const progressSub = subscribeOnFileSend(data => {
-          setProgress(data.progress);
-          console.log(`📊 SPRED: Send progress: ${data.progress}%`);
-        });
+        let progressSub: any = null;
+        try {
+          progressSub = subscribeOnFileSend(data => {
+            setProgress(data.progress);
+            console.log(`📊 SPRED: Send progress: ${data.progress}%`);
+          });
 
-        const data = await sendFileTo(downloadedVideoPath, address);
-        progressSub.remove();
+          const data = await sendFileTo(downloadedVideoPath, address);
 
-        Snackbar.show({
-          text: `"${title || 'Video'}" sent successfully!`,
-        });
-        console.log('✅ SPRED: File sent successfully:', data);
+          if (progressSub) {
+            progressSub.remove();
+          }
+
+          Snackbar.show({
+            text: `"${title || 'Video'}" sent successfully!`,
+          });
+          console.log('✅ SPRED: File sent successfully:', data);
+        } catch (err) {
+          if (progressSub) {
+            progressSub.remove();
+          }
+          throw err;
+        }
       } else {
-        showError('No valid peer address found');
+        showError('No valid peer address found - Make sure devices are connected');
       }
     } catch (err) {
       console.log('❌ SPRED: Send error:', err);
@@ -73,11 +90,7 @@ export default function SpredShare({ downloadedVideoPath, title }: Props) {
     }
   };
 
-  const close = () => {
-    connectionSubscription.remove();
-    clientsSubscription.remove();
-  };
-
+  
   return (
     <View>
       {title && (
